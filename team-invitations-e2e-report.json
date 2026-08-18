@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-08-18T08:40:05.599Z",
+  "phases": {
+    "PHASE_4_PROFILE_LOOKUP": {
+      "tested": true
+    },
+    "PHASE_5_ACTIVITY_LOGGING": {
+      "table_name": "activity_logs"
+    },
+    "PHASE_6_RBAC": {
+      "roles": [
+        "super_admin",
+        "admin",
+        "manager",
+        "receptionist",
+        "staff",
+        "customer"
+      ]
+    }
+  },
+  "failures": [
+    {
+      "phase": "PHASE_1_DATABASE",
+      "message": "invitations table missing: Could not find the table 'public.invitations' in the schema cache",
+      "timestamp": "2026-08-18T08:40:07.268Z"
+    },
+    {
+      "phase": "PHASE_2_RLS",
+      "message": "Unexpected error: PGRST205 - Could not find the table 'public.invitations' in the schema cache",
+      "timestamp": "2026-08-18T08:40:07.477Z"
+    },
+    {
+      "phase": "PHASE_3_EMAIL_EXISTS",
+      "message": "Error: recordWarning is not defined",
+      "timestamp": "2026-08-18T08:40:08.376Z"
+    }
+  ],
+  "issues": [
+    {
+      "phase": "PHASE_3_EMAIL_EXISTS",
+      "message": "⚠️ profiles does NOT have 'email' column - emailExists() may fail",
+      "timestamp": "2026-08-18T08:40:08.116Z"
+    }
+  ],
+  "phaseResults": {
+    "phase1": false,
+    "phase2": false,
+    "phase3": false,
+    "phase4": true,
+    "phase5": true,
+    "phase6": true
+  },
+  "passed": false
+}

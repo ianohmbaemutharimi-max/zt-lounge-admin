@@ -1,0 +1,18 @@
+
+> dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.88.181:3000
+- Environments: .env.local
+✓ Ready in 1576ms
+
+○ Compiling /dashboard/services ...
+ GET /dashboard/services 200 in 14.1s (next.js: 6.4s, application-code: 7.6s)
+ GET /api/admin/notifications 200 in 9.1s (next.js: 4.1s, application-code: 4.9s)
+ GET /api/admin/services 200 in 4.1s (next.js: 35ms, application-code: 4.0s)
+ GET /api/admin/service-categories 200 in 4.5s (next.js: 9ms, application-code: 4.5s)
+ GET /api/auth/session 200 in 4.8s (next.js: 362ms, application-code: 4.4s)
+ GET /api/auth/session 200 in 672ms (next.js: 6ms, application-code: 666ms)
+ GET /api/admin/menu-items 401 in 44ms (next.js: 25ms, application-code: 19ms)

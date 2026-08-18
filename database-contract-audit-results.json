@@ -1,0 +1,175 @@
+{
+  "timestamp": "2026-08-13T15:50:37.226Z",
+  "database": "https://jczwilrysvnhcjzjztbi.supabase.co",
+  "primaryKeys": {
+    "business_settings": {
+      "column": "id",
+      "type": "integer",
+      "sampleValue": 1,
+      "method": "inferred"
+    },
+    "menu_items": {
+      "column": "id",
+      "type": "uuid",
+      "sampleValue": "553cfbbf-fa6d-43b9-ae1f-310387f6a6c8",
+      "method": "inferred"
+    },
+    "services": {
+      "column": "id",
+      "type": "uuid",
+      "sampleValue": "8df2b696-241b-49fc-8c9b-95a6bacc547d",
+      "method": "inferred"
+    },
+    "gallery": {
+      "column": "id",
+      "type": "uuid",
+      "sampleValue": "8c783778-ec58-43df-b2c1-02a6e99d145c",
+      "method": "inferred"
+    },
+    "hero_slides": {
+      "column": "id",
+      "type": "uuid",
+      "sampleValue": "0125fb9e-0b5c-4a15-b698-3be79aa0d0bf",
+      "method": "inferred"
+    },
+    "media_assets": {
+      "column": "id",
+      "type": "uuid",
+      "sampleValue": "c8c306df-aed5-485a-91b0-c346768525e2",
+      "method": "inferred"
+    },
+    "media_usage": {
+      "column": "id",
+      "type": "uuid",
+      "sampleValue": "bc606ccf-7017-48a9-a5ca-a5b553630ba7",
+      "method": "inferred"
+    },
+    "profiles": {
+      "column": "id",
+      "type": "uuid",
+      "sampleValue": "0c03fc39-c8ff-4906-a1ab-9b6cb9313539",
+      "method": "inferred"
+    }
+  },
+  "mediaAssets": {
+    "originalNameSemantics": {
+      "looksLikeFilename": 0,
+      "looksLikeTable": 10,
+      "looksLikeCategory": 0,
+      "null": 0
+    },
+    "fieldPopulation": {
+      "id": {
+        "populated": 36,
+        "null": 0
+      },
+      "bucket": {
+        "populated": 36,
+        "null": 0
+      },
+      "path": {
+        "populated": 36,
+        "null": 0
+      },
+      "public_url": {
+        "populated": 36,
+        "null": 0
+      },
+      "original_name": {
+        "populated": 36,
+        "null": 0
+      },
+      "mime_type": {
+        "populated": 0,
+        "null": 36
+      },
+      "file_size": {
+        "populated": 0,
+        "null": 36
+      },
+      "width": {
+        "populated": 0,
+        "null": 36
+      },
+      "height": {
+        "populated": 0,
+        "null": 36
+      },
+      "alt_text": {
+        "populated": 35,
+        "null": 1
+      },
+      "title": {
+        "populated": 36,
+        "null": 0
+      },
+      "content_hash": {
+        "populated": 0,
+        "null": 36
+      },
+      "uploaded_by": {
+        "populated": 0,
+        "null": 36
+      },
+      "created_at": {
+        "populated": 36,
+        "null": 0
+      },
+      "updated_at": {
+        "populated": 36,
+        "null": 0
+      }
+    }
+  },
+  "mediaUsage": {},
+  "compatibility": {
+    "menu_items": {
+      "pkType": "uuid",
+      "compatible": true,
+      "issue": null
+    },
+    "services": {
+      "pkType": "uuid",
+      "compatible": true,
+      "issue": null
+    },
+    "gallery": {
+      "pkType": "uuid",
+      "compatible": true,
+      "issue": null
+    },
+    "hero_slides": {
+      "pkType": "uuid",
+      "compatible": true,
+      "issue": null
+    }
+  },
+  "constraints": {
+    "assetsDuplicates": 0,
+    "usageDuplicates": 0
+  },
+  "policies": {},
+  "grants": {},
+  "cmsMapping": {
+    "menu_items": {
+      "field": "image_url",
+      "sampleCount": 5
+    },
+    "services": {
+      "field": "image_url",
+      "sampleCount": 5
+    },
+    "gallery": {
+      "field": "image_url",
+      "sampleCount": 5
+    },
+    "hero_slides": {
+      "field": "image_url",
+      "sampleCount": 2
+    },
+    "business_settings": {
+      "field": "logo_url",
+      "sampleCount": 1
+    }
+  }
+}

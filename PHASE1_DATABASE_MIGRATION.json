@@ -1,0 +1,91 @@
+{
+  "timestamp": "2026-08-18T12:10:20.263Z",
+  "phase": "PHASE 1 — DATABASE / MEDIA MIGRATION",
+  "status": "BLOCKED",
+  "sections": {
+    "migration": {
+      "exists": true,
+      "path": "\\supabase\\migrations\\20260817_add_media_id_to_cms_tables.sql",
+      "size": 5313,
+      "lineCount": 116,
+      "verification": {
+        "addsMenuItemsMediaId": true,
+        "addsServicesMediaId": true,
+        "addsGalleryMediaId": true,
+        "addsHeroSlidesMediaId": true,
+        "hasForeignKeys": true,
+        "hasOnDeleteSetNull": true,
+        "hasIndexes": true,
+        "isIdempotent": true,
+        "hasRollback": true
+      },
+      "status": "READY_TO_APPLY",
+      "instructions": {
+        "step1": "Open Supabase Dashboard → SQL Editor",
+        "step2": "Copy entire SQL from: supabase/migrations/20260817_add_media_id_to_cms_tables.sql",
+        "step3": "Paste into SQL Editor",
+        "step4": "Execute",
+        "step5": "Verify: SELECT column_name FROM information_schema.columns WHERE table_name IN ('menu_items', 'services', 'gallery', 'hero_slides') AND column_name = 'media_id';",
+        "expected": "4 rows (one media_id per table)"
+      }
+    },
+    "liveDatabase": {
+      "credentialsFound": true,
+      "url": "https://jczwilrysvnhcjzjztbi.s..."
+    },
+    "apiTests": {
+      "results": [],
+      "testsPlanned": [
+        {
+          "name": "Menu Items",
+          "endpoint": "/api/admin/menu-items",
+          "expectedStatus": 200,
+          "expectedFields": [
+            "id",
+            "media_id"
+          ]
+        },
+        {
+          "name": "Services",
+          "endpoint": "/api/admin/services",
+          "expectedStatus": 200,
+          "expectedFields": [
+            "id",
+            "media_id"
+          ]
+        },
+        {
+          "name": "Gallery",
+          "endpoint": "/api/admin/gallery",
+          "expectedStatus": 200,
+          "expectedFields": [
+            "id",
+            "media_id"
+          ]
+        },
+        {
+          "name": "Hero Slides",
+          "endpoint": "/api/admin/hero-slides",
+          "expectedStatus": 200,
+          "expectedFields": [
+            "id",
+            "media_id"
+          ]
+        }
+      ]
+    },
+    "typecheck": {
+      "status": "PASS"
+    },
+    "acceptance": {}
+  },
+  "acceptance_criteria": {
+    "liveSchemaVerified": false,
+    "mediaIdExists": false,
+    "fkConstraintsVerified": false,
+    "indexesVerified": false,
+    "apisReturn200": false,
+    "noDataLoss": false,
+    "typecheckPasses": true
+  }
+}

@@ -1,0 +1,56 @@
+
+> build
+> next build
+
+▲ Next.js 16.2.6 (Turbopack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 25.8s
+  Running TypeScript ...
+  Finished TypeScript in 26.4s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/23) ...
+  Generating static pages using 3 workers (5/23) 
+  Generating static pages using 3 workers (11/23) 
+  Generating static pages using 3 workers (17/23) 
+✓ Generating static pages using 3 workers (23/23) in 1347ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/admin/[resource]
+├ ƒ /api/admin/[resource]/[id]
+├ ƒ /api/admin/roles
+├ ƒ /api/admin/team-invitations
+├ ƒ /api/admin/team-invitations/[id]
+├ ƒ /api/admin/upload
+├ ƒ /api/auth/login-audit
+├ ƒ /api/auth/session
+├ ƒ /api/dashboard/stats
+├ ƒ /api/health
+├ ƒ /api/invitations/accept
+├ ƒ /api/media
+├ ƒ /dashboard
+├ ƒ /dashboard/bookings
+├ ƒ /dashboard/customers
+├ ƒ /dashboard/gallery
+├ ƒ /dashboard/media
+├ ƒ /dashboard/menu
+├ ƒ /dashboard/messages
+├ ƒ /dashboard/promotions
+├ ƒ /dashboard/services
+├ ƒ /dashboard/settings
+├ ƒ /dashboard/team
+├ ƒ /dashboard/testimonials
+├ ƒ /dashboard/website
+├ ○ /login
+└ ○ /unauthorized
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

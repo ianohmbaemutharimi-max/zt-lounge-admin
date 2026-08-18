@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-08-18T16:50:01.689Z",
+  "runId": "test_1787071801689",
+  "phases": {
+    "phase_1_environment": {
+      "status": "BLOCKED",
+      "reason": "No test users found"
+    }
+  },
+  "summary": {
+    "passed": 0,
+    "failed": 0,
+    "blocked": 1
+  },
+  "createdRecords": [],
+  "gate": "YELLOW"
+}

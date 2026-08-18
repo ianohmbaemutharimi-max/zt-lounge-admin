@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-08-18T17:16:44.262Z",
+  "tests": {
+    "authenticated_menu_items": {
+      "status": "FAIL",
+      "details": {
+        "tested_roles": 4,
+        "passed": 0
+      }
+    },
+    "authenticated_hero_slides": {
+      "status": "FAIL",
+      "details": {
+        "tested_roles": 4,
+        "passed": 0
+      }
+    },
+    "error_contracts": {
+      "status": "FAIL",
+      "details": {
+        "unauthenticated_menu_items": null,
+        "unauthenticated_hero_slides": null
+      }
+    },
+    "performance": {
+      "status": "NOT_TESTED",
+      "details": null
+    }
+  },
+  "summary": {
+    "passed": 0,
+    "failed": 3,
+    "blocked": 0
+  },
+  "gate": "RED"
+}

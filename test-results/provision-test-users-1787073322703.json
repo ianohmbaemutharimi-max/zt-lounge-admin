@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-08-18T17:15:13.782Z",
+  "environment": {
+    "projectId": "jczwilrysvnhcjzjztbi",
+    "safe": true
+  },
+  "testUsers": [],
+  "summary": {
+    "created": 0,
+    "updated": 0,
+    "failed": 0,
+    "verified": 4
+  }
+}
