@@ -1,0 +1,52 @@
+{
+  "timestamp": "2026-08-18T18:43:05.811Z",
+  "environment": {
+    "supabaseUrl": "https://jczwilrysvnhcjzjztbi.supabase.co",
+    "serverRunning": false,
+    "buildStatus": "UNKNOWN"
+  },
+  "authentication": {
+    "status": "UNAUTHENTICATED_TEST_ONLY",
+    "mechanism": "supabase_session",
+    "adminUser": null,
+    "sessionToken": null
+  },
+  "menu_items_authenticated": {
+    "status": "FAIL",
+    "http_status": 404,
+    "duration_ms": 114,
+    "data_count": null,
+    "sample_record": null,
+    "error": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/src_app_globals_0p2ml",
+    "media_resolution": null
+  },
+  "hero_slides_authenticated": {
+    "status": "FAIL",
+    "http_status": 404,
+    "duration_ms": 106,
+    "data_count": null,
+    "sample_record": null,
+    "error": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"stylesheet\" href=\"/_next/static/chunks/src_app_globals_0p2ml",
+    "media_resolution": null
+  },
+  "regression": {
+    "menu_categories": {
+      "status": "PASS",
+      "http_status": 404
+    },
+    "website_pages": {
+      "status": "PASS",
+      "http_status": 404
+    },
+    "business_settings": {
+      "status": "PASS",
+      "http_status": 404
+    },
+    "media": {
+      "status": "PASS",
+      "http_status": 401
+    }
+  },
+  "gate_result": "YELLOW",
+  "gate_reason": "Test incomplete - could not determine authenticated state"
+}

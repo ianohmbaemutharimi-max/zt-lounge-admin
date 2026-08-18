@@ -1,0 +1,62 @@
+{
+  "repositoryMethods": {
+    "create": true,
+    "update": true,
+    "delete": true,
+    "allowlist": true,
+    "readonlyProtection": true
+  },
+  "resourceConfig": {
+    "collections": [
+      "menu-items",
+      "services",
+      "gallery",
+      "hero-slides",
+      "promotions"
+    ]
+  },
+  "authImplementation": {
+    "withAdminAuth": true,
+    "withContentManagerAuth": true,
+    "supabaseClient": true
+  },
+  "migrations": {
+    "media_assets": false,
+    "media_usage": false,
+    "menu_items": true,
+    "services": false,
+    "gallery": false,
+    "hero_slides": false,
+    "promotions": false,
+    "mediaIdRelationships": true
+  },
+  "cmsUIPages": {
+    "menu": true,
+    "services": true,
+    "gallery": true,
+    "website": true,
+    "media": true,
+    "team": true
+  },
+  "publicDataFetching": {
+    "menu": true,
+    "services": true,
+    "gallery": true,
+    "heroes": true
+  },
+  "cacheStrategy": {
+    "revalidation": false,
+    "forceDynamic": true
+  },
+  "errorHandling": {
+    "validationError": true,
+    "notFoundError": true,
+    "unauthorizedError": true
+  },
+  "performancePatterns": {},
+  "defectsFound": [
+    "Repository: getCollection missing",
+    "Repository: Auth context missing",
+    "Auth: JWT extraction missing"
+  ]
+}

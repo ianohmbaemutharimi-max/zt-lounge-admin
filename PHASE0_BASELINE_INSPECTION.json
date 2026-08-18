@@ -1,0 +1,108 @@
+{
+  "timestamp": "2026-08-18T12:06:12.815Z",
+  "phase": "PHASE 0 — BASELINE INSPECTION",
+  "sections": {
+    "database": {
+      "migrationFile": "20260817_add_media_id_to_cms_tables.sql",
+      "migrationExists": true,
+      "migrationActions": {
+        "addsMenuItemsMediaId": false,
+        "addsServicesMediaId": false,
+        "addsGalleryMediaId": false,
+        "addsHeroSlidesMediaId": false,
+        "hasForeignKeys": true,
+        "hasIndexes": true
+      }
+    },
+    "repository": {
+      "fileExists": true,
+      "hasWritableFields": true,
+      "hasResponseAllowlists": true,
+      "writableTables": [],
+      "hasPromotions": true,
+      "mediaIdReferences": 8
+    },
+    "apis": {
+      "genericRoute": true,
+      "idRoute": true,
+      "genericSupportsPost": false,
+      "genericSupportsGet": false,
+      "idSupportsGet": false,
+      "idSupportsDelete": false,
+      "idSupportsPatch": false,
+      "hasRevalidation": true
+    },
+    "promotions": {
+      "directoryExists": true,
+      "typesFileExists": false,
+      "files": [
+        "promotions-view.tsx"
+      ]
+    },
+    "collectionLimits": {
+      "slice": [
+        {
+          "file": "/src/app/api/admin/upload/route.ts",
+          "occurrences": 1
+        },
+        {
+          "file": "/src/app/api/admin/[resource]/route.ts",
+          "occurrences": 1
+        },
+        {
+          "file": "/src/features/bookings/bookings-view.tsx",
+          "occurrences": 1
+        },
+        {
+          "file": "/src/features/customers/customers-view.tsx",
+          "occurrences": 1
+        },
+        {
+          "file": "/src/features/promotions/promotions-view.tsx",
+          "occurrences": 1
+        },
+        {
+          "file": "/src/integrations/google-business-profile/sync.ts",
+          "occurrences": 1
+        },
+        {
+          "file": "/src/lib/validation/admin.ts",
+          "occurrences": 1
+        }
+      ],
+      "limit": [
+        {
+          "file": "/src/integrations/google-business-profile/oauth.ts",
+          "occurrences": 1
+        },
+        {
+          "file": "/src/lib/team/invitations.ts",
+          "occurrences": 1
+        }
+      ],
+      "take": [],
+      "totalOccurrences": 9
+    },
+    "cache": {
+      "revalidationPatterns": [
+        {
+          "file": "/src/app/api/admin/[resource]/[id]/route.ts",
+          "occurrences": 2
+        }
+      ]
+    },
+    "mediaLibrary": {
+      "libraryViewExists": true,
+      "resolverExists": true,
+      "resolverHasCaching": false
+    },
+    "rls": {
+      "migrationsWithRLS": 2
+    },
+    "publicWebsite": {
+      "publicPagesDir": "\\src\\app\\(public)",
+      "publicPagesCount": 0,
+      "dataFetchPatterns": 9
+    }
+  }
+}

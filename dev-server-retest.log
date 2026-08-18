@@ -1,0 +1,23 @@
+
+> dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.50.181:3000
+- Environments: .env.local
+✓ Ready in 1484ms
+
+ GET / 307 in 949ms (next.js: 438ms, application-code: 511ms)
+ GET /dashboard 307 in 499ms (next.js: 141ms, application-code: 358ms)
+ GET /login 200 in 171ms (next.js: 43ms, application-code: 129ms)
+ GET /login 200 in 323ms (next.js: 5ms, application-code: 317ms)
+ GET /unauthorized 200 in 237ms (next.js: 65ms, application-code: 172ms)
+ GET /api/admin/hero-slides 401 in 1912ms (next.js: 1861ms, application-code: 51ms)
+ GET /api/admin/gallery 401 in 28ms (next.js: 14ms, application-code: 14ms)
+ GET /api/admin/services 401 in 17ms (next.js: 3ms, application-code: 13ms)
+ GET /api/admin/menu-items 401 in 13ms (next.js: 4ms, application-code: 9ms)
+ GET /api/admin/business-settings 401 in 15ms (next.js: 5ms, application-code: 9ms)
+ GET /api/health 503 in 240ms (next.js: 223ms, application-code: 17ms)
+ GET /login 200 in 1278ms (next.js: 11ms, application-code: 1267ms)
+[?25h

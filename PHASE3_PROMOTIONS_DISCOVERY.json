@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-08-18T13:58:31.864Z",
+  "phase": "3.1",
+  "totalFiles": 3,
+  "findings": {
+    "database": [],
+    "types": [],
+    "repository": [],
+    "api": [],
+    "admin": [
+      "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\promotions\\promotions-view.tsx",
+      "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\dashboard\\promotions\\page.tsx"
+    ],
+    "public": [],
+    "migrations": [
+      "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\supabase\\migrations"
+    ],
+    "config": []
+  },
+  "status": "INCOMPLETE"
+}

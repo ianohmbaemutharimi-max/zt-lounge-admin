@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-08-13T12:56:36.514Z",
+  "phase": "Phase 1B - Database Foundation & Backfill",
+  "status": "FAILED",
+  "migration": {},
+  "postgrestCache": {},
+  "backfill": {},
+  "verification": {},
+  "compatibility": {},
+  "issues": [
+    "supabaseAdmin.rpc(...).catch is not a function"
+  ],
+  "recommendation": ""
+}

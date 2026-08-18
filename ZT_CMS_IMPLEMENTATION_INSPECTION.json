@@ -1,0 +1,133 @@
+{
+  "timestamp": "2026-08-18T11:59:41.431Z",
+  "projectRoot": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin",
+  "findings": {
+    "migrations": [
+      {
+        "file": "20260817_add_media_id_to_cms_tables.sql",
+        "applied": "⚠️ NEEDS VERIFICATION",
+        "mediaIdColumns": true,
+        "foreignKeys": true,
+        "indexes": true,
+        "note": "Migration exists but must verify it is applied to live database"
+      }
+    ],
+    "databaseSchema": [],
+    "repositoryLayer": [
+      {
+        "file": "/src/lib/repository.ts",
+        "hasWritableFields": true,
+        "hasResponseAllowlists": true,
+        "mediaIdSupport": 8,
+        "tables": []
+      }
+    ],
+    "apiRoutes": [
+      {
+        "admin_routes": [
+          "/api/admin/roles",
+          "/api/admin/team-invitations",
+          "/api/admin/upload",
+          "/api/admin/[resource]"
+        ],
+        "hasCrudHandler": true,
+        "hasIdCrudHandler": true
+      }
+    ],
+    "uiComponents": [
+      {
+        "component": "services",
+        "exists": true,
+        "hasDynamicRendering": true,
+        "files": [
+          "catalog-manager.tsx"
+        ]
+      },
+      {
+        "component": "gallery",
+        "exists": true,
+        "hasDynamicRendering": true,
+        "files": [
+          "gallery-view.tsx"
+        ]
+      },
+      {
+        "component": "cms",
+        "exists": true,
+        "hasDynamicRendering": true,
+        "files": [
+          "website-cms.tsx"
+        ]
+      }
+    ],
+    "hardcodedPatterns": [],
+    "publicWebsite": [
+      {
+        "dataFetchingPatterns": 12,
+        "note": "Public pages should fetch CMS content dynamically"
+      }
+    ],
+    "mediaLibrary": [
+      {
+        "file": "/src/features/media/media-library-view.tsx",
+        "exists": true,
+        "size": 10219
+      }
+    ],
+    "promotions": [
+      {
+        "promotionsFeatureExists": true,
+        "note": "Promotions feature found"
+      }
+    ],
+    "types": [
+      {
+        "typeDir": "/src/types",
+        "files": [
+          "lucide-react.d.ts",
+          "media.ts",
+          "supabase.ts"
+        ],
+        "hasMediaTypes": true,
+        "hasPromotionTypes": false
+      }
+    ],
+    "validation": [],
+    "rls": [],
+    "cache": [
+      {
+        "hasRevalidation": true,
+        "count": 1,
+        "files": [
+          "\\src\\app\\api\\admin\\[resource]\\[id]\\route.ts"
+        ]
+      }
+    ],
+    "issues": [
+      {
+        "type": "CRITICAL",
+        "issue": "slice(0, N) limits found",
+        "count": 5,
+        "files": [
+          "\\src\\app\\api\\admin\\upload\\route.ts",
+          "\\src\\features\\bookings\\bookings-view.tsx",
+          "\\src\\features\\customers\\customers-view.tsx"
+        ],
+        "note": "These may impose artificial collection limits"
+      },
+      {
+        "type": "REVIEW NEEDED",
+        "issue": ".limit() calls found",
+        "count": 2,
+        "note": "Verify these are for pagination, not business content limits"
+      }
+    ]
+  },
+  "summary": {
+    "totalIssuesFound": 2,
+    "criticalIssues": 1,
+    "hardcodedPatterns": 0,
+    "migrationsVerified": 1,
+    "promotionsReady": true
+  }
+}

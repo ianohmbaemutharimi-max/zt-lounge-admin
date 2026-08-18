@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-08-13T12:48:01.919Z",
+  "dryRun": true,
+  "sourceReferences": 37,
+  "uniqueUrls": 37,
+  "mediaAssetsCreated": 0,
+  "mediaAssetsSkipped": 0,
+  "mediaUsageCreated": 0,
+  "missingFiles": [],
+  "duplicateUrls": [],
+  "categoryDistribution": {
+    "menu": 13,
+    "services": 6,
+    "gallery": 14,
+    "hero": 2,
+    "logos": 1
+  },
+  "errors": []
+}

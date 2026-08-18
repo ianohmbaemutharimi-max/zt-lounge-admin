@@ -1,0 +1,158 @@
+{
+  "timestamp": "2026-08-13T13:30:29.903Z",
+  "dryRun": false,
+  "sourceReferences": 37,
+  "uniqueUrls": 37,
+  "mediaAssetsCreated": 0,
+  "mediaAssetsSkipped": 0,
+  "mediaUsageCreated": 0,
+  "missingFiles": [],
+  "duplicateUrls": [],
+  "categoryDistribution": {},
+  "errors": [
+    {
+      "filename": "beef-steak.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "mixed-grill.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "loaded-fries.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "chicken-tikka.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "grilled-chicken.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "premium-sides.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "goat-ribs.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "fresh-juice.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "coffee.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "signature-cocktail.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "cocktail.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "nyama-choma.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "signature-pilau.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "lounge-interior-main.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "vip-fireplace-lounge.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "car-detailing.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "interior.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "wedding.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "conference-hall.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-04.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-05.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-06.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-07.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-08.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-09.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-10.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-11.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-12.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-01.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-02.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-03.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-13.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "gallery-14.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "hero-restaurant.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "hero-lounge.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    },
+    {
+      "filename": "logo.webp",
+      "error": "Could not find the table 'public.media_assets' in the schema cache"
+    }
+  ]
+}

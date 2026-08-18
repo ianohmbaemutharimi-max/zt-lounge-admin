@@ -1,0 +1,40 @@
+{
+  "environment": {
+    "supabase_url": "https://jczwilrysvnhcjzjztbi.supabase.co",
+    "has_service_role_key": true,
+    "has_anon_key": true,
+    "timestamp": "2026-08-18T17:50:53.253Z"
+  },
+  "database_state": {
+    "is_admin_or_above_check": "RPC_UNAVAILABLE - manual check required",
+    "error": "supabase.from(...).select(...).in(...).catch is not a function"
+  },
+  "migration_check": {
+    "migration_file_exists": true,
+    "file_size": 3023,
+    "has_function_definition": true,
+    "has_rls_policies": true
+  },
+  "api_tests": {
+    "error": "fetch failed"
+  },
+  "rbac_tests": {},
+  "rls_tests": {},
+  "regression_tests": {
+    "/api/admin/menu-categories": "ERROR",
+    "/api/admin/services": "ERROR",
+    "/api/admin/promotions": "ERROR",
+    "/api/media?summary=true": "ERROR",
+    "/dashboard": "ERROR"
+  },
+  "cleanup": {},
+  "final_gate": "YELLOW",
+  "app_state": {
+    "dev_server_running": true,
+    "ready_for_testing": true
+  },
+  "auth": {
+    "note": "Real auth testing blocked - no test account credentials in .env",
+    "status": "BLOCKED"
+  }
+}

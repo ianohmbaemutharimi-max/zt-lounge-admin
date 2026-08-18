@@ -1,0 +1,32 @@
+PHASE 1 — DATABASE / MEDIA MIGRATION
+Status: BLOCKED (awaiting manual Supabase action)
+Date: 2026-08-18T12:10:28.113Z
+
+IMMEDIATE ACTION REQUIRED:
+
+1. Go to: https://app.supabase.com
+2. Select your ZT Lounge project
+3. Click: SQL Editor (left sidebar)
+4. Click: New Query
+5. Copy the entire SQL from:
+   supabase/migrations/20260817_add_media_id_to_cms_tables.sql
+6. Paste into SQL Editor
+7. Click: Execute
+8. Verify success with query:
+   SELECT column_name FROM information_schema.columns 
+   WHERE table_name IN ('menu_items', 'services', 'gallery', 'hero_slides')
+   AND column_name = 'media_id';
+9. Expected result: 4 rows
+
+THEN:
+- Run this script again: npm run phase1-verify
+- Or proceed to PHASE 2 once APIs return 200
+
+ACCEPTANCE CRITERIA:
+✅ TypeScript check: PASS
+⏳ Live schema verified: BLOCKED
+⏳ media_id columns: BLOCKED
+⏳ FK constraints: BLOCKED
+⏳ Indexes: BLOCKED
+⏳ CMS APIs 200: BLOCKED
+⏳ No data loss: BLOCKED

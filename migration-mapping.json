@@ -1,0 +1,254 @@
+[
+  {
+    "table": "hero_slides",
+    "id": "0125fb9e-0b5c-4a15-b698-3be79aa0d0bf",
+    "label": "ZT Lounge Meru",
+    "oldPath": "assets/images/restaurant/hero-restaurant.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-restaurant.webp"
+  },
+  {
+    "table": "hero_slides",
+    "id": "78eeb5cb-5070-42b0-9959-66e76cb0ba4f",
+    "label": "Unforgettable Evenings Await",
+    "oldPath": "assets/images/lounge/hero-lounge.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-lounge.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "8c783778-ec58-43df-b2c1-02a6e99d145c",
+    "label": "Premium Lounge",
+    "oldPath": "assets/images/gallery/gallery-04.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-04.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "e073851e-a6fd-4ed3-abb8-aa5060666920",
+    "label": "Event Setup",
+    "oldPath": "assets/images/gallery/gallery-05.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-05.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "151bcc5a-60a6-4ffc-b29a-bfe0fc5ebb28",
+    "label": "Nightlife",
+    "oldPath": "assets/images/gallery/gallery-06.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-06.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "4eb85a61-c272-40fa-9eeb-dcb7bab1bdc6",
+    "label": "Auto Spa",
+    "oldPath": "assets/images/gallery/gallery-07.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-07.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "40c1637c-5cdd-4d66-8f1b-c1f5f5af29b5",
+    "label": "Restaurant Interior",
+    "oldPath": "assets/images/gallery/gallery-08.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-08.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "2b8f9ada-4ca3-4677-aaac-2723c4756b1a",
+    "label": "VIP Suite",
+    "oldPath": "assets/images/gallery/gallery-09.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-09.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "479e33c3-a0eb-456c-8bbe-ea0371c63449",
+    "label": "Conference Tech",
+    "oldPath": "assets/images/gallery/gallery-10.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-10.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "56055378-2f54-45df-bfff-c6f9d6b71305",
+    "label": "Outdoor Patio",
+    "oldPath": "assets/images/gallery/gallery-11.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-11.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "6b8d31fe-6d4f-4c50-9f95-3d90786a92bd",
+    "label": "Private Dining",
+    "oldPath": "assets/images/gallery/gallery-12.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-12.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "99bb88f5-a23a-4cb0-9043-1ec23734c702",
+    "label": "Elegant Dining",
+    "oldPath": "assets/images/gallery/gallery-01.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-01.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "018ae57b-ce61-442b-bc6c-e1fea7c87367",
+    "label": "VIP Cabin",
+    "oldPath": "assets/images/gallery/gallery-02.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-02.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "13dfb794-4c26-457b-95fe-69a638ceac62",
+    "label": "Conference Hall",
+    "oldPath": "assets/images/gallery/gallery-03.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-03.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "4c31ac75-6d05-4577-ab3c-7a1548f0566b",
+    "label": "Car Detailing",
+    "oldPath": "assets/images/gallery/gallery-13.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-13.webp"
+  },
+  {
+    "table": "gallery",
+    "id": "a6654f84-dc0e-438e-b9e6-d6573f9a8df8",
+    "label": "Exterior",
+    "oldPath": "assets/images/gallery/gallery-14.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-14.webp"
+  },
+  {
+    "table": "services",
+    "id": "8df2b696-241b-49fc-8c9b-95a6bacc547d",
+    "label": "Lounge & Bar",
+    "oldPath": "assets/images/lounge/lounge-interior-main.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/lounge-interior-main.webp"
+  },
+  {
+    "table": "services",
+    "id": "3139fc1e-fa7f-4f19-8822-c9aabf0bcf46",
+    "label": "VIP Cabins",
+    "oldPath": "assets/images/vip/vip-fireplace-lounge.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/vip-fireplace-lounge.webp"
+  },
+  {
+    "table": "services",
+    "id": "f12be083-6b42-4fa4-a534-de6846a07029",
+    "label": "Auto Spa",
+    "oldPath": "assets/images/autospa/car-detailing.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/car-detailing.webp"
+  },
+  {
+    "table": "services",
+    "id": "e38ef721-2a57-4c05-88aa-5509d766ca66",
+    "label": "Restaurant",
+    "oldPath": "assets/images/restaurant/interior.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/interior.webp"
+  },
+  {
+    "table": "services",
+    "id": "033640c1-bbad-4890-82f6-2b1cbfcae896",
+    "label": "Events",
+    "oldPath": "assets/images/events/wedding.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/wedding.webp"
+  },
+  {
+    "table": "services",
+    "id": "a21bdd86-ad9c-4845-9dc7-a2d5e96e8c00",
+    "label": "Conference",
+    "oldPath": "assets/images/conference/conference-hall.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/conference-hall.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "2c66bd38-9986-4078-b1a4-b2b5a9a1f885",
+    "label": "Signature Nyama Choma",
+    "oldPath": "assets/images/menu/nyama-choma.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/nyama-choma.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "a88ed411-bf78-4985-a41f-31cfc5e4ff44",
+    "label": "ZT Signature Pilau",
+    "oldPath": "assets/images/menu/signature-pilau.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/signature-pilau.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "553cfbbf-fa6d-43b9-ae1f-310387f6a6c8",
+    "label": "Premium Beef Steak",
+    "oldPath": "assets/images/menu/beef-steak.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/beef-steak.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "8d768393-c52c-438f-884e-9910ba78a27e",
+    "label": "Mixed Grill Platter",
+    "oldPath": "assets/images/menu/mixed-grill.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/mixed-grill.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "ebd98cc3-927c-42f1-9e88-f28b749c8e08",
+    "label": "Loaded Fries",
+    "oldPath": "assets/images/menu/loaded-fries.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/loaded-fries.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "be61cf75-6bf7-4eb5-a0c6-739d48e22640",
+    "label": "Chicken Tikka",
+    "oldPath": "assets/images/menu/chicken-tikka.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/chicken-tikka.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "123d283c-860c-490d-b071-ad1261127ca0",
+    "label": "Grilled Chicken",
+    "oldPath": "assets/images/menu/grilled-chicken.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/grilled-chicken.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "fbb9bcdf-9b6a-4b1e-9d75-658b952b86c5",
+    "label": "Premium Sides",
+    "oldPath": "assets/images/menu/premium-sides.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/premium-sides.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "3d43e076-2ddb-49bf-8ce5-c02e26a11df8",
+    "label": "Goat Ribs",
+    "oldPath": "assets/images/menu/goat-ribs.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/goat-ribs.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "1489a80d-0633-46a0-b88c-4c7ed6c63b8f",
+    "label": "Fresh Juice",
+    "oldPath": "assets/images/menu/fresh-juice.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/fresh-juice.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "be858af1-a273-4675-a41c-d4cc54ab24d9",
+    "label": "Coffee",
+    "oldPath": "assets/images/menu/coffee.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/coffee.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "444e00b3-955e-4b21-b745-1b85712b6223",
+    "label": "Signature Cocktail",
+    "oldPath": "assets/images/menu/signature-cocktail.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/signature-cocktail.webp"
+  },
+  {
+    "table": "menu_items",
+    "id": "2ff55c17-750d-4bdc-9a2f-bbe93eb17dd4",
+    "label": "Cocktail Selection",
+    "oldPath": "assets/images/menu/cocktail.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/cocktail.webp"
+  },
+  {
+    "table": "business_settings",
+    "id": 1,
+    "label": "Business Logo",
+    "oldPath": "assets/images/branding/logo.webp",
+    "newUrl": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/logos/logo.webp"
+  }
+]

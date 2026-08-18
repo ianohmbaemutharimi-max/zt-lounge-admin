@@ -1,0 +1,109 @@
+{
+  "serverHealth": {
+    "url": "http://localhost:3000",
+    "status": 200,
+    "pass": true
+  },
+  "publicPages": [
+    {
+      "url": "/login",
+      "status": 200,
+      "pass": true
+    },
+    {
+      "url": "/unauthorized",
+      "status": 200,
+      "pass": true
+    }
+  ],
+  "staticAssets": [],
+  "apiEndpoints": [
+    {
+      "url": "/api/admin/hero-slides",
+      "status": 401,
+      "pass": true,
+      "note": "Auth required"
+    },
+    {
+      "url": "/api/admin/gallery",
+      "status": 401,
+      "pass": true,
+      "note": "Auth required"
+    },
+    {
+      "url": "/api/admin/services",
+      "status": 401,
+      "pass": true,
+      "note": "Auth required"
+    },
+    {
+      "url": "/api/admin/menu-items",
+      "status": 401,
+      "pass": true,
+      "note": "Auth required"
+    },
+    {
+      "url": "/api/admin/business-settings",
+      "status": 401,
+      "pass": true,
+      "note": "Auth required"
+    }
+  ],
+  "imageUrls": [
+    {
+      "url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-restaurant.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "pass": true
+    },
+    {
+      "url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-lounge.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "pass": true
+    },
+    {
+      "url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-01.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "pass": true
+    },
+    {
+      "url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/lounge-interior-main.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "pass": true
+    },
+    {
+      "url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/nyama-choma.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "pass": true
+    },
+    {
+      "url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/logos/logo.webp",
+      "status": 200,
+      "contentType": "image/webp",
+      "pass": true
+    }
+  ],
+  "favicon": {
+    "url": "/favicon.ico",
+    "status": 200,
+    "contentType": "image/x-icon",
+    "pass": true
+  },
+  "optionalChecks": [
+    {
+      "url": "/api/health",
+      "status": 503,
+      "implemented": false,
+      "note": "Optional monitoring endpoint - not required for CMS functionality"
+    }
+  ],
+  "summary": {
+    "total": 16,
+    "passed": 16,
+    "failed": 0
+  }
+}

@@ -1,0 +1,1501 @@
+
+> dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.50.181:3000
+- Environments: .env.local
+✓ Ready in 1568ms
+
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: null
+[UPLOAD] Auth failed: Auth session missing!
+ POST /api/admin/upload 401 in 2.4s (next.js: 2.4s, application-code: 70ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: null
+[UPLOAD] Auth failed: Auth session missing!
+ POST /api/admin/upload 401 in 41ms (next.js: 12ms, application-code: 29ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: null
+[UPLOAD] Auth failed: Auth session missing!
+ POST /api/admin/upload 401 in 34ms (next.js: 11ms, application-code: 23ms)
+ GET /api/auth/session 200 in 2.4s (next.js: 1041ms, application-code: 1341ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1031ms (next.js: 5ms, application-code: 1026ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1318ms (next.js: 8ms, application-code: 1310ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1762ms (next.js: 5ms, application-code: 1757ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 987ms (next.js: 5ms, application-code: 982ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 797ms (next.js: 6ms, application-code: 791ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1351ms (next.js: 4ms, application-code: 1348ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1069ms (next.js: 7ms, application-code: 1062ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1489ms (next.js: 7ms, application-code: 1482ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1220ms (next.js: 5ms, application-code: 1215ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1006ms (next.js: 7ms, application-code: 1000ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 2.3s (next.js: 90ms, application-code: 2.2s)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1039ms (next.js: 6ms, application-code: 1034ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 995ms (next.js: 4ms, application-code: 991ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1817ms (next.js: 86ms, application-code: 1730ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1541ms (next.js: 7ms, application-code: 1534ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1005ms (next.js: 3ms, application-code: 1002ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 953ms (next.js: 3ms, application-code: 950ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: null
+[UPLOAD] Auth failed: Auth session missing!
+ POST /api/admin/upload 401 in 25ms (next.js: 4ms, application-code: 21ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: null
+[UPLOAD] Auth failed: Auth session missing!
+ POST /api/admin/upload 401 in 69ms (next.js: 44ms, application-code: 26ms)
+ GET /api/auth/session 200 in 1219ms (next.js: 3ms, application-code: 1216ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 965ms (next.js: 3ms, application-code: 962ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1002ms (next.js: 7ms, application-code: 996ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 737ms (next.js: 3ms, application-code: 733ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 951ms (next.js: 4ms, application-code: 947ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1121ms (next.js: 3ms, application-code: 1118ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1223ms (next.js: 7ms, application-code: 1215ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1418ms (next.js: 4ms, application-code: 1413ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 862ms (next.js: 4ms, application-code: 858ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1009ms (next.js: 3ms, application-code: 1006ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1123ms (next.js: 51ms, application-code: 1072ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1026ms (next.js: 3ms, application-code: 1023ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1427ms (next.js: 8ms, application-code: 1419ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 910ms (next.js: 9ms, application-code: 901ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 931ms (next.js: 3ms, application-code: 928ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1002ms (next.js: 4ms, application-code: 997ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 922ms (next.js: 4ms, application-code: 918ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1115ms (next.js: 93ms, application-code: 1022ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: null
+[UPLOAD] Auth failed: Auth session missing!
+ POST /api/admin/upload 401 in 30ms (next.js: 5ms, application-code: 26ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: null
+[UPLOAD] Auth failed: Auth session missing!
+ POST /api/admin/upload 401 in 26ms (next.js: 4ms, application-code: 22ms)
+ GET /api/auth/session 200 in 1009ms (next.js: 9ms, application-code: 1000ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 912ms (next.js: 7ms, application-code: 904ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] FATAL ERROR: {
+  name: 'TypeError',
+  message: 'Failed to parse body as FormData.',
+  stack: 'TypeError: Failed to parse body as FormData.\n' +
+    '    at parsingError (node:internal/deps/undici/undici:6729:14)\n' +
+    '    at multipartFormDataParser (node:internal/deps/undici/undici:6472:15)\n' +
+    '    at node:internal/deps/undici/undici:6994:34\n' +
+    '    at successSteps (node:internal/deps/undici/undici:7041:27)'
+}
+ POST /api/admin/upload 500 in 1009ms (next.js: 5ms, application-code: 1003ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 1013ms (next.js: 11ms, application-code: 1001ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 1286ms (next.js: 5ms, application-code: 1282ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 860ms (next.js: 5ms, application-code: 855ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 810ms (next.js: 5ms, application-code: 805ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+[UPLOAD] Generating storage path
+[UPLOAD] Storage path: assets/images/gallery/488e3b51-e30a-4f06-be19-7321ba6367c1.webp
+[UPLOAD] Creating admin client
+[UPLOAD] Admin client created, starting storage upload
+[UPLOAD] Inserting media_assets record with service role client
+ POST /api/admin/upload 201 in 2.2s (next.js: 6ms, application-code: 2.2s)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 1086ms (next.js: 3ms, application-code: 1082ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 799ms (next.js: 14ms, application-code: 786ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 805ms (next.js: 50ms, application-code: 755ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 889ms (next.js: 25ms, application-code: 864ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 846ms (next.js: 39ms, application-code: 807ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 780ms (next.js: 4ms, application-code: 776ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 905ms (next.js: 4ms, application-code: 901ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+[UPLOAD] Generating storage path
+[UPLOAD] Storage path: assets/images/gallery/cdbf1fdb-371a-457a-9224-bc608e41a507.webp
+[UPLOAD] Creating admin client
+[UPLOAD] Admin client created, starting storage upload
+[UPLOAD] Inserting media_assets record with service role client
+ POST /api/admin/upload 201 in 1600ms (next.js: 5ms, application-code: 1596ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+[UPLOAD] Generating storage path
+[UPLOAD] Storage path: assets/images/gallery/0a9bb6ff-9bde-4f50-a76a-0315449d9171.webp
+[UPLOAD] Creating admin client
+[UPLOAD] Admin client created, starting storage upload
+[UPLOAD] Inserting media_assets record with service role client
+ POST /api/admin/upload 201 in 1989ms (next.js: 10ms, application-code: 1979ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+[UPLOAD] Generating storage path
+[UPLOAD] Storage path: assets/images/gallery/2f7a166b-beb9-45b8-af3f-d0bc8642a3f6.webp
+[UPLOAD] Creating admin client
+[UPLOAD] Admin client created, starting storage upload
+[UPLOAD] Inserting media_assets record with service role client
+ POST /api/admin/upload 201 in 1586ms (next.js: 4ms, application-code: 1582ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: null
+[UPLOAD] Auth failed: Auth session missing!
+ POST /api/admin/upload 401 in 62ms (next.js: 19ms, application-code: 43ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: null
+[UPLOAD] Auth failed: Auth session missing!
+ POST /api/admin/upload 401 in 22ms (next.js: 7ms, application-code: 15ms)
+ GET /api/auth/session 200 in 1006ms (next.js: 7ms, application-code: 999ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 887ms (next.js: 8ms, application-code: 879ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 1007ms (next.js: 65ms, application-code: 941ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 720ms (next.js: 6ms, application-code: 714ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 811ms (next.js: 4ms, application-code: 807ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 1533ms (next.js: 4ms, application-code: 1529ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 806ms (next.js: 4ms, application-code: 802ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 729ms (next.js: 5ms, application-code: 724ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 1016ms (next.js: 8ms, application-code: 1008ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 1196ms (next.js: 4ms, application-code: 1193ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 810ms (next.js: 12ms, application-code: 799ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 952ms (next.js: 6ms, application-code: 945ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 842ms (next.js: 6ms, application-code: 836ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 1348ms (next.js: 5ms, application-code: 1344ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+[UPLOAD] Generating storage path
+[UPLOAD] Storage path: assets/images/gallery/91934806-5540-479d-91be-7c32983f50b5.webp
+[UPLOAD] Creating admin client
+[UPLOAD] Admin client created, starting storage upload
+[UPLOAD] Inserting media_assets record with service role client
+ POST /api/admin/upload 201 in 2.7s (next.js: 5ms, application-code: 2.7s)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+[UPLOAD] Generating storage path
+[UPLOAD] Storage path: assets/images/gallery/93f0defa-f5b1-437a-99ee-5457b5f9833b.webp
+[UPLOAD] Creating admin client
+[UPLOAD] Admin client created, starting storage upload
+[UPLOAD] Inserting media_assets record with service role client
+ POST /api/admin/upload 201 in 1501ms (next.js: 4ms, application-code: 1496ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+[UPLOAD] Generating storage path
+[UPLOAD] Storage path: assets/images/gallery/1378924f-d9e8-49b7-8aa5-6fe778dfc536.webp
+[UPLOAD] Creating admin client
+[UPLOAD] Admin client created, starting storage upload
+[UPLOAD] Inserting media_assets record with service role client
+ POST /api/admin/upload 201 in 1464ms (next.js: 4ms, application-code: 1460ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: null
+[UPLOAD] Auth failed: Auth session missing!
+ POST /api/admin/upload 401 in 181ms (next.js: 83ms, application-code: 97ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: null
+[UPLOAD] Auth failed: Auth session missing!
+ POST /api/admin/upload 401 in 34ms (next.js: 9ms, application-code: 25ms)
+ GET /api/auth/session 200 in 1012ms (next.js: 13ms, application-code: 999ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 1053ms (next.js: 15ms, application-code: 1039ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 1247ms (next.js: 6ms, application-code: 1240ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 889ms (next.js: 7ms, application-code: 882ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 1214ms (next.js: 7ms, application-code: 1207ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 1007ms (next.js: 8ms, application-code: 999ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 848ms (next.js: 10ms, application-code: 837ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 924ms (next.js: 67ms, application-code: 857ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 823ms (next.js: 20ms, application-code: 803ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 869ms (next.js: 6ms, application-code: 863ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 928ms (next.js: 5ms, application-code: 923ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 923ms (next.js: 6ms, application-code: 917ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 400 in 749ms (next.js: 5ms, application-code: 744ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+ POST /api/admin/upload 415 in 908ms (next.js: 35ms, application-code: 873ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+[UPLOAD] Generating storage path
+[UPLOAD] Storage path: assets/images/gallery/9c4bea14-5d27-432f-bd47-5a84318c1c01.webp
+[UPLOAD] Creating admin client
+[UPLOAD] Admin client created, starting storage upload
+[UPLOAD] Inserting media_assets record with service role client
+ POST /api/admin/upload 201 in 1369ms (next.js: 3ms, application-code: 1366ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+[UPLOAD] Generating storage path
+[UPLOAD] Storage path: assets/images/gallery/163470db-27fa-48a3-9996-511a16997622.webp
+[UPLOAD] Creating admin client
+[UPLOAD] Admin client created, starting storage upload
+[UPLOAD] Inserting media_assets record with service role client
+ POST /api/admin/upload 201 in 1917ms (next.js: 4ms, application-code: 1912ms)
+[UPLOAD] Request received
+[UPLOAD] Starting authentication
+[UPLOAD] Supabase client created
+[UPLOAD] Auth check complete, user: exists
+[UPLOAD] Starting profile lookup
+[UPLOAD] Profile lookup complete: found
+[UPLOAD] Starting role lookup, role_id: d92ddefd-8935-420b-81c8-f5bff5530b02
+[UPLOAD] Role lookup complete: admin
+[UPLOAD] Checking RBAC, role: admin
+[UPLOAD] RBAC passed, parsing form data
+[UPLOAD] Cloning request for FormData parsing
+[UPLOAD] Form data parsed successfully
+[UPLOAD] Generating storage path
+[UPLOAD] Storage path: assets/images/gallery/9c37376e-65ca-433e-946a-8e911960f577.webp
+[UPLOAD] Creating admin client
+[UPLOAD] Admin client created, starting storage upload
+[UPLOAD] Inserting media_assets record with service role client
+ POST /api/admin/upload 201 in 1569ms (next.js: 4ms, application-code: 1564ms)
+✓ Compiled in 260ms
+✓ Compiled in 7ms
+[?25h
