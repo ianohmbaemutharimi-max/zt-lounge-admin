@@ -2,8 +2,16 @@
 // Updates business_settings.tagline, verifies, then reverts to original.
 const { createClient } = require('@supabase/supabase-js');
 
-const url = 'https://jczwilrysvnhcjzjztbi.supabase.co';
-const serviceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjendpbHJ5c3ZuaGNqemp6dGJpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4Mzk0MTI1MCwiZXhwIjoyMDk5NTE3MjUwfQ.nj7YBr_EixrTdv5hqIzJVu3L7kFWVD15RJka4u7UgwM';
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://jczwilrysvnhcjzjztbi.supabase.co';
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!url || !serviceKey) {
+  console.error('❌ Missing required environment variables:');
+  console.error('   NEXT_PUBLIC_SUPABASE_URL:', url ? '✓' : '✗');
+  console.error('   SUPABASE_SERVICE_ROLE_KEY:', serviceKey ? '✓' : '✗');
+  process.exit(1);
+}
+
 const admin = createClient(url, serviceKey);
 
 const TEST_TAGLINE = 'ZT Lounge Meru - CMS Test Write (safe, reverted)';

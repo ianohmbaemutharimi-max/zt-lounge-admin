@@ -2,9 +2,16 @@
 const { createClient } = require('@supabase/supabase-js');
 
 const BASE = process.env.APP_URL || 'http://localhost:3100';
-const PROJECT_REF = 'jczwilrysvnhcjzjztbi';
+const PROJECT_REF = process.env.SUPABASE_PROJECT_REF || 'jczwilrysvnhcjzjztbi';
 const url = `https://${PROJECT_REF}.supabase.co`;
-const anonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjendpbHJ5c3ZuaGNqemp6dGJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NDEyNTAsImV4cCI6MjA5OTUxNzI1MH0.TooU0gjA4VcKsGBF07O1hpiCvJgACLxvZY09bukpXhw';
+const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!anonKey) {
+  console.error('❌ Missing required environment variables:');
+  console.error('   NEXT_PUBLIC_SUPABASE_ANON_KEY:', anonKey ? '✓' : '✗');
+  process.exit(1);
+}
+
 
 async function test(route, cookieHeader) {
   const headers = cookieHeader ? { Cookie: cookieHeader } : {};

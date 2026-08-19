@@ -1,7 +1,15 @@
 // Inspect live Supabase schema for CMS tables
 const { createClient } = require('@supabase/supabase-js');
-const url = 'https://jczwilrysvnhcjzjztbi.supabase.co';
-const key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpjendpbHJ5c3ZuaGNqemp6dGJpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4Mzk0MTI1MCwiZXhwIjoyMDk5NTE3MjUwfQ.nj7YBr_EixrTdv5hqIzJVu3L7kFWVD15RJka4u7UgwM';
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://jczwilrysvnhcjzjztbi.supabase.co';
+const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!url || !key) {
+  console.error('❌ Missing required environment variables:');
+  console.error('   NEXT_PUBLIC_SUPABASE_URL:', url ? '✓' : '✗');
+  console.error('   SUPABASE_SERVICE_ROLE_KEY:', key ? '✓' : '✗');
+  process.exit(1);
+}
+
 const supabase = createClient(url, key);
 const tables = ['business_settings', 'website_pages', 'hero_slides', 'gallery'];
 
