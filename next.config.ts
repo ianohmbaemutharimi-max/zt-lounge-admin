@@ -1,13 +1,16 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const nextConfig: NextConfig = {
-  // This file establishes zt-lounge-admin as the Next.js project root.
-  // Without next.config.ts, Turbopack walks up the directory tree and
-  // resolves dependencies from the parent directory (zt-lounge-demo),
-  // which lacks tailwindcss, next, and react dependencies.
-  // Next.js automatically sets the project root to the directory
-  // containing next.config.ts, ensuring all module resolution
-  // occurs from this directory's node_modules.
+  // Explicitly set the project root to this directory to prevent Turbopack
+  // from walking up the directory tree and resolving from the parent.
+  // The parent directory (zt-lounge-demo) lacks tailwindcss, next, and react.
+  // This ensures all module resolution occurs from zt-lounge-admin/node_modules.
+  experimental: {
+    turbopack: {
+      root: path.resolve(__dirname),
+    },
+  },
   serverExternalPackages: ["pg"],
 };
 
