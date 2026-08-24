@@ -1,0 +1,85 @@
+{
+  "timestamp": "2026-08-20T12:17:54.052Z",
+  "passed": 7,
+  "failed": 2,
+  "skipped": 0,
+  "tests": [
+    {
+      "name": "menu_items: CREATE with valid media_id",
+      "passed": true,
+      "message": "media_id accepted and persisted",
+      "details": {},
+      "timestamp": "2026-08-20T12:17:55.684Z"
+    },
+    {
+      "name": "menu_items: CREATE with invalid UUID",
+      "passed": true,
+      "message": "Invalid UUID rejected as expected",
+      "details": {},
+      "timestamp": "2026-08-20T12:17:56.367Z"
+    },
+    {
+      "name": "menu_items: CREATE with nonexistent media_id",
+      "passed": true,
+      "message": "FK constraint enforced",
+      "details": {},
+      "timestamp": "2026-08-20T12:17:56.678Z"
+    },
+    {
+      "name": "services: CREATE with valid media_id",
+      "passed": false,
+      "message": "null value in column \"category_id\" of relation \"services\" violates not-null constraint",
+      "details": {
+        "error": {
+          "code": "23502",
+          "details": "Failing row contains (0f6682af-067e-4911-b71f-b02422f048a4, null, Test Media ID Service, null, Testing media_id integration, 60, 50.00, null, f, f, 2026-08-20 12:17:57.3449+00, 2026-08-20 12:17:57.3449+00, null, null, null, null, 0, null, , c8c306df-aed5-485a-91b0-c346768525e2).",
+          "hint": null,
+          "message": "null value in column \"category_id\" of relation \"services\" violates not-null constraint"
+        }
+      },
+      "timestamp": "2026-08-20T12:17:56.992Z"
+    },
+    {
+      "name": "gallery: CREATE with valid media_id",
+      "passed": false,
+      "message": "null value in column \"image_url\" of relation \"gallery\" violates not-null constraint",
+      "details": {
+        "error": {
+          "code": "23502",
+          "details": "Failing row contains (7238c669-6c47-4f14-8568-66d98d2aeadf, Test Media ID Gallery, Testing media_id integration, null, null, null, 0, f, f, null, 2026-08-20 12:17:57.702748+00, 2026-08-20 12:17:57.702748+00, null, null, c8c306df-aed5-485a-91b0-c346768525e2).",
+          "hint": null,
+          "message": "null value in column \"image_url\" of relation \"gallery\" violates not-null constraint"
+        }
+      },
+      "timestamp": "2026-08-20T12:17:57.322Z"
+    },
+    {
+      "name": "hero_slides: CREATE with valid media_id",
+      "passed": true,
+      "message": "media_id accepted and persisted",
+      "details": {},
+      "timestamp": "2026-08-20T12:17:57.600Z"
+    },
+    {
+      "name": "business_settings: UPDATE logo_media_id",
+      "passed": true,
+      "message": "logo_media_id accepted and persisted",
+      "details": {},
+      "timestamp": "2026-08-20T12:17:58.584Z"
+    },
+    {
+      "name": "menu_items: UPDATE media_id = NULL",
+      "passed": true,
+      "message": "NULL clears media_id relationship",
+      "details": {},
+      "timestamp": "2026-08-20T12:17:59.859Z"
+    },
+    {
+      "name": "menu_items: UPDATE without media_id",
+      "passed": true,
+      "message": "Omitted media_id preserved existing value",
+      "details": {},
+      "timestamp": "2026-08-20T12:18:00.755Z"
+    }
+  ]
+}

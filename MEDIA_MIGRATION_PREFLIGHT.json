@@ -1,0 +1,1641 @@
+{
+  "timestamp": "2026-08-20T09:58:49.540Z",
+  "phase": "PHASE 0 — READ-ONLY PREFLIGHT",
+  "purpose": "Verify current state before media_id migration",
+  "database_schemas": {
+    "media_assets": {
+      "exists": true,
+      "columns": [],
+      "details": "Limited schema info (exec_sql not available)"
+    },
+    "menu_items": {
+      "exists": true,
+      "columns": [],
+      "details": "Limited schema info (exec_sql not available)"
+    },
+    "services": {
+      "exists": true,
+      "columns": [],
+      "details": "Limited schema info (exec_sql not available)"
+    },
+    "gallery": {
+      "exists": true,
+      "columns": [],
+      "details": "Limited schema info (exec_sql not available)"
+    },
+    "hero_slides": {
+      "exists": true,
+      "columns": [],
+      "details": "Limited schema info (exec_sql not available)"
+    },
+    "business_settings": {
+      "exists": true,
+      "columns": [],
+      "details": "Limited schema info (exec_sql not available)"
+    },
+    "testimonials": {
+      "exists": true,
+      "columns": [],
+      "details": "Limited schema info (exec_sql not available)"
+    }
+  },
+  "record_counts": {
+    "media_assets": {
+      "total": 37,
+      "with_image": 0,
+      "with_media_id": 0,
+      "needs_migration": 0
+    },
+    "menu_items": {
+      "total": 13,
+      "with_image": 13,
+      "with_media_id": 0,
+      "needs_migration": 13
+    },
+    "services": {
+      "total": 6,
+      "with_image": 6,
+      "with_media_id": 0,
+      "needs_migration": 6
+    },
+    "gallery": {
+      "total": 14,
+      "with_image": 14,
+      "with_media_id": 0,
+      "needs_migration": 14
+    },
+    "hero_slides": {
+      "total": 8,
+      "with_image": 2,
+      "with_media_id": 0,
+      "needs_migration": 2
+    },
+    "testimonials": {
+      "total": 0,
+      "with_image": 0,
+      "with_media_id": 0,
+      "needs_migration": 0
+    },
+    "business_settings": {
+      "error": "column business_settings.logo_media_id does not exist"
+    }
+  },
+  "field_population": {},
+  "foreign_keys": {},
+  "indexes": {},
+  "storage_buckets": {
+    "total": 7,
+    "buckets": [
+      {
+        "id": "hero-images",
+        "name": "hero-images",
+        "owner": "",
+        "public": true,
+        "type": "STANDARD",
+        "file_size_limit": 5242880,
+        "allowed_mime_types": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "image/svg+xml"
+        ],
+        "created_at": "2026-07-20T19:10:57.506Z",
+        "updated_at": "2026-07-20T19:10:57.506Z"
+      },
+      {
+        "id": "gallery-images",
+        "name": "gallery-images",
+        "owner": "",
+        "public": true,
+        "type": "STANDARD",
+        "file_size_limit": 5242880,
+        "allowed_mime_types": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "image/svg+xml"
+        ],
+        "created_at": "2026-07-20T19:10:57.506Z",
+        "updated_at": "2026-07-20T19:10:57.506Z"
+      },
+      {
+        "id": "service-images",
+        "name": "service-images",
+        "owner": "",
+        "public": true,
+        "type": "STANDARD",
+        "file_size_limit": 5242880,
+        "allowed_mime_types": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "image/svg+xml"
+        ],
+        "created_at": "2026-07-20T19:10:57.506Z",
+        "updated_at": "2026-07-20T19:10:57.506Z"
+      },
+      {
+        "id": "menu-images",
+        "name": "menu-images",
+        "owner": "",
+        "public": true,
+        "type": "STANDARD",
+        "file_size_limit": 5242880,
+        "allowed_mime_types": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "image/svg+xml"
+        ],
+        "created_at": "2026-07-20T19:10:57.506Z",
+        "updated_at": "2026-07-20T19:10:57.506Z"
+      },
+      {
+        "id": "testimonial-photos",
+        "name": "testimonial-photos",
+        "owner": "",
+        "public": true,
+        "type": "STANDARD",
+        "file_size_limit": 5242880,
+        "allowed_mime_types": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "image/svg+xml"
+        ],
+        "created_at": "2026-07-20T19:10:57.506Z",
+        "updated_at": "2026-07-20T19:10:57.506Z"
+      },
+      {
+        "id": "logos",
+        "name": "logos",
+        "owner": "",
+        "public": true,
+        "type": "STANDARD",
+        "file_size_limit": 5242880,
+        "allowed_mime_types": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "image/svg+xml"
+        ],
+        "created_at": "2026-07-20T19:10:57.506Z",
+        "updated_at": "2026-07-20T19:10:57.506Z"
+      },
+      {
+        "id": "public-assets",
+        "name": "public-assets",
+        "owner": "",
+        "public": true,
+        "type": "STANDARD",
+        "file_size_limit": 5242880,
+        "allowed_mime_types": [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "image/svg+xml"
+        ],
+        "created_at": "2026-08-05T15:14:56.959Z",
+        "updated_at": "2026-08-05T15:14:56.959Z"
+      }
+    ],
+    "names": [
+      "hero-images",
+      "gallery-images",
+      "service-images",
+      "menu-images",
+      "testimonial-photos",
+      "logos",
+      "public-assets"
+    ]
+  },
+  "media_assets_inventory": {
+    "total": 37,
+    "assets": [
+      {
+        "id": "9c43adbd-bdf1-4d20-bd88-e0fa92250032",
+        "bucket": "public-assets",
+        "path": "assets/images/gallery/488e3b51-e30a-4f06-be19-7321ba6367c1.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/public-assets/assets/images/gallery/488e3b51-e30a-4f06-be19-7321ba6367c1.webp",
+        "original_name": "large.jpg",
+        "mime_type": "image/jpeg",
+        "file_size": 2620,
+        "width": 1200,
+        "height": 1200,
+        "alt_text": "Definitive verification test",
+        "title": "VERIFIED_EDIT_1786952383449",
+        "content_hash": null,
+        "uploaded_by": "bad5c72d-b203-45bf-842e-9fe6b69962a0",
+        "created_at": "2026-08-14T18:51:33.291306+00:00",
+        "updated_at": "2026-08-17T07:39:46.274005+00:00"
+      },
+      {
+        "id": "9e66cc0a-59d2-482c-8137-f7ca081901c8",
+        "bucket": "menu-images",
+        "path": "mixed-grill.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/mixed-grill.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Mixed grill platter with assorted meats",
+        "title": "Mixed Grill Platter",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "3d421b49-9533-4f92-9930-638a8bdce110",
+        "bucket": "menu-images",
+        "path": "loaded-fries.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/loaded-fries.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Loaded fries with cheese and toppings",
+        "title": "Loaded Fries",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "1ed186c3-cde7-464d-a284-b640f78be679",
+        "bucket": "menu-images",
+        "path": "chicken-tikka.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/chicken-tikka.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Chicken tikka with aromatic spices",
+        "title": "Chicken Tikka",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "a3157f18-fb56-4473-95c6-b2d259d9c707",
+        "bucket": "menu-images",
+        "path": "grilled-chicken.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/grilled-chicken.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Grilled chicken with herb potatoes",
+        "title": "Grilled Chicken",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "6b8bb3dc-a7ec-40ca-bd4f-4898b746121a",
+        "bucket": "menu-images",
+        "path": "premium-sides.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/premium-sides.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Premium side dishes selection",
+        "title": "Premium Sides",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "8d01dc78-26b2-4f02-bbc6-c37db2520233",
+        "bucket": "menu-images",
+        "path": "goat-ribs.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/goat-ribs.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Tender grilled goat ribs",
+        "title": "Goat Ribs",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "379dfca9-e67c-4b2f-b921-76ac2030d934",
+        "bucket": "menu-images",
+        "path": "fresh-juice.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/fresh-juice.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Fresh tropical fruit juice",
+        "title": "Fresh Juice",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "d898e851-fd7a-4744-8494-e1cbb620a8a1",
+        "bucket": "menu-images",
+        "path": "coffee.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/coffee.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Premium brewed coffee",
+        "title": "Coffee",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "611ade4f-5c7b-4018-900a-abb7afca0e76",
+        "bucket": "menu-images",
+        "path": "signature-cocktail.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/signature-cocktail.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "House signature cocktail",
+        "title": "Signature Cocktail",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "319e829a-b819-4dff-ad7e-7fa50ad2146d",
+        "bucket": "menu-images",
+        "path": "cocktail.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/cocktail.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Premium cocktail selection",
+        "title": "Cocktail Selection",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "610bcb3e-c2ed-4914-aff5-850aa8de859e",
+        "bucket": "menu-images",
+        "path": "nyama-choma.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/nyama-choma.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Signature Nyama Choma slow-grilled to perfection",
+        "title": "Signature Nyama Choma",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "897b3a61-9bf0-4e4e-ba55-4bf824eea35e",
+        "bucket": "menu-images",
+        "path": "signature-pilau.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/signature-pilau.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "ZT Signature Pilau aromatic basmati rice",
+        "title": "ZT Signature Pilau",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "40fe55fd-3969-4b12-af10-163008ec18c1",
+        "bucket": "service-images",
+        "path": "lounge-interior-main.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/lounge-interior-main.webp",
+        "original_name": "services",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Luxury lounge and bar at ZT Lounge with premium seating and sophisticated atmosphere",
+        "title": "Lounge & Bar",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "e9eb1f40-1093-4dd8-8c36-f5dbee824870",
+        "bucket": "service-images",
+        "path": "vip-fireplace-lounge.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/vip-fireplace-lounge.webp",
+        "original_name": "services",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Luxury VIP cabin at ZT Lounge with private dining and exclusive amenities",
+        "title": "VIP Cabins",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "774bf8d2-1404-4735-b656-786fdd1d9898",
+        "bucket": "service-images",
+        "path": "car-detailing.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/car-detailing.webp",
+        "original_name": "services",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Professional auto detailing at ZT Lounge with premium car care services",
+        "title": "Auto Spa",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "31c61869-6843-41ba-9af9-fa5f0be77399",
+        "bucket": "service-images",
+        "path": "interior.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/interior.webp",
+        "original_name": "services",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Fine dining restaurant at ZT Lounge with elegant table setting and ambient lighting",
+        "title": "Restaurant",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "3fe9fbae-27ac-49ee-af18-5f1d78993cb1",
+        "bucket": "service-images",
+        "path": "wedding.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/wedding.webp",
+        "original_name": "services",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Elegant event setup at ZT Lounge with floral arrangements and celebratory decor",
+        "title": "Events",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "c8c306df-aed5-485a-91b0-c346768525e2",
+        "bucket": "menu-images",
+        "path": "beef-steak.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/beef-steak.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Premium Beef Steak prime cuts grilled to preference",
+        "title": "Premium Beef Steak",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "5ce9ae31-a4b3-487f-b313-1b747b550ab8",
+        "bucket": "gallery-images",
+        "path": "gallery-04.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-04.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Premium lounge area with stylish seating",
+        "title": "Premium Lounge",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "a1086978-8bbd-4b49-a11e-cc3f65a88f7b",
+        "bucket": "gallery-images",
+        "path": "gallery-05.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-05.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Elegant event setup with floral decorations",
+        "title": "Event Setup",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "872936a8-63ce-4b6d-869c-e1612ad68364",
+        "bucket": "gallery-images",
+        "path": "gallery-06.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-06.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Vibrant nightlife experience at the lounge bar",
+        "title": "Nightlife",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "af2c33c5-743b-462d-9882-fe82610c1b41",
+        "bucket": "gallery-images",
+        "path": "gallery-07.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-07.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Professional car detailing at the auto spa",
+        "title": "Auto Spa",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "2626a8ba-4683-42c3-a531-913c890014ba",
+        "bucket": "gallery-images",
+        "path": "gallery-08.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-08.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Restaurant interior showcasing premium dining atmosphere",
+        "title": "Restaurant Interior",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "2ea6d47f-c739-4cc3-8d79-659bc529d11c",
+        "bucket": "gallery-images",
+        "path": "gallery-09.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-09.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "VIP cabin with premium amenities and luxury furnishings",
+        "title": "VIP Suite",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "acf772a5-f6af-4375-b725-e1c33d4012e5",
+        "bucket": "gallery-images",
+        "path": "gallery-10.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-10.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Conference room setup with modern presentation technology",
+        "title": "Conference Tech",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "f22949ee-1cb7-4807-80c9-249cc1ae66ae",
+        "bucket": "gallery-images",
+        "path": "gallery-11.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-11.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Outdoor patio and lounge seating area",
+        "title": "Outdoor Patio",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "1831f945-64bf-4048-b3ba-4505a1310bc0",
+        "bucket": "gallery-images",
+        "path": "gallery-12.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-12.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Private event dining setup with elegant table decor",
+        "title": "Private Dining",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "1b8a64af-b730-4291-8f06-1f66db8018b1",
+        "bucket": "gallery-images",
+        "path": "gallery-01.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-01.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "ZT Lounge elegant dining area with premium table settings",
+        "title": "Elegant Dining",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "b44a10fc-b446-4b74-a379-8345d2687bea",
+        "bucket": "gallery-images",
+        "path": "gallery-02.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-02.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Luxurious VIP cabin with modern amenities",
+        "title": "VIP Cabin",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "a8b741dd-fa4c-46b0-a0b7-b9d484590619",
+        "bucket": "gallery-images",
+        "path": "gallery-03.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-03.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Modern conference hall with AV equipment",
+        "title": "Conference Hall",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "e55d3b83-1681-4abf-932c-f0843abf3fd1",
+        "bucket": "gallery-images",
+        "path": "gallery-13.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-13.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Auto spa premium detailing service in progress",
+        "title": "Car Detailing",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "6468fd9e-783a-4097-a813-408133971afd",
+        "bucket": "gallery-images",
+        "path": "gallery-14.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-14.webp",
+        "original_name": "gallery",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "ZT Lounge exterior showing the luxury facade and entrance",
+        "title": "Exterior",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "ce0458d4-2275-40a7-b82c-f367922d1d0b",
+        "bucket": "hero-images",
+        "path": "hero-restaurant.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-restaurant.webp",
+        "original_name": "hero_slides",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "ZT Lounge Meru - Premium Hospitality Logo",
+        "title": "ZT Lounge Meru",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "141ce2ea-6bf1-463d-a390-5faf426a74d4",
+        "bucket": "hero-images",
+        "path": "hero-lounge.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-lounge.webp",
+        "original_name": "hero_slides",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "ZT Lounge Nightlife Experience",
+        "title": "Unforgettable Evenings Await",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "a5fb7148-8562-4d82-9fc1-d979fc19a323",
+        "bucket": "logos",
+        "path": "logo.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/logos/logo.webp",
+        "original_name": "business_settings",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": null,
+        "title": "ZT Lounge Logo",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "78c4936d-8a71-418d-9209-304ef5faed63",
+        "bucket": "service-images",
+        "path": "conference-hall.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/conference-hall.webp",
+        "original_name": "services",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Modern conference hall at ZT Lounge with state-of-the-art audiovisual equipment",
+        "title": "Conference",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      }
+    ],
+    "by_bucket": {
+      "public-assets": [
+        "9c43adbd-bdf1-4d20-bd88-e0fa92250032"
+      ],
+      "menu-images": [
+        "9e66cc0a-59d2-482c-8137-f7ca081901c8",
+        "3d421b49-9533-4f92-9930-638a8bdce110",
+        "1ed186c3-cde7-464d-a284-b640f78be679",
+        "a3157f18-fb56-4473-95c6-b2d259d9c707",
+        "6b8bb3dc-a7ec-40ca-bd4f-4898b746121a",
+        "8d01dc78-26b2-4f02-bbc6-c37db2520233",
+        "379dfca9-e67c-4b2f-b921-76ac2030d934",
+        "d898e851-fd7a-4744-8494-e1cbb620a8a1",
+        "611ade4f-5c7b-4018-900a-abb7afca0e76",
+        "319e829a-b819-4dff-ad7e-7fa50ad2146d",
+        "610bcb3e-c2ed-4914-aff5-850aa8de859e",
+        "897b3a61-9bf0-4e4e-ba55-4bf824eea35e",
+        "c8c306df-aed5-485a-91b0-c346768525e2"
+      ],
+      "service-images": [
+        "40fe55fd-3969-4b12-af10-163008ec18c1",
+        "e9eb1f40-1093-4dd8-8c36-f5dbee824870",
+        "774bf8d2-1404-4735-b656-786fdd1d9898",
+        "31c61869-6843-41ba-9af9-fa5f0be77399",
+        "3fe9fbae-27ac-49ee-af18-5f1d78993cb1",
+        "78c4936d-8a71-418d-9209-304ef5faed63"
+      ],
+      "gallery-images": [
+        "5ce9ae31-a4b3-487f-b313-1b747b550ab8",
+        "a1086978-8bbd-4b49-a11e-cc3f65a88f7b",
+        "872936a8-63ce-4b6d-869c-e1612ad68364",
+        "af2c33c5-743b-462d-9882-fe82610c1b41",
+        "2626a8ba-4683-42c3-a531-913c890014ba",
+        "2ea6d47f-c739-4cc3-8d79-659bc529d11c",
+        "acf772a5-f6af-4375-b725-e1c33d4012e5",
+        "f22949ee-1cb7-4807-80c9-249cc1ae66ae",
+        "1831f945-64bf-4048-b3ba-4505a1310bc0",
+        "1b8a64af-b730-4291-8f06-1f66db8018b1",
+        "b44a10fc-b446-4b74-a379-8345d2687bea",
+        "a8b741dd-fa4c-46b0-a0b7-b9d484590619",
+        "e55d3b83-1681-4abf-932c-f0843abf3fd1",
+        "6468fd9e-783a-4097-a813-408133971afd"
+      ],
+      "hero-images": [
+        "ce0458d4-2275-40a7-b82c-f367922d1d0b",
+        "141ce2ea-6bf1-463d-a390-5faf426a74d4"
+      ],
+      "logos": [
+        "a5fb7148-8562-4d82-9fc1-d979fc19a323"
+      ]
+    },
+    "by_path": {
+      "assets/images/gallery/488e3b51-e30a-4f06-be19-7321ba6367c1.webp": "9c43adbd-bdf1-4d20-bd88-e0fa92250032",
+      "mixed-grill.webp": "9e66cc0a-59d2-482c-8137-f7ca081901c8",
+      "loaded-fries.webp": "3d421b49-9533-4f92-9930-638a8bdce110",
+      "chicken-tikka.webp": "1ed186c3-cde7-464d-a284-b640f78be679",
+      "grilled-chicken.webp": "a3157f18-fb56-4473-95c6-b2d259d9c707",
+      "premium-sides.webp": "6b8bb3dc-a7ec-40ca-bd4f-4898b746121a",
+      "goat-ribs.webp": "8d01dc78-26b2-4f02-bbc6-c37db2520233",
+      "fresh-juice.webp": "379dfca9-e67c-4b2f-b921-76ac2030d934",
+      "coffee.webp": "d898e851-fd7a-4744-8494-e1cbb620a8a1",
+      "signature-cocktail.webp": "611ade4f-5c7b-4018-900a-abb7afca0e76",
+      "cocktail.webp": "319e829a-b819-4dff-ad7e-7fa50ad2146d",
+      "nyama-choma.webp": "610bcb3e-c2ed-4914-aff5-850aa8de859e",
+      "signature-pilau.webp": "897b3a61-9bf0-4e4e-ba55-4bf824eea35e",
+      "lounge-interior-main.webp": "40fe55fd-3969-4b12-af10-163008ec18c1",
+      "vip-fireplace-lounge.webp": "e9eb1f40-1093-4dd8-8c36-f5dbee824870",
+      "car-detailing.webp": "774bf8d2-1404-4735-b656-786fdd1d9898",
+      "interior.webp": "31c61869-6843-41ba-9af9-fa5f0be77399",
+      "wedding.webp": "3fe9fbae-27ac-49ee-af18-5f1d78993cb1",
+      "beef-steak.webp": "c8c306df-aed5-485a-91b0-c346768525e2",
+      "gallery-04.webp": "5ce9ae31-a4b3-487f-b313-1b747b550ab8",
+      "gallery-05.webp": "a1086978-8bbd-4b49-a11e-cc3f65a88f7b",
+      "gallery-06.webp": "872936a8-63ce-4b6d-869c-e1612ad68364",
+      "gallery-07.webp": "af2c33c5-743b-462d-9882-fe82610c1b41",
+      "gallery-08.webp": "2626a8ba-4683-42c3-a531-913c890014ba",
+      "gallery-09.webp": "2ea6d47f-c739-4cc3-8d79-659bc529d11c",
+      "gallery-10.webp": "acf772a5-f6af-4375-b725-e1c33d4012e5",
+      "gallery-11.webp": "f22949ee-1cb7-4807-80c9-249cc1ae66ae",
+      "gallery-12.webp": "1831f945-64bf-4048-b3ba-4505a1310bc0",
+      "gallery-01.webp": "1b8a64af-b730-4291-8f06-1f66db8018b1",
+      "gallery-02.webp": "b44a10fc-b446-4b74-a379-8345d2687bea",
+      "gallery-03.webp": "a8b741dd-fa4c-46b0-a0b7-b9d484590619",
+      "gallery-13.webp": "e55d3b83-1681-4abf-932c-f0843abf3fd1",
+      "gallery-14.webp": "6468fd9e-783a-4097-a813-408133971afd",
+      "hero-restaurant.webp": "ce0458d4-2275-40a7-b82c-f367922d1d0b",
+      "hero-lounge.webp": "141ce2ea-6bf1-463d-a390-5faf426a74d4",
+      "logo.webp": "a5fb7148-8562-4d82-9fc1-d979fc19a323",
+      "conference-hall.webp": "78c4936d-8a71-418d-9209-304ef5faed63"
+    },
+    "by_url": {
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/public-assets/assets/images/gallery/488e3b51-e30a-4f06-be19-7321ba6367c1.webp": "9c43adbd-bdf1-4d20-bd88-e0fa92250032",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/mixed-grill.webp": "9e66cc0a-59d2-482c-8137-f7ca081901c8",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/loaded-fries.webp": "3d421b49-9533-4f92-9930-638a8bdce110",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/chicken-tikka.webp": "1ed186c3-cde7-464d-a284-b640f78be679",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/grilled-chicken.webp": "a3157f18-fb56-4473-95c6-b2d259d9c707",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/premium-sides.webp": "6b8bb3dc-a7ec-40ca-bd4f-4898b746121a",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/goat-ribs.webp": "8d01dc78-26b2-4f02-bbc6-c37db2520233",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/fresh-juice.webp": "379dfca9-e67c-4b2f-b921-76ac2030d934",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/coffee.webp": "d898e851-fd7a-4744-8494-e1cbb620a8a1",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/signature-cocktail.webp": "611ade4f-5c7b-4018-900a-abb7afca0e76",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/cocktail.webp": "319e829a-b819-4dff-ad7e-7fa50ad2146d",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/nyama-choma.webp": "610bcb3e-c2ed-4914-aff5-850aa8de859e",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/signature-pilau.webp": "897b3a61-9bf0-4e4e-ba55-4bf824eea35e",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/lounge-interior-main.webp": "40fe55fd-3969-4b12-af10-163008ec18c1",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/vip-fireplace-lounge.webp": "e9eb1f40-1093-4dd8-8c36-f5dbee824870",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/car-detailing.webp": "774bf8d2-1404-4735-b656-786fdd1d9898",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/interior.webp": "31c61869-6843-41ba-9af9-fa5f0be77399",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/wedding.webp": "3fe9fbae-27ac-49ee-af18-5f1d78993cb1",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/beef-steak.webp": "c8c306df-aed5-485a-91b0-c346768525e2",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-04.webp": "5ce9ae31-a4b3-487f-b313-1b747b550ab8",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-05.webp": "a1086978-8bbd-4b49-a11e-cc3f65a88f7b",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-06.webp": "872936a8-63ce-4b6d-869c-e1612ad68364",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-07.webp": "af2c33c5-743b-462d-9882-fe82610c1b41",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-08.webp": "2626a8ba-4683-42c3-a531-913c890014ba",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-09.webp": "2ea6d47f-c739-4cc3-8d79-659bc529d11c",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-10.webp": "acf772a5-f6af-4375-b725-e1c33d4012e5",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-11.webp": "f22949ee-1cb7-4807-80c9-249cc1ae66ae",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-12.webp": "1831f945-64bf-4048-b3ba-4505a1310bc0",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-01.webp": "1b8a64af-b730-4291-8f06-1f66db8018b1",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-02.webp": "b44a10fc-b446-4b74-a379-8345d2687bea",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-03.webp": "a8b741dd-fa4c-46b0-a0b7-b9d484590619",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-13.webp": "e55d3b83-1681-4abf-932c-f0843abf3fd1",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-14.webp": "6468fd9e-783a-4097-a813-408133971afd",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-restaurant.webp": "ce0458d4-2275-40a7-b82c-f367922d1d0b",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-lounge.webp": "141ce2ea-6bf1-463d-a390-5faf426a74d4",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/logos/logo.webp": "a5fb7148-8562-4d82-9fc1-d979fc19a323",
+      "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/conference-hall.webp": "78c4936d-8a71-418d-9209-304ef5faed63"
+    },
+    "sample": [
+      {
+        "id": "9c43adbd-bdf1-4d20-bd88-e0fa92250032",
+        "bucket": "public-assets",
+        "path": "assets/images/gallery/488e3b51-e30a-4f06-be19-7321ba6367c1.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/public-assets/assets/images/gallery/488e3b51-e30a-4f06-be19-7321ba6367c1.webp",
+        "original_name": "large.jpg",
+        "mime_type": "image/jpeg",
+        "file_size": 2620,
+        "width": 1200,
+        "height": 1200,
+        "alt_text": "Definitive verification test",
+        "title": "VERIFIED_EDIT_1786952383449",
+        "content_hash": null,
+        "uploaded_by": "bad5c72d-b203-45bf-842e-9fe6b69962a0",
+        "created_at": "2026-08-14T18:51:33.291306+00:00",
+        "updated_at": "2026-08-17T07:39:46.274005+00:00"
+      },
+      {
+        "id": "9e66cc0a-59d2-482c-8137-f7ca081901c8",
+        "bucket": "menu-images",
+        "path": "mixed-grill.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/mixed-grill.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Mixed grill platter with assorted meats",
+        "title": "Mixed Grill Platter",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "3d421b49-9533-4f92-9930-638a8bdce110",
+        "bucket": "menu-images",
+        "path": "loaded-fries.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/loaded-fries.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Loaded fries with cheese and toppings",
+        "title": "Loaded Fries",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "1ed186c3-cde7-464d-a284-b640f78be679",
+        "bucket": "menu-images",
+        "path": "chicken-tikka.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/chicken-tikka.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Chicken tikka with aromatic spices",
+        "title": "Chicken Tikka",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      },
+      {
+        "id": "a3157f18-fb56-4473-95c6-b2d259d9c707",
+        "bucket": "menu-images",
+        "path": "grilled-chicken.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/grilled-chicken.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Grilled chicken with herb potatoes",
+        "title": "Grilled Chicken",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      }
+    ]
+  },
+  "cms_entity_analysis": {
+    "menu_items": {
+      "total": 13,
+      "with_image": 13,
+      "with_media_id": 0,
+      "both_populated": 0,
+      "neither_populated": 0,
+      "needs_linking": [
+        {
+          "id": "553cfbbf-fa6d-43b9-ae1f-310387f6a6c8",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/beef-steak.webp"
+        },
+        {
+          "id": "8d768393-c52c-438f-884e-9910ba78a27e",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/mixed-grill.webp"
+        },
+        {
+          "id": "ebd98cc3-927c-42f1-9e88-f28b749c8e08",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/loaded-fries.webp"
+        },
+        {
+          "id": "be61cf75-6bf7-4eb5-a0c6-739d48e22640",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/chicken-tikka.webp"
+        },
+        {
+          "id": "123d283c-860c-490d-b071-ad1261127ca0",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/grilled-chicken.webp"
+        },
+        {
+          "id": "fbb9bcdf-9b6a-4b1e-9d75-658b952b86c5",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/premium-sides.webp"
+        },
+        {
+          "id": "3d43e076-2ddb-49bf-8ce5-c02e26a11df8",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/goat-ribs.webp"
+        },
+        {
+          "id": "1489a80d-0633-46a0-b88c-4c7ed6c63b8f",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/fresh-juice.webp"
+        },
+        {
+          "id": "be858af1-a273-4675-a41c-d4cc54ab24d9",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/coffee.webp"
+        },
+        {
+          "id": "444e00b3-955e-4b21-b745-1b85712b6223",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/signature-cocktail.webp"
+        },
+        {
+          "id": "2ff55c17-750d-4bdc-9a2f-bbe93eb17dd4",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/cocktail.webp"
+        },
+        {
+          "id": "2c66bd38-9986-4078-b1a4-b2b5a9a1f885",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/nyama-choma.webp"
+        },
+        {
+          "id": "a88ed411-bf78-4985-a41f-31cfc5e4ff44",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/signature-pilau.webp"
+        }
+      ],
+      "already_linked": [],
+      "no_image": []
+    },
+    "services": {
+      "total": 6,
+      "with_image": 6,
+      "with_media_id": 0,
+      "both_populated": 0,
+      "neither_populated": 0,
+      "needs_linking": [
+        {
+          "id": "8df2b696-241b-49fc-8c9b-95a6bacc547d",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/lounge-interior-main.webp"
+        },
+        {
+          "id": "3139fc1e-fa7f-4f19-8822-c9aabf0bcf46",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/vip-fireplace-lounge.webp"
+        },
+        {
+          "id": "f12be083-6b42-4fa4-a534-de6846a07029",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/car-detailing.webp"
+        },
+        {
+          "id": "e38ef721-2a57-4c05-88aa-5509d766ca66",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/interior.webp"
+        },
+        {
+          "id": "033640c1-bbad-4890-82f6-2b1cbfcae896",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/wedding.webp"
+        },
+        {
+          "id": "a21bdd86-ad9c-4845-9dc7-a2d5e96e8c00",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/conference-hall.webp"
+        }
+      ],
+      "already_linked": [],
+      "no_image": []
+    },
+    "gallery": {
+      "total": 14,
+      "with_image": 14,
+      "with_media_id": 0,
+      "both_populated": 0,
+      "neither_populated": 0,
+      "needs_linking": [
+        {
+          "id": "8c783778-ec58-43df-b2c1-02a6e99d145c",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-04.webp"
+        },
+        {
+          "id": "e073851e-a6fd-4ed3-abb8-aa5060666920",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-05.webp"
+        },
+        {
+          "id": "151bcc5a-60a6-4ffc-b29a-bfe0fc5ebb28",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-06.webp"
+        },
+        {
+          "id": "4eb85a61-c272-40fa-9eeb-dcb7bab1bdc6",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-07.webp"
+        },
+        {
+          "id": "40c1637c-5cdd-4d66-8f1b-c1f5f5af29b5",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-08.webp"
+        },
+        {
+          "id": "2b8f9ada-4ca3-4677-aaac-2723c4756b1a",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-09.webp"
+        },
+        {
+          "id": "479e33c3-a0eb-456c-8bbe-ea0371c63449",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-10.webp"
+        },
+        {
+          "id": "56055378-2f54-45df-bfff-c6f9d6b71305",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-11.webp"
+        },
+        {
+          "id": "6b8d31fe-6d4f-4c50-9f95-3d90786a92bd",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-12.webp"
+        },
+        {
+          "id": "99bb88f5-a23a-4cb0-9043-1ec23734c702",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-01.webp"
+        },
+        {
+          "id": "018ae57b-ce61-442b-bc6c-e1fea7c87367",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-02.webp"
+        },
+        {
+          "id": "13dfb794-4c26-457b-95fe-69a638ceac62",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-03.webp"
+        },
+        {
+          "id": "4c31ac75-6d05-4577-ab3c-7a1548f0566b",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-13.webp"
+        },
+        {
+          "id": "a6654f84-dc0e-438e-b9e6-d6573f9a8df8",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-14.webp"
+        }
+      ],
+      "already_linked": [],
+      "no_image": []
+    },
+    "hero_slides": {
+      "total": 8,
+      "with_image": 2,
+      "with_media_id": 0,
+      "both_populated": 0,
+      "neither_populated": 0,
+      "needs_linking": [
+        {
+          "id": "78eeb5cb-5070-42b0-9959-66e76cb0ba4f",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-lounge.webp"
+        },
+        {
+          "id": "0125fb9e-0b5c-4a15-b698-3be79aa0d0bf",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-restaurant.webp"
+        }
+      ],
+      "already_linked": [],
+      "no_image": [
+        "1e9feb59-4cb3-4959-a136-b8052d1320bf",
+        "a599f954-a799-4845-b4bb-05e63a7a3f04",
+        "b7fc66c7-698d-42be-8001-d9428e819e1c",
+        "b5da1929-5ff9-4198-9b52-544e33f656a1",
+        "502d886c-d80f-494a-ba94-363b7e93e7b1",
+        "36ff3ed7-b5df-4749-8d98-80252311522c"
+      ]
+    }
+  },
+  "matching_candidates": {
+    "menu_items": {
+      "exact_matches": 13,
+      "high_confidence": 13,
+      "medium_confidence": 0,
+      "ambiguous": 0,
+      "unresolved": 0,
+      "details": [
+        {
+          "entity_id": "553cfbbf-fa6d-43b9-ae1f-310387f6a6c8",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/beef-steak.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "c8c306df-aed5-485a-91b0-c346768525e2",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "8d768393-c52c-438f-884e-9910ba78a27e",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/mixed-grill.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "9e66cc0a-59d2-482c-8137-f7ca081901c8",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "ebd98cc3-927c-42f1-9e88-f28b749c8e08",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/loaded-fries.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "3d421b49-9533-4f92-9930-638a8bdce110",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "be61cf75-6bf7-4eb5-a0c6-739d48e22640",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/chicken-tikka.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "1ed186c3-cde7-464d-a284-b640f78be679",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "123d283c-860c-490d-b071-ad1261127ca0",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/grilled-chicken.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "a3157f18-fb56-4473-95c6-b2d259d9c707",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "fbb9bcdf-9b6a-4b1e-9d75-658b952b86c5",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/premium-sides.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "6b8bb3dc-a7ec-40ca-bd4f-4898b746121a",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "3d43e076-2ddb-49bf-8ce5-c02e26a11df8",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/goat-ribs.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "8d01dc78-26b2-4f02-bbc6-c37db2520233",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "1489a80d-0633-46a0-b88c-4c7ed6c63b8f",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/fresh-juice.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "379dfca9-e67c-4b2f-b921-76ac2030d934",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "be858af1-a273-4675-a41c-d4cc54ab24d9",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/coffee.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "d898e851-fd7a-4744-8494-e1cbb620a8a1",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "444e00b3-955e-4b21-b745-1b85712b6223",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/signature-cocktail.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "611ade4f-5c7b-4018-900a-abb7afca0e76",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "2ff55c17-750d-4bdc-9a2f-bbe93eb17dd4",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/cocktail.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "319e829a-b819-4dff-ad7e-7fa50ad2146d",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "2c66bd38-9986-4078-b1a4-b2b5a9a1f885",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/nyama-choma.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "610bcb3e-c2ed-4914-aff5-850aa8de859e",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "a88ed411-bf78-4985-a41f-31cfc5e4ff44",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/signature-pilau.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "897b3a61-9bf0-4e4e-ba55-4bf824eea35e",
+            "confidence": "HIGH"
+          }
+        }
+      ]
+    },
+    "services": {
+      "exact_matches": 6,
+      "high_confidence": 6,
+      "medium_confidence": 0,
+      "ambiguous": 0,
+      "unresolved": 0,
+      "details": [
+        {
+          "entity_id": "8df2b696-241b-49fc-8c9b-95a6bacc547d",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/lounge-interior-main.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "40fe55fd-3969-4b12-af10-163008ec18c1",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "3139fc1e-fa7f-4f19-8822-c9aabf0bcf46",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/vip-fireplace-lounge.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "e9eb1f40-1093-4dd8-8c36-f5dbee824870",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "f12be083-6b42-4fa4-a534-de6846a07029",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/car-detailing.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "774bf8d2-1404-4735-b656-786fdd1d9898",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "e38ef721-2a57-4c05-88aa-5509d766ca66",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/interior.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "31c61869-6843-41ba-9af9-fa5f0be77399",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "033640c1-bbad-4890-82f6-2b1cbfcae896",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/wedding.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "3fe9fbae-27ac-49ee-af18-5f1d78993cb1",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "a21bdd86-ad9c-4845-9dc7-a2d5e96e8c00",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/conference-hall.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "78c4936d-8a71-418d-9209-304ef5faed63",
+            "confidence": "HIGH"
+          }
+        }
+      ]
+    },
+    "gallery": {
+      "exact_matches": 14,
+      "high_confidence": 14,
+      "medium_confidence": 0,
+      "ambiguous": 0,
+      "unresolved": 0,
+      "details": [
+        {
+          "entity_id": "8c783778-ec58-43df-b2c1-02a6e99d145c",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-04.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "5ce9ae31-a4b3-487f-b313-1b747b550ab8",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "e073851e-a6fd-4ed3-abb8-aa5060666920",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-05.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "a1086978-8bbd-4b49-a11e-cc3f65a88f7b",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "151bcc5a-60a6-4ffc-b29a-bfe0fc5ebb28",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-06.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "872936a8-63ce-4b6d-869c-e1612ad68364",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "4eb85a61-c272-40fa-9eeb-dcb7bab1bdc6",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-07.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "af2c33c5-743b-462d-9882-fe82610c1b41",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "40c1637c-5cdd-4d66-8f1b-c1f5f5af29b5",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-08.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "2626a8ba-4683-42c3-a531-913c890014ba",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "2b8f9ada-4ca3-4677-aaac-2723c4756b1a",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-09.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "2ea6d47f-c739-4cc3-8d79-659bc529d11c",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "479e33c3-a0eb-456c-8bbe-ea0371c63449",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-10.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "acf772a5-f6af-4375-b725-e1c33d4012e5",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "56055378-2f54-45df-bfff-c6f9d6b71305",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-11.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "f22949ee-1cb7-4807-80c9-249cc1ae66ae",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "6b8d31fe-6d4f-4c50-9f95-3d90786a92bd",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-12.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "1831f945-64bf-4048-b3ba-4505a1310bc0",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "99bb88f5-a23a-4cb0-9043-1ec23734c702",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-01.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "1b8a64af-b730-4291-8f06-1f66db8018b1",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "018ae57b-ce61-442b-bc6c-e1fea7c87367",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-02.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "b44a10fc-b446-4b74-a379-8345d2687bea",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "13dfb794-4c26-457b-95fe-69a638ceac62",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-03.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "a8b741dd-fa4c-46b0-a0b7-b9d484590619",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "4c31ac75-6d05-4577-ab3c-7a1548f0566b",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-13.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "e55d3b83-1681-4abf-932c-f0843abf3fd1",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "a6654f84-dc0e-438e-b9e6-d6573f9a8df8",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/gallery-images/gallery-14.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "6468fd9e-783a-4097-a813-408133971afd",
+            "confidence": "HIGH"
+          }
+        }
+      ]
+    },
+    "hero_slides": {
+      "exact_matches": 2,
+      "high_confidence": 2,
+      "medium_confidence": 0,
+      "ambiguous": 0,
+      "unresolved": 0,
+      "details": [
+        {
+          "entity_id": "78eeb5cb-5070-42b0-9959-66e76cb0ba4f",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-lounge.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "141ce2ea-6bf1-463d-a390-5faf426a74d4",
+            "confidence": "HIGH"
+          }
+        },
+        {
+          "entity_id": "0125fb9e-0b5c-4a15-b698-3be79aa0d0bf",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-restaurant.webp",
+          "match": {
+            "match_type": "EXACT_URL",
+            "media_id": "ce0458d4-2275-40a7-b82c-f367922d1d0b",
+            "confidence": "HIGH"
+          }
+        }
+      ]
+    }
+  },
+  "brand_assets": {},
+  "testimonials_boundary": {
+    "table_exists": true,
+    "record_count": 0,
+    "should_migrate": false,
+    "reason": "External Google Reviews data - MUST remain outside Media Library"
+  },
+  "code_integration_points": {},
+  "migration_readiness": {
+    "database_schema_ready": true,
+    "media_assets_exist": true,
+    "cms_entities_need_migration": true,
+    "brand_assets_need_columns": false,
+    "blocking_issues": [],
+    "warnings": [],
+    "recommendations": [
+      "menu_items: 13 records need media_id linking",
+      "services: 6 records need media_id linking",
+      "gallery: 14 records need media_id linking",
+      "hero_slides: 2 records need media_id linking"
+    ]
+  },
+  "warnings": [
+    "Cannot read business_settings: column business_settings.logo_media_id does not exist"
+  ],
+  "errors": []
+}

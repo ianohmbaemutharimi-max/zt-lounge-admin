@@ -1,0 +1,56 @@
+{
+  "timestamp": "2026-08-22T12:26:06.616Z",
+  "project": "jczwilrysvnhcjzjztbi",
+  "phase": "1-root-cause-investigation-simple",
+  "findings": {
+    "anonymous_bookings": {
+      "error": null,
+      "error_code": null,
+      "hint": null,
+      "details": null,
+      "rows_returned": 0,
+      "blocked": false,
+      "verdict": "ALLOWED ❌ (0 rows)"
+    },
+    "anonymous_customers": {
+      "error": null,
+      "error_code": null,
+      "rows_returned": 0,
+      "blocked": false,
+      "verdict": "ALLOWED ❌ (0 rows)"
+    },
+    "anonymous_update_bookings": {
+      "error": null,
+      "error_code": null,
+      "blocked": false,
+      "verdict": "ALLOWED ❌"
+    },
+    "anonymous_insert_bookings": {
+      "error": "new row violates row-level security policy for table \"bookings\"",
+      "error_code": "42501",
+      "blocked": true,
+      "verdict": "BLOCKED ✅"
+    },
+    "anonymous_create_booking_rpc": {
+      "error": "The requested time slot (14:00:00) is already booked. Please choose another time.",
+      "error_code": "P0001",
+      "success": false,
+      "verdict": "BLOCKED ❌ - The requested time slot (14:00:00) is already booked. Please choose another time."
+    },
+    "service_role_bookings": {
+      "error": null,
+      "rows_returned": 1,
+      "accessible": true,
+      "note": "service_role bypasses RLS"
+    },
+    "record_counts": {
+      "bookings": 27,
+      "customers": 19
+    },
+    "migration_check": {
+      "note": "Attempting to find RLS-related migrations",
+      "found": 0,
+      "migrations": []
+    }
+  }
+}

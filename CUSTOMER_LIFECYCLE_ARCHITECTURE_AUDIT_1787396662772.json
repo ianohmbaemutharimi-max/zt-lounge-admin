@@ -1,0 +1,146 @@
+{
+  "timestamp": "2026-08-22T11:04:05.944Z",
+  "phases": {
+    "phase1_data_flow": {
+      "create_booking_function": "NOT_FOUND"
+    },
+    "phase2_customer_semantics": {
+      "has_customer_lookup": false,
+      "has_customer_insert": false,
+      "has_conflict_handling": false,
+      "customer_logic_snippets": [],
+      "sample_relationships": [
+        {
+          "id": "3b103d89-9c11-4057-b049-021ae9dd453d",
+          "status": "pending",
+          "created_at": "2026-08-22T10:56:47.812539+00:00",
+          "customer_id": "e4c29fe8-c9ee-499e-8485-e1bfbcd431bd",
+          "customers": {
+            "id": "e4c29fe8-c9ee-499e-8485-e1bfbcd431bd",
+            "email": null,
+            "phone": "+254792714414",
+            "full_name": "Service Test restaurant"
+          }
+        },
+        {
+          "id": "0870cf38-fb49-4a81-a2f2-a0ecbae28402",
+          "status": "pending",
+          "created_at": "2026-08-22T10:56:46.905114+00:00",
+          "customer_id": "64833261-b46c-40b9-ab3c-9e4cbf861ccb",
+          "customers": {
+            "id": "64833261-b46c-40b9-ab3c-9e4cbf861ccb",
+            "email": null,
+            "phone": "+254799888777",
+            "full_name": "Lifecycle Test Customer"
+          }
+        },
+        {
+          "id": "1222a9b1-b84a-4c8e-b893-5950fc6e2680",
+          "status": "pending",
+          "created_at": "2026-08-22T10:56:46.361428+00:00",
+          "customer_id": "64833261-b46c-40b9-ab3c-9e4cbf861ccb",
+          "customers": {
+            "id": "64833261-b46c-40b9-ab3c-9e4cbf861ccb",
+            "email": null,
+            "phone": "+254799888777",
+            "full_name": "Lifecycle Test Customer"
+          }
+        },
+        {
+          "id": "40b10c67-7e5f-4e7c-9e7e-90e1d57e6ac9",
+          "status": "pending",
+          "created_at": "2026-08-22T10:56:37.566419+00:00",
+          "customer_id": "ef259fbb-7635-4962-a10a-b5d84ab86fb3",
+          "customers": {
+            "id": "ef259fbb-7635-4962-a10a-b5d84ab86fb3",
+            "email": "remediation.test@ztlounge.test",
+            "phone": "0712345999",
+            "full_name": "Remediation Test Customer"
+          }
+        },
+        {
+          "id": "4d1953dc-d4a2-4f30-adb9-d555247dd03f",
+          "status": "pending",
+          "created_at": "2026-08-22T10:38:10.148668+00:00",
+          "customer_id": "d71a9e58-b6fc-45b3-a345-5577469d576a",
+          "customers": {
+            "id": "d71a9e58-b6fc-45b3-a345-5577469d576a",
+            "email": "ianohmbaemutharimi@gmail.com",
+            "phone": "+254798507736",
+            "full_name": "Ian Mutharimi"
+          }
+        }
+      ]
+    },
+    "phase3_identity": {
+      "schema": null,
+      "constraints": null,
+      "phone_format_distribution": {
+        "international (+254)": 7,
+        "local (07/01)": 7
+      },
+      "phone_samples": [
+        "+254700000001",
+        "+254700000002",
+        "+254700000000",
+        "+254799999999",
+        "0712345001"
+      ]
+    },
+    "phase4_relationship": {
+      "foreign_key": null,
+      "orphaned_bookings": 0,
+      "multi_booking_customers": null
+    },
+    "phase5_confirmation": {
+      "status_distribution": {
+        "pending": 15
+      }
+    },
+    "phase6_admin_customers": {
+      "sample_customers_with_bookings": null
+    },
+    "phase7_metrics": {},
+    "phase8_forms": {
+      "services": [
+        {
+          "id": "f12be083-6b42-4fa4-a534-de6846a07029",
+          "name": "Auto Spa",
+          "slug": "auto-spa",
+          "is_active": true
+        },
+        {
+          "id": "a21bdd86-ad9c-4845-9dc7-a2d5e96e8c00",
+          "name": "Conference",
+          "slug": "conference",
+          "is_active": true
+        },
+        {
+          "id": "033640c1-bbad-4890-82f6-2b1cbfcae896",
+          "name": "Events",
+          "slug": "events",
+          "is_active": true
+        },
+        {
+          "id": "8df2b696-241b-49fc-8c9b-95a6bacc547d",
+          "name": "Lounge & Bar",
+          "slug": "lounge-bar",
+          "is_active": true
+        },
+        {
+          "id": "e38ef721-2a57-4c05-88aa-5509d766ca66",
+          "name": "Restaurant",
+          "slug": "restaurant",
+          "is_active": true
+        },
+        {
+          "id": "3139fc1e-fa7f-4f19-8822-c9aabf0bcf46",
+          "name": "VIP Cabins",
+          "slug": "vip-cabins",
+          "is_active": true
+        }
+      ],
+      "service_booking_distribution": null
+    }
+  }
+}

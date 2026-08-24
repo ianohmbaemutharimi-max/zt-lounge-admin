@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-08-21T11:14:44.714Z",
+  "framework": {
+    "name": "Next.js",
+    "version": "^16.2.6",
+    "react": "^19.2.6"
+  },
+  "routing": {
+    "appRouter": true,
+    "pagesRouter": false,
+    "type": "App Router"
+  },
+  "businessSettingsFetch": {
+    "searched": [
+      "src/lib/business-settings.ts",
+      "src/lib/businessSettings.ts",
+      "src/lib/api.ts",
+      "src/lib/supabase.ts",
+      "src/lib/data/business-settings.ts"
+    ],
+    "found": []
+  },
+  "logoLocations": [],
+  "faviconImplementation": {},
+  "metadata": {
+    "file": "src/app/layout.tsx",
+    "exists": true,
+    "hasMetadataExport": true,
+    "hasGenerateMetadata": false,
+    "hasIcons": true,
+    "references": {
+      "businessSettings": false,
+      "faviconUrl": false,
+      "faviconMediaId": false,
+      "resolvedFaviconUrl": false
+    }
+  },
+  "searchResults": {
+    "logo_url": [],
+    "favicon_url": [],
+    "logo_media_id": [],
+    "favicon_media_id": [],
+    "resolved_logo_url": [],
+    "resolved_favicon_url": [],
+    "business_settings": [],
+    "businessSettings": []
+  },
+  "confirmedDefects": [
+    {
+      "area": "DATA_LAYER",
+      "severity": "HIGH",
+      "issue": "No business settings fetch mechanism detected"
+    },
+    {
+      "area": "FAVICON",
+      "severity": "HIGH",
+      "issue": "Favicon not connected to CMS business_settings"
+    },
+    {
+      "area": "LOGO",
+      "severity": "HIGH",
+      "issue": "Logo not consuming CMS branding data"
+    }
+  ]
+}

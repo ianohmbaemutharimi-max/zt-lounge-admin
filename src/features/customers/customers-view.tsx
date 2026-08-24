@@ -13,9 +13,10 @@ import { DataTable, type Column } from "@/components/data-table";
 import { formatDate, formatKES, formatTime } from "@/lib/utils";
 
 const customerSchema = z.object({
-  fullName: z.string().min(2, "Name is required"),
+  full_name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email").or(z.literal("")),
   phone: z.string().min(7, "Phone is required"),
+  source: z.enum(["manual", "booking"]).optional(),
   notes: z.string().optional(),
 });
 type CustomerForm = z.infer<typeof customerSchema>;
@@ -44,7 +45,7 @@ export function CustomersView() {
 
   function openForm(c?: any) {
     setEditing(c ?? null);
-    form.reset(c ? { fullName: c.fullName, email: c.email ?? "", phone: c.phone ?? "", notes: c.notes ?? "" } : { fullName: "", email: "", phone: "", notes: "" });
+    form.reset(c ? { full_name: c.full_name, email: c.email ?? "", phone: c.phone ?? "", source: c.source ?? "manual", notes: c.notes ?? "" } : { full_name: "", email: "", phone: "", source: "manual", notes: "" });
     setFormOpen(true);
   }
 
@@ -55,16 +56,16 @@ export function CustomersView() {
     { header: "Customer", cell: (c) => (
       <div className="flex items-center gap-3">
         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/10 text-sm font-semibold text-gold">
-          {c.fullName.split(" ").map((p: string) => p[0]).slice(0, 2).join("")}
+          {(c.full_name ?? "").split(" ").map((p: string) => p[0]).slice(0, 2).join("")}
         </span>
-        <span className="font-medium">{c.fullName}</span>
+        <span className="font-medium">{c.full_name}</span>
       </div>
     )},
     { header: "Email", cell: (c) => <span className="text-stone-300">{c.email ?? "—"}</span> },
     { header: "Phone", cell: (c) => <span className="text-stone-300">{c.phone ?? "—"}</span> },
     { header: "Visits", cell: (c) => <span className="text-gold">{c.totalVisits}</span> },
     { header: "Bookings", cell: (c) => customerBookings(c.id).length },
-    { header: "Joined", cell: (c) => <span className="text-stone-400">{formatDate(c.createdAt)}</span> },
+    { header: "Joined", cell: (c) => <span className="text-stone-400">{formatDate(c.created_at)}</span> },
     { header: "Actions", cell: (c) => (
       <div className="flex gap-1">
         <button title="Profile" onClick={() => setViewing(c)} className="rounded-lg p-1.5 text-stone-400 hover:bg-panel-2 hover:text-white"><Eye className="h-4 w-4" /></button>
@@ -86,7 +87,7 @@ export function CustomersView() {
       <DataTable
         data={customers.data ?? []}
         columns={columns}
-        searchKeys={["fullName", "email", "phone"]}
+        searchKeys={["full_name", "email", "phone"]}
         searchPlaceholder="Search by name, email or phone…"
         emptyTitle="No customers yet"
         emptyDescription="Customers will appear here when they book or when you add them."
@@ -98,10 +99,10 @@ export function CustomersView() {
           <div className="space-y-5">
             <div className="flex items-center gap-4">
               <span className="flex h-14 w-14 items-center justify-center rounded-full bg-gold/10 text-lg font-semibold text-gold">
-                {viewing.fullName.split(" ").map((p: string) => p[0]).slice(0, 2).join("")}
+                {(viewing.full_name ?? "").split(" ").map((p: string) => p[0]).slice(0, 2).join("")}
               </span>
               <div>
-                <p className="text-lg font-semibold text-white">{viewing.fullName}</p>
+                <p className="text-lg font-semibold text-white">{viewing.full_name}</p>
                 <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted">
                   {viewing.email && <span className="flex items-center gap-1"><Mail className="h-3.5 w-3.5" /> {viewing.email}</span>}
                   {viewing.phone && <span className="flex items-center gap-1"><Phone className="h-3.5 w-3.5" /> {viewing.phone}</span>}
@@ -110,6 +111,7 @@ export function CustomersView() {
               <div className="ml-auto rounded-xl bg-panel-2 px-4 py-2 text-center">
                 <p className="text-xl font-semibold text-gold">{viewing.totalVisits}</p>
                 <p className="text-xs text-muted">visits</p>
+                <p className="text-xs font-medium text-stone-400 mt-1">Source: {viewing.source}</p>
               </div>
             </div>
             {viewing.notes && <p className="rounded-xl bg-panel-2 px-4 py-3 text-sm text-stone-300">{viewing.notes}</p>}
@@ -126,7 +128,7 @@ export function CustomersView() {
                         <span className="font-medium text-gold">{b.bookingNumber}</span>
                         <span className="text-stone-300">{svc?.name ?? "—"}</span>
                         <span className="text-muted">{formatDate(b.bookingDate)} · {formatTime(b.bookingTime)}</span>
-                        <span className="ml-auto">{formatKES(b.totalAmount)}</span>
+                        
                         <Badge status={b.status}>{b.status}</Badge>
                       </div>
                     );
@@ -141,8 +143,8 @@ export function CustomersView() {
       {/* Form */}
       <Modal open={formOpen} onClose={() => setFormOpen(false)} title={editing ? "Edit Customer" : "Add Customer"}>
         <form onSubmit={form.handleSubmit((v) => save.mutate(v))} className="space-y-4">
-          <Field label="Full Name" error={form.formState.errors.fullName?.message}>
-            <Input placeholder="e.g. Alice Nkatha" {...form.register("fullName")} />
+          <Field label="Full Name" error={form.formState.errors.full_name?.message}>
+            <Input placeholder="e.g. Alice Nkatha" {...form.register("full_name")} />
           </Field>
           <Field label="Email" error={form.formState.errors.email?.message}>
             <Input type="email" placeholder="customer@email.com" {...form.register("email")} />

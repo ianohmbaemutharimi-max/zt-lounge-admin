@@ -1,0 +1,113 @@
+{
+  "timestamp": "2026-08-22T13:54:57.131Z",
+  "project": "jczwilrysvnhcjzjztbi",
+  "phases": {
+    "phase1_anonymous_table_access": {
+      "select_bookings": {
+        "error": null,
+        "code": null,
+        "rows_returned": 0,
+        "denied": false
+      },
+      "select_customers": {
+        "error": null,
+        "code": null,
+        "rows_returned": 0,
+        "denied": false
+      },
+      "insert_bookings": {
+        "error": "new row violates row-level security policy for table \"bookings\"",
+        "code": "42501",
+        "denied": true
+      },
+      "update_bookings": {
+        "error": null,
+        "code": null,
+        "denied": false
+      },
+      "delete_bookings": {
+        "error": null,
+        "code": null,
+        "denied": false
+      },
+      "insert_customers": {
+        "error": "new row violates row-level security policy for table \"customers\"",
+        "code": "42501",
+        "denied": true
+      },
+      "update_customers": {
+        "error": null,
+        "code": null,
+        "denied": false
+      },
+      "delete_customers": {
+        "error": null,
+        "code": null,
+        "denied": false
+      }
+    },
+    "phase2_rls_status": [],
+    "phase2_policies": [],
+    "phase2_grants": {
+      "bookings": [],
+      "customers": []
+    },
+    "phase3_decision": "MIGRATION_REQUIRED",
+    "phase3_migration_inspection": {
+      "file": "supabase/migrations/20260822_enable_booking_rls_security.sql",
+      "size": 5709,
+      "compatible": true
+    },
+    "phase4_rpc_verification": {
+      "success": true,
+      "error": null,
+      "booking_id": "93c0fa6e-ed32-48a5-91f6-9526b1d5090d",
+      "booking_number": "ZT-100299E3",
+      "customer_id": "dc98f74b-2d86-4fac-97fe-5a3e2d4a6fff"
+    },
+    "phase4_direct_select_test": {
+      "denied": true,
+      "error": "Cannot coerce the result to a single JSON object",
+      "rows_returned": 0
+    }
+  },
+  "security_tests": {
+    "test1": {
+      "name": "anon SELECT bookings",
+      "denied": false
+    },
+    "test2": {
+      "name": "anon SELECT customers",
+      "denied": false
+    },
+    "test3": {
+      "name": "anon INSERT bookings",
+      "denied": true
+    },
+    "test4": {
+      "name": "anon UPDATE bookings",
+      "denied": false
+    },
+    "test5": {
+      "name": "anon DELETE bookings",
+      "denied": false
+    },
+    "test6": {
+      "name": "anon INSERT customers",
+      "denied": true
+    },
+    "test7": {
+      "name": "anon UPDATE customers",
+      "denied": false
+    },
+    "test8": {
+      "name": "anon DELETE customers",
+      "denied": false
+    },
+    "test9": {
+      "name": "anon create_booking() RPC",
+      "allowed": true
+    }
+  },
+  "verdict": "🔴 NOT PRODUCTION READY"
+}

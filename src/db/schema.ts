@@ -77,6 +77,8 @@ export const businessSettings = pgTable("business_settings", {
   timezone: text("timezone").default("Africa/Nairobi").notNull(),
   logoUrl: text("logo_url"),
   faviconUrl: text("favicon_url"),
+  logoMediaId: uuid("logo_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
+  faviconMediaId: uuid("favicon_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
@@ -252,6 +254,7 @@ export const customers = pgTable("customers", {
   dateOfBirth: date("date_of_birth"),
   notes: text("notes"),
   marketingOptIn: boolean("marketing_opt_in").default(false),
+  source: text("source").default("manual").notNull(),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),

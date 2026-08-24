@@ -1,0 +1,275 @@
+{
+  "timestamp": "2026-08-19T17:56:22.035Z",
+  "phase": "COMPREHENSIVE_MEDIA_ARCHITECTURE_AUDIT",
+  "findings": [],
+  "criticalIssues": [],
+  "highIssues": [
+    {
+      "type": "VIDEO_FUNCTIONALITY",
+      "severity": "HIGH",
+      "count": 12,
+      "files": [
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\api\\admin\\resources.ts",
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\api\\auth\\login-audit\\route.ts",
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\login\\page.tsx",
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\components\\LogoutButton.tsx",
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\components\\sidebar.tsx",
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\components\\ui.tsx",
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\media\\image-change-dialog.tsx",
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\media\\image-editor-modal.tsx",
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\media\\media-library-view.tsx",
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\promotions\\promotions-view.tsx",
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\services\\catalog-manager.tsx",
+        "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\lib\\audit\\logger.ts"
+      ],
+      "description": "Files contain video-related code (requirement: image-only)"
+    }
+  ],
+  "mediumIssues": [],
+  "lowIssues": [],
+  "filesInspected": 97,
+  "mediaRelatedFiles": [
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\api\\admin\\resources.ts",
+      "findings": {
+        "videoKeywords": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\api\\admin\\upload\\route.ts",
+      "findings": {
+        "publicUrl": 6
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\api\\admin\\[resource]\\route.ts",
+      "findings": {
+        "imageUrl": 3,
+        "mediaId": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\api\\admin\\[resource]\\[id]\\route.ts",
+      "findings": {
+        "imageUrl": 2,
+        "mediaId": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\api\\auth\\login-audit\\route.ts",
+      "findings": {
+        "videoKeywords": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\dashboard\\media\\page.tsx",
+      "findings": {
+        "mediaLibrary": 3
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\login\\page.tsx",
+      "findings": {
+        "videoKeywords": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\components\\LogoutButton.tsx",
+      "findings": {
+        "videoKeywords": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\components\\sidebar.tsx",
+      "findings": {
+        "videoKeywords": 4
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\components\\ui.tsx",
+      "findings": {
+        "videoKeywords": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\db\\schema.ts",
+      "findings": {
+        "imageUrl": 10,
+        "logoUrl": 2,
+        "faviconUrl": 2,
+        "mediaId": 12,
+        "publicUrl": 2
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\cms\\website-cms.tsx",
+      "findings": {
+        "imageUrl": 12,
+        "mediaId": 4,
+        "mediaPicker": 9,
+        "imageChange": 8
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\dashboard\\overview.tsx",
+      "findings": {
+        "mediaLibrary": 2
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\gallery\\gallery-view.tsx",
+      "findings": {
+        "imageUrl": 12,
+        "mediaId": 4,
+        "mediaPicker": 9,
+        "imageChange": 8
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\media\\image-change-dialog.tsx",
+      "findings": {
+        "imageUrl": 8,
+        "mediaId": 1,
+        "publicUrl": 1,
+        "fileInput": 1,
+        "mediaPicker": 9,
+        "imageChange": 3,
+        "videoKeywords": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\media\\image-editor-modal.tsx",
+      "findings": {
+        "imageUrl": 8,
+        "mediaId": 1,
+        "publicUrl": 1,
+        "fileInput": 1,
+        "mediaPicker": 9,
+        "videoKeywords": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\media\\media-library-view.tsx",
+      "findings": {
+        "publicUrl": 2,
+        "mediaLibrary": 1,
+        "videoKeywords": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\media\\media-picker-modal.tsx",
+      "findings": {
+        "mediaId": 4,
+        "publicUrl": 2,
+        "mediaPicker": 4
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\promotions\\promotions-view.tsx",
+      "findings": {
+        "videoKeywords": 2
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\services\\catalog-manager.tsx",
+      "findings": {
+        "imageUrl": 15,
+        "mediaId": 10,
+        "mediaPicker": 9,
+        "imageChange": 8,
+        "videoKeywords": 4
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\integrations\\google-business-profile\\mapper.ts",
+      "findings": {
+        "imageUrl": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\integrations\\google-business-profile\\sync.ts",
+      "findings": {
+        "imageUrl": 3
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\integrations\\google-business-profile\\types.ts",
+      "findings": {
+        "imageUrl": 2
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\lib\\audit\\logger.ts",
+      "findings": {
+        "videoKeywords": 5
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\lib\\media\\resolver.ts",
+      "findings": {
+        "imageUrl": 31,
+        "mediaId": 29,
+        "publicUrl": 8
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\lib\\media\\selection.ts",
+      "findings": {
+        "mediaId": 9
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\lib\\repository.ts",
+      "findings": {
+        "imageUrl": 10,
+        "logoUrl": 2,
+        "faviconUrl": 2,
+        "mediaId": 12,
+        "publicUrl": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\types\\media.ts",
+      "findings": {
+        "mediaId": 2,
+        "publicUrl": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\types\\supabase.ts",
+      "findings": {
+        "imageUrl": 3
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\supabase\\migrations\\20260813_create_media_library_tables.sql",
+      "findings": {
+        "logoUrl": 1,
+        "mediaId": 2,
+        "publicUrl": 3,
+        "mediaLibrary": 2
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\supabase\\migrations\\20260813_fix_media_library_grants.sql",
+      "findings": {
+        "mediaLibrary": 1
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\supabase\\migrations\\20260817_add_media_id_to_cms_tables.sql",
+      "findings": {
+        "imageUrl": 2,
+        "mediaId": 61
+      }
+    },
+    {
+      "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\supabase\\migrations\\20260819_add_brand_assets_media_id.sql",
+      "findings": {
+        "logoUrl": 2,
+        "faviconUrl": 2,
+        "mediaId": 9
+      }
+    }
+  ]
+}

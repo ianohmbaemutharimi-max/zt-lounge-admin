@@ -1,0 +1,123 @@
+{
+  "schema": {
+    "pass": true,
+    "details": {
+      "accessible": true,
+      "error": "supabase.rpc(...).catch is not a function"
+    }
+  },
+  "singleton": {
+    "pass": true,
+    "details": {
+      "exists": true,
+      "row": {
+        "id": 1,
+        "business_name": "ZT Lounge Meru",
+        "email": "ztloungemeru@gmail.com",
+        "phone": "+254143542601",
+        "address": "Milimani Road, Meru, Kenya",
+        "google_maps_url": "https://maps.app.goo.gl/HqTbiiU4q2jRFoPg6",
+        "whatsapp": "+254143542601",
+        "facebook": "https://facebook.com/ztlounge",
+        "instagram": "https://instagram.com/ztlounge",
+        "opening_hours": {
+          "friday": "10:00 AM - 2:00 AM",
+          "monday": "10:00 AM - 2:00 AM",
+          "sunday": "10:00 AM - 2:00 AM",
+          "tuesday": "10:00 AM - 2:00 AM",
+          "saturday": "10:00 AM - 2:00 AM",
+          "thursday": "10:00 AM - 2:00 AM",
+          "wednesday": "10:00 AM - 2:00 AM"
+        },
+        "logo_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/logos/logo.webp",
+        "favicon_url": "/favicon.ico",
+        "timezone": "Africa/Nairobi",
+        "currency": "KES",
+        "created_at": "2026-07-13T15:39:06.478736+00:00",
+        "updated_at": "2026-08-20T12:17:59.265772+00:00",
+        "tagline": "Premium Lounge Experience in Meru",
+        "description": "ZT Lounge Meru offers premium dining, entertainment, events, and hospitality experiences.",
+        "twitter": "https://x.com/ztlounge_meru",
+        "youtube": "https://youtube.com/@ztlounge",
+        "city": "Meru",
+        "country": "Kenya",
+        "latitude": 0.0476,
+        "longitude": 37.6822,
+        "logo_media_id": "a5fb7148-8562-4d82-9fc1-d979fc19a323",
+        "favicon_media_id": null
+      }
+    }
+  },
+  "repository": {
+    "pass": false,
+    "details": {
+      "responseFields": [
+        "id",
+        "business_name",
+        "email",
+        "phone",
+        "address",
+        "google_maps_url",
+        "whatsapp",
+        "facebook",
+        "instagram",
+        "opening_hours",
+        "logo_url",
+        "favicon_url",
+        "logo_media_id",
+        "favicon_media_id",
+        "timezone",
+        "currency",
+        "tagline",
+        "description",
+        "twitter",
+        "youtube",
+        "city",
+        "country",
+        "latitude",
+        "longitude",
+        "created_at",
+        "updated_at"
+      ],
+      "writableFields": [
+        "business_settings: [business_name",
+        "email",
+        "phone",
+        "address",
+        "google_maps_url",
+        "whatsapp",
+        "facebook",
+        "instagram",
+        "opening_hours",
+        "logo_url",
+        "favicon_url",
+        "logo_media_id",
+        "favicon_media_id",
+        "timezone",
+        "currency",
+        "tagline",
+        "description",
+        "twitter",
+        "youtube",
+        "city",
+        "country",
+        "latitude",
+        "longitude]"
+      ],
+      "missingFromResponse": [],
+      "missingFromWritable": [
+        "business_name",
+        "longitude"
+      ]
+    }
+  },
+  "ui": {
+    "pass": false,
+    "details": {
+      "issues": [
+        "business_name uses camelCase (businessName) instead of snake_case"
+      ]
+    }
+  },
+  "overall": false
+}

@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, Suspense, useRef } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -96,12 +95,12 @@ function LoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-ink px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <Image
-            src="/images/logo/zt-lounge-logo.png"
+          <img
+            src="/images/logo/zt-lounge-logo.svg"
             alt="ZT Lounge"
-            width={64}
-            height={64}
-            className="mx-auto mb-4 rounded-full ring-2 ring-gold/40"
+            width={160}
+            height={40}
+            className="mx-auto mb-4 rounded ring-2 ring-gold/40"
           />
           <h1 className="text-3xl font-bold text-white">Admin Login</h1>
           <p className="mt-2 text-sm text-muted">ZT Lounge Meru — Control Center</p>

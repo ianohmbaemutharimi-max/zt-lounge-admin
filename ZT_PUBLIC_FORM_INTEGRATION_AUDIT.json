@@ -1,0 +1,446 @@
+{
+  "timestamp": "2026-08-21T14:16:31.568Z",
+  "publicSiteRoot": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge",
+  "forms": [
+    {
+      "file": "pages\\business\\autospa.html",
+      "id": "autospaBookingForm",
+      "class": "booking-form-autospa",
+      "action": null,
+      "method": "GET",
+      "inputs": [
+        {
+          "name": "fullName",
+          "type": "text",
+          "id": "fullName"
+        },
+        {
+          "name": "phoneNumber",
+          "type": "tel",
+          "id": "phoneNumber"
+        },
+        {
+          "name": "servicePackage",
+          "type": "text",
+          "id": "servicePackage"
+        },
+        {
+          "name": "appointmentDate",
+          "type": "date",
+          "id": "appointmentDate"
+        }
+      ],
+      "handler": null,
+      "repository": null,
+      "database": null,
+      "admin": null,
+      "status": "UNKNOWN"
+    },
+    {
+      "file": "pages\\business\\conference.html",
+      "id": "conferenceBookingForm",
+      "class": "booking-form-conference",
+      "action": null,
+      "method": "GET",
+      "inputs": [
+        {
+          "name": "fullName",
+          "type": "text",
+          "id": "fullName"
+        },
+        {
+          "name": "phoneNumber",
+          "type": "tel",
+          "id": "phoneNumber"
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "id": "email"
+        },
+        {
+          "name": "eventType",
+          "type": "text",
+          "id": "eventType"
+        },
+        {
+          "name": "attendees",
+          "type": "text",
+          "id": "attendees"
+        },
+        {
+          "name": "eventDate",
+          "type": "date",
+          "id": "eventDate"
+        },
+        {
+          "name": "duration",
+          "type": "text",
+          "id": "duration"
+        },
+        {
+          "name": "specialRequests",
+          "type": "textarea",
+          "id": "specialRequests"
+        }
+      ],
+      "handler": null,
+      "repository": null,
+      "database": null,
+      "admin": null,
+      "status": "UNKNOWN"
+    },
+    {
+      "file": "pages\\business\\events.html",
+      "id": "eventBookingForm",
+      "class": "booking-form-events",
+      "action": null,
+      "method": "GET",
+      "inputs": [
+        {
+          "name": "fullName",
+          "type": "text",
+          "id": "fullName"
+        },
+        {
+          "name": "phoneNumber",
+          "type": "tel",
+          "id": "phoneNumber"
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "id": "email"
+        },
+        {
+          "name": "eventType",
+          "type": "text",
+          "id": "eventType"
+        },
+        {
+          "name": "guestCount",
+          "type": "text",
+          "id": "guestCount"
+        },
+        {
+          "name": "eventDate",
+          "type": "date",
+          "id": "eventDate"
+        },
+        {
+          "name": "eventTime",
+          "type": "time",
+          "id": "eventTime"
+        },
+        {
+          "name": "specialRequests",
+          "type": "textarea",
+          "id": "specialRequests"
+        }
+      ],
+      "handler": null,
+      "repository": null,
+      "database": null,
+      "admin": null,
+      "status": "UNKNOWN"
+    },
+    {
+      "file": "pages\\contact\\contact.html",
+      "id": "contactForm",
+      "class": "booking-form-contact",
+      "action": null,
+      "method": "GET",
+      "inputs": [
+        {
+          "name": "fullName",
+          "type": "text",
+          "id": "fullName"
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "id": "email"
+        },
+        {
+          "name": "phoneNumber",
+          "type": "tel",
+          "id": "phoneNumber"
+        },
+        {
+          "name": "service",
+          "type": "text",
+          "id": "service"
+        },
+        {
+          "name": "bookingDate",
+          "type": "date",
+          "id": "bookingDate"
+        },
+        {
+          "name": "bookingTime",
+          "type": "time",
+          "id": "bookingTime"
+        },
+        {
+          "name": "guestCount",
+          "type": "number",
+          "id": "guestCount"
+        },
+        {
+          "name": "occasion",
+          "type": "text",
+          "id": "occasion"
+        },
+        {
+          "name": "specialRequests",
+          "type": "textarea",
+          "id": "specialRequests"
+        }
+      ],
+      "handler": "assets\\js\\forms.js",
+      "repository": null,
+      "database": null,
+      "admin": null,
+      "status": "UNKNOWN"
+    },
+    {
+      "file": "pages\\experiences\\lounge.html",
+      "id": "loungeBookingForm",
+      "class": "booking-form-lounge",
+      "action": null,
+      "method": "GET",
+      "inputs": [
+        {
+          "name": "fullName",
+          "type": "text",
+          "id": "fullName"
+        },
+        {
+          "name": "phoneNumber",
+          "type": "tel",
+          "id": "phoneNumber"
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "id": "email"
+        },
+        {
+          "name": "guestCount",
+          "type": "text",
+          "id": "guestCount"
+        },
+        {
+          "name": "occasion",
+          "type": "text",
+          "id": "occasion"
+        },
+        {
+          "name": "bookingDate",
+          "type": "date",
+          "id": "bookingDate"
+        },
+        {
+          "name": "bookingTime",
+          "type": "text",
+          "id": "bookingTime"
+        },
+        {
+          "name": "specialRequests",
+          "type": "textarea",
+          "id": "specialRequests"
+        }
+      ],
+      "handler": null,
+      "repository": null,
+      "database": null,
+      "admin": null,
+      "status": "UNKNOWN"
+    },
+    {
+      "file": "pages\\experiences\\restaurant.html",
+      "id": "reservationForm",
+      "class": "booking-form-restaurant",
+      "action": null,
+      "method": "GET",
+      "inputs": [
+        {
+          "name": "website",
+          "type": "text",
+          "id": "website"
+        },
+        {
+          "name": "fullName",
+          "type": "text",
+          "id": "fullName"
+        },
+        {
+          "name": "phoneNumber",
+          "type": "tel",
+          "id": "phoneNumber"
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "id": "email"
+        },
+        {
+          "name": "guestCount",
+          "type": "text",
+          "id": "guestCount"
+        },
+        {
+          "name": "occasion",
+          "type": "text",
+          "id": "occasion"
+        },
+        {
+          "name": "bookingDate",
+          "type": "date",
+          "id": "bookingDate"
+        },
+        {
+          "name": "bookingTime",
+          "type": "text",
+          "id": "bookingTime"
+        },
+        {
+          "name": "specialRequests",
+          "type": "textarea",
+          "id": "specialRequests"
+        }
+      ],
+      "handler": null,
+      "repository": null,
+      "database": null,
+      "admin": null,
+      "status": "UNKNOWN"
+    },
+    {
+      "file": "pages\\experiences\\vip.html",
+      "id": "vipBookingForm",
+      "class": "booking-form-vip",
+      "action": null,
+      "method": "GET",
+      "inputs": [
+        {
+          "name": "fullName",
+          "type": "text",
+          "id": "fullName"
+        },
+        {
+          "name": "phoneNumber",
+          "type": "tel",
+          "id": "phoneNumber"
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "id": "email"
+        },
+        {
+          "name": "cabinPackage",
+          "type": "text",
+          "id": "cabinPackage"
+        },
+        {
+          "name": "guestCount",
+          "type": "text",
+          "id": "guestCount"
+        },
+        {
+          "name": "bookingDate",
+          "type": "date",
+          "id": "bookingDate"
+        },
+        {
+          "name": "bookingTime",
+          "type": "text",
+          "id": "bookingTime"
+        },
+        {
+          "name": "specialRequests",
+          "type": "textarea",
+          "id": "specialRequests"
+        }
+      ],
+      "handler": null,
+      "repository": null,
+      "database": null,
+      "admin": null,
+      "status": "UNKNOWN"
+    }
+  ],
+  "repositories": [],
+  "handlers": [
+    {
+      "file": "assets\\js\\forms.js",
+      "formId": "contactForm",
+      "type": "addEventListener"
+    }
+  ],
+  "databaseTables": [
+    {
+      "file": "assets\\js\\repositories\\BusinessRepository.js",
+      "method": "from",
+      "target": "media_assets"
+    }
+  ],
+  "adminEndpoints": [
+    "/dashboard/bookings",
+    "/dashboard/customers",
+    "/dashboard/gallery",
+    "/dashboard/menu",
+    "/dashboard/messages",
+    "/dashboard/promotions",
+    "/dashboard/services",
+    "/dashboard/settings",
+    "/dashboard/testimonials",
+    "/dashboard/website"
+  ],
+  "issues": [
+    {
+      "severity": "WARNING",
+      "component": "Form #autospaBookingForm",
+      "file": "pages\\business\\autospa.html",
+      "message": "No JavaScript handler found"
+    },
+    {
+      "severity": "WARNING",
+      "component": "Form #conferenceBookingForm",
+      "file": "pages\\business\\conference.html",
+      "message": "No JavaScript handler found"
+    },
+    {
+      "severity": "WARNING",
+      "component": "Form #eventBookingForm",
+      "file": "pages\\business\\events.html",
+      "message": "No JavaScript handler found"
+    },
+    {
+      "severity": "WARNING",
+      "component": "Form #loungeBookingForm",
+      "file": "pages\\experiences\\lounge.html",
+      "message": "No JavaScript handler found"
+    },
+    {
+      "severity": "WARNING",
+      "component": "Form #reservationForm",
+      "file": "pages\\experiences\\restaurant.html",
+      "message": "No JavaScript handler found"
+    },
+    {
+      "severity": "WARNING",
+      "component": "Form #vipBookingForm",
+      "file": "pages\\experiences\\vip.html",
+      "message": "No JavaScript handler found"
+    },
+    {
+      "severity": "WARNING",
+      "component": "assets\\js\\forms.js",
+      "message": "Form handler found but no database operation detected"
+    }
+  ],
+  "dataFlows": [],
+  "recommendations": []
+}

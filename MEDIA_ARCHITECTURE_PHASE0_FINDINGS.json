@@ -1,0 +1,81 @@
+{
+  "patchEndpoint": {
+    "exists": true,
+    "details": {
+      "path": "src/app/api/admin/media_assets/[id]/route.ts",
+      "method": "PATCH",
+      "auth": "✅ withContentManagerAuth",
+      "validation": "✅ UUID validation",
+      "fields": "✅ Field validation",
+      "errorHandling": "✅ Complete"
+    }
+  },
+  "uploadApiContract": {
+    "structure": {
+      "hasDataWrapper": true,
+      "hasPublicUrl": true,
+      "hasUrl": false,
+      "samples": [
+        "return NextResponse.json(\r\n        { success: false, error: \"Authentication required\" }",
+        "return NextResponse.json(\r\n        { success: false, error: \"Profile not found\" }",
+        "return NextResponse.json(\r\n        { success: false, error: \"No role assigned\" }",
+        "return NextResponse.json(\r\n        { success: false, error: \"Role not found\" }",
+        "return NextResponse.json(\r\n        { \r\n          success: false, \r\n          error: \"Insufficient permissions. Content manager role required.\" \r\n        }",
+        "return NextResponse.json(\r\n        { success: false, error: \"File is required\" }",
+        "return NextResponse.json(\r\n        { success: false, error: \"Category is required\" }",
+        "return NextResponse.json(\r\n        { \r\n          success: false, \r\n          error: error instanceof Error ? error.message : \"Invalid category\" \r\n        }",
+        "return NextResponse.json(\r\n        { \r\n          success: false, \r\n          error: `File too large: ${sizeMB}",
+        "return NextResponse.json(\r\n        { success: false, error: message }",
+        "return NextResponse.json(\r\n        { \r\n          success: false, \r\n          error: \"Failed to upload file to storage\" \r\n        }",
+        "return NextResponse.json(\r\n        { \r\n          success: false, \r\n          error: \"Failed to save upload record\" \r\n        }",
+        "return NextResponse.json(\r\n      {\r\n        success: true,\r\n        data: {\r\n          id: fileUploadRecord.id,\r\n          bucket: PUBLIC_ASSETS_BUCKET,\r\n          path: storagePath,\r\n          relati",
+        "return NextResponse.json(\r\n      { \r\n        success: false, \r\n        error: \"Internal server error\" \r\n      }"
+      ]
+    },
+    "consumers": []
+  },
+  "imageChangeDialog": {
+    "expectations": {
+      "expectsResponseUrl": false,
+      "expectsResponseData": true,
+      "expectsPublicUrl": true
+    }
+  },
+  "heroSlidesIntegration": {
+    "status": "Found",
+    "files": [
+      "\"Not found\""
+    ]
+  },
+  "brandingMediaResolution": {
+    "status": {
+      "hasLogoMediaId": false,
+      "hasFaviconMediaId": false,
+      "hasMediaResolver": false
+    }
+  },
+  "mediaUsageTracking": {
+    "status": "Implemented",
+    "files": [
+      "\"Not found\""
+    ]
+  },
+  "mediaResolver": {
+    "implementation": {
+      "hasResolveMediaUrl": false,
+      "hasMediaIdResolution": true,
+      "hasLegacyFallback": true,
+      "hasBatchQuerying": false
+    }
+  },
+  "repositoryPatterns": {
+    "/api/admin/upload": "Error",
+    "response.url": "Error",
+    "publicUrl": "Error",
+    "media_assets": "Error",
+    "media_usage": "Error",
+    "media_id": "Error",
+    "logo_media_id": "Error",
+    "favicon_media_id": "Error"
+  }
+}

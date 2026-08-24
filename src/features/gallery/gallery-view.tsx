@@ -16,9 +16,8 @@ import type { SelectableMediaAsset } from "@/types/media";
 
 const imageSchema = z.object({
   title: z.string().min(2, "Title is required"),
-  imageUrl: z.string().url("Enter a valid image URL").or(z.literal("")),
   category: z.string().min(2, "Category is required"),
-  mediaId: z.string().uuid().nullable().optional(),
+  media_id: z.string().uuid("Select an image from the Media Library").nullable().optional(),
 });
 type ImageForm = z.infer<typeof imageSchema>;
 
@@ -33,13 +32,12 @@ export function GalleryView() {
 
   const gallery = useQuery({ queryKey: queryKeys.gallery.all(), queryFn: () => api.list("gallery") });
   const form = useForm<ImageForm>({ resolver: zodResolver(imageSchema) });
-  const watchedUrl = form.watch("imageUrl");
 
   const invalidate = () => qc.invalidateQueries({ queryKey: queryKeys.gallery.all() });
 
   const add = useMutation({
     mutationFn: (v: ImageForm) =>
-      api.create("gallery", { ...v, sortOrder: (gallery.data?.length ?? 0) + 1 }),
+      api.create("gallery", { ...v, display_order: (gallery.data?.length ?? 0) + 1 }),
     onSuccess: () => { invalidate(); setOpen(false); form.reset(); },
   });
   const patch = useMutation({
@@ -52,17 +50,17 @@ export function GalleryView() {
   });
 
   function move(row: any, dir: -1 | 1) {
-    const sorted = [...(gallery.data ?? [])].sort((a: any, b: any) => a.sortOrder - b.sortOrder);
+    const sorted = [...(gallery.data ?? [])].sort((a: any, b: any) => a.display_order - b.display_order);
     const idx = sorted.findIndex((g: any) => g.id === row.id);
     const swap = sorted[idx + dir];
     if (!swap) return;
-    patch.mutate({ id: row.id, body: { sortOrder: swap.sortOrder } });
-    patch.mutate({ id: swap.id, body: { sortOrder: row.sortOrder } });
+    patch.mutate({ id: row.id, body: { display_order: swap.display_order } });
+    patch.mutate({ id: swap.id, body: { display_order: row.display_order } });
   }
 
   if (gallery.isLoading) return <Spinner label="Loading gallery…" />;
 
-  const images = [...(gallery.data ?? [])].sort((a: any, b: any) => a.sortOrder - b.sortOrder);
+  const images = [...(gallery.data ?? [])].sort((a: any, b: any) => a.display_order - b.display_order);
 
   return (
     <div>
@@ -81,25 +79,25 @@ export function GalleryView() {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {images.map((g: any, i: number) => (
-            <Card key={g.id} className={cn("overflow-hidden", !g.isActive && "opacity-50")}>
+            <Card key={g.id} className={cn("overflow-hidden", !g.is_active && "opacity-50")}>
               <button className="block w-full" onClick={() => setPreview(g)}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={g.imageUrl} alt={g.title ?? ""} className="h-48 w-full object-cover transition-transform hover:scale-105" />
+                <img src={g.resolved_image_url || g.image_url} alt={g.title ?? ""} className="h-48 w-full object-cover transition-transform hover:scale-105" />
               </button>
               <div className="flex items-center justify-between p-3">
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-white">{g.title}</p>
-                  <p className="text-xs text-muted">{g.category} · #{g.sortOrder}</p>
+                  <p className="text-xs text-muted">{g.category} · #{g.display_order}</p>
                 </div>
                 <div className="flex shrink-0 gap-0.5">
                   <button title="Edit image" onClick={() => { setEditingImage(g); setImageChangeDialogOpen(true); }} className="rounded-lg p-1.5 text-gold hover:bg-gold/10"><Pencil className="h-4 w-4" /></button>
                   <button title="Move up" disabled={i === 0} onClick={() => move(g, -1)} className="rounded-lg p-1.5 text-stone-400 hover:bg-panel-2 disabled:opacity-30"><ArrowUp className="h-4 w-4" /></button>
                   <button title="Move down" disabled={i === images.length - 1} onClick={() => move(g, 1)} className="rounded-lg p-1.5 text-stone-400 hover:bg-panel-2 disabled:opacity-30"><ArrowDown className="h-4 w-4" /></button>
-                  <button title={g.isFeatured ? "Unfeature" : "Feature"} onClick={() => patch.mutate({ id: g.id, body: { isFeatured: !g.isFeatured } })} className={cn("rounded-lg p-1.5 hover:bg-panel-2", g.isFeatured ? "text-gold" : "text-stone-500")}>
-                    <Star className="h-4 w-4" fill={g.isFeatured ? "currentColor" : "none"} />
+                  <button title={g.is_featured ? "Unfeature" : "Feature"} onClick={() => patch.mutate({ id: g.id, body: { is_featured: !g.is_featured } })} className={cn("rounded-lg p-1.5 hover:bg-panel-2", g.is_featured ? "text-gold" : "text-stone-500")}>
+                    <Star className="h-4 w-4" fill={g.is_featured ? "currentColor" : "none"} />
                   </button>
-                  <button title={g.isActive ? "Hide" : "Show"} onClick={() => patch.mutate({ id: g.id, body: { isActive: !g.isActive } })} className="rounded-lg p-1.5 text-stone-400 hover:bg-panel-2">
-                    {g.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                  <button title={g.is_active ? "Hide" : "Show"} onClick={() => patch.mutate({ id: g.id, body: { is_active: !g.is_active } })} className="rounded-lg p-1.5 text-stone-400 hover:bg-panel-2">
+                    {g.is_active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                   </button>
                   <button title="Delete" onClick={() => { if (confirm("Delete this image?")) remove.mutate(g.id); }} className="rounded-lg p-1.5 text-rose-400 hover:bg-rose-500/10"><Trash2 className="h-4 w-4" /></button>
                 </div>
@@ -113,7 +111,7 @@ export function GalleryView() {
       <Modal open={!!preview} onClose={() => setPreview(null)} title={preview?.title ?? "Preview"} wide>
         {preview && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview.imageUrl} alt={preview.title ?? ""} className="w-full rounded-xl object-contain" />
+          <img src={preview.resolved_image_url || preview.image_url} alt={preview.title ?? ""} className="w-full rounded-xl object-contain" />
         )}
       </Modal>
 
@@ -126,37 +124,36 @@ export function GalleryView() {
           <Field label="Category" error={form.formState.errors.category?.message}>
             <Input placeholder="Interior, Food, Drinks, Events…" {...form.register("category")} />
           </Field>
-          <Field label="Image URL" error={form.formState.errors.imageUrl?.message}>
-            <Input placeholder="https://… (storage upload URL)" {...form.register("imageUrl")} />
-          </Field>
-          {watchedUrl && !form.formState.errors.imageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={watchedUrl} alt="Preview" className="h-40 w-full rounded-xl object-cover" onError={(e) => ((e.target as HTMLImageElement).style.display = "none")} />
-          )}
-
+          {/* Canonical media selection — new gallery images must reference media_id,
+              never a raw URL. */}
           <div className="space-y-3 rounded-lg border border-edge bg-panel-2/50 p-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-stone-300">Media Library</span>
-              <Button 
-                type="button" 
+              <Button
+                type="button"
                 onClick={() => setMediaPickerOpen(true)}
                 className="text-xs"
               >
-                Select from Library
+                {form.watch("media_id") ? "Change Image" : "Select from Library"}
               </Button>
             </div>
-            {form.watch("mediaId") && (
+            {form.watch("media_id") && (
               <div className="flex items-center justify-between rounded bg-panel p-2 text-sm text-stone-300">
                 <span>✓ Media linked</span>
                 <button
                   type="button"
-                  onClick={() => form.setValue("mediaId", null)}
+                  onClick={() => form.setValue("media_id", null)}
                   className="text-rose-400 hover:text-rose-300"
                   title="Remove media"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
+            )}
+            {!form.watch("media_id") && (
+              <p className="text-xs text-muted">
+                No image selected. Click "Select from Library" to choose from the Media Library.
+              </p>
             )}
           </div>
 
@@ -173,7 +170,7 @@ export function GalleryView() {
         open={mediaPickerOpen}
         onClose={() => setMediaPickerOpen(false)}
         onSelect={(media) => {
-          form.setValue("mediaId", media.id);
+          form.setValue("media_id", media.id);
           setSelectedMedia(media);
           setMediaPickerOpen(false);
         }}
@@ -187,15 +184,17 @@ export function GalleryView() {
             setImageChangeDialogOpen(false);
             setEditingImage(null);
           }}
-          currentImageUrl={editingImage.imageUrl}
-          onSave={async (newImageUrl) => {
+          currentMediaId={editingImage.media_id}
+          currentImageUrl={editingImage.image_url}
+          onSave={async ({ media_id, image_url }) => {
             await patch.mutateAsync({
               id: editingImage.id,
-              body: { imageUrl: newImageUrl },
+              body: { media_id, image_url },
             });
           }}
           title="Change gallery image"
-          uploadBucket="media-gallery"
+          uploadCategory="gallery"
+          canonicalOnly
         />
       )}
     </div>

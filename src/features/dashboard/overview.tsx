@@ -8,7 +8,6 @@ import {
   Sparkles,
   UserRound,
   Inbox,
-  Banknote,
   Activity,
   Bell,
   Image,
@@ -45,7 +44,6 @@ interface RecentBooking {
   serviceName: string;
   bookingDate: string;
   bookingTime: string;
-  totalAmount: number;
   status: string;
 }
 
@@ -149,40 +147,17 @@ export function DashboardOverview() {
         subtitle="Everything happening at ZT Lounge Meru, at a glance."
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-5">
         <MetricCard title="Today's Bookings" value={c.todays_bookings ?? 0} icon={CalendarCheck} hint={`${c.pending_bookings ?? 0} pending overall`} />
         <MetricCard title="Total Customers" value={c.total_customers ?? 0} icon={Users} />
         <MetricCard title="Active Services" value={c.active_services ?? 0} icon={Sparkles} />
         <MetricCard title="Staff Members" value={c.staff_members ?? 0} icon={UserRound} />
         <MetricCard title="Pending Messages" value={c.pending_messages ?? 0} icon={Inbox} />
-        <MetricCard title="Monthly Revenue" value={formatKES(c.monthly_revenue)} icon={Banknote} />
       </div>
 
       <MediaLibraryCard />
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="p-5">
-          <h3 className="mb-4 text-sm font-semibold text-white">Revenue Analytics <span className="ml-1 text-xs font-normal text-muted">last 6 months</span></h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data.revenue ?? []}>
-                <defs>
-                  <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#D4AF37" stopOpacity={0.5} />
-                    <stop offset="100%" stopColor="#D4AF37" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid stroke="#242424" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="month" stroke="#6b6b6b" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#6b6b6b" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v: number | string) => `${Math.round(Number(v) / 1000)}k`} />
-                <Tooltip contentStyle={tooltipStyle} formatter={(v) => [formatKES(Number(v)), "Revenue"]} />
-                <Area type="monotone" dataKey="revenue" stroke="#D4AF37" strokeWidth={2} fill="url(#gold)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-
-        <Card className="p-5">
+      <Card className="p-5">
           <h3 className="mb-4 text-sm font-semibold text-white">Booking Trends <span className="ml-1 text-xs font-normal text-muted">last 14 days</span></h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -195,8 +170,7 @@ export function DashboardOverview() {
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </Card>
-      </div>
+      </Card>
 
       <Card className="overflow-hidden">
         <div className="border-b border-edge px-5 py-4">
@@ -215,7 +189,7 @@ export function DashboardOverview() {
                   <th className="px-5 py-3">Service</th>
                   <th className="px-5 py-3">Date</th>
                   <th className="px-5 py-3">Time</th>
-                  <th className="px-5 py-3">Amount</th>
+                  
                   <th className="px-5 py-3">Status</th>
                 </tr>
               </thead>
@@ -227,7 +201,7 @@ export function DashboardOverview() {
                     <td className="whitespace-nowrap px-5 py-3 text-stone-300">{b.serviceName ?? "—"}</td>
                     <td className="whitespace-nowrap px-5 py-3 text-stone-300">{formatDate(b.bookingDate)}</td>
                     <td className="whitespace-nowrap px-5 py-3 text-stone-300">{formatTime(b.bookingTime)}</td>
-                    <td className="whitespace-nowrap px-5 py-3">{formatKES(b.totalAmount)}</td>
+                    
                     <td className="whitespace-nowrap px-5 py-3"><Badge status={b.status}>{b.status}</Badge></td>
                   </tr>
                 ))}

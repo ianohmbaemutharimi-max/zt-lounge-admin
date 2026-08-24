@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-08-20T20:36:03.075Z",
+  "devServer": "FAIL",
+  "postCreation": null,
+  "databaseRow": null,
+  "fiveMinuteExpiry": null,
+  "pendingGet": null,
+  "acceptanceBefore": "DEFERRED",
+  "expiredRejection": "DEFERRED",
+  "teamUI": null,
+  "typecheck": null,
+  "build": null,
+  "errors": [
+    "Dev server not responding to /api/health"
+  ]
+}

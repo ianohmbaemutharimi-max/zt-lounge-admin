@@ -1,0 +1,456 @@
+Package roots found:
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\9oUpVh3_ZXl4SIeC\openhands
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\9oUpVh3_ZXl4SIeC\openhands_agent_server-1.34.0.dist-info
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\cMvkQNHHjLjQyMg_\openhands
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\cMvkQNHHjLjQyMg_\openhands_sdk-1.43.1.dist-info
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\e5S6eqWJaC8125Bv\openhands
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\e5S6eqWJaC8125Bv\openhands_sdk-1.34.0.dist-info
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\MIF_ldWEhwQ4BXda\openhands
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\MIF_ldWEhwQ4BXda\openhands_tools-1.42.1.dist-info
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\QkO4hejFIfDSlW8T\openhands
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\QkO4hejFIfDSlW8T\openhands_sdk-1.42.1.dist-info
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\rYUwLAJjCAjP0Qos\openhands
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\rYUwLAJjCAjP0Qos\openhands_agent_server-1.42.1.dist-info
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\t1qFDY1L9DXljLDC\openhands
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\t1qFDY1L9DXljLDC\openhands_ai-1.11.0.dist-info
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\t2SJVsyV5lPosomp\openhands
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\t2SJVsyV5lPosomp\openhands_workspace-1.42.1.dist-info
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\URFpK5ProTHI8rns\openhands
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\URFpK5ProTHI8rns\openhands_tools-1.34.0.dist-info
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\vqDcKJwLjPQgLQpN\openhands
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\vqDcKJwLjPQgLQpN\openhands_automation-1.8.0.dist-info
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\ZZLD-3gj1O4U6b8i\openhands
+   C:\Users\Fluxtech\AppData\Local\uv\cache\archive-v0\ZZLD-3gj1O4U6b8i\openhands_agent_server-1.43.1.dist-info
+
+Matches:
+agent_server\api.py:32: check_session_api_key,
+agent_server\api.py:334: # check_session_api_key reads config from request.app.state at request time,
+agent_server\api.py:337: Depends(check_session_api_key),
+agent_server\api.py:370: # EITHER the X-Session-API-Key header OR the workspace session cookie.
+agent_server\auth_router.py:5: be authenticated by the ``X-Session-API-Key`` header alone when the canvas
+agent_server\auth_router.py:14: continues to require the ``X-Session-API-Key`` header. This is deliberate:
+agent_server\auth_router.py:125: 401: {"description": "Missing or invalid X-Session-API-Key header"},
+agent_server\auth_router.py:131: Caller must already be authenticated by the ``X-Session-API-Key``
+agent_server\auth_router.py:136: session_api_key = request.headers.get("x-session-api-key", "")
+agent_server\auth_router.py:139: value=session_api_key,
+agent_server\config.py:22: V0_SESSION_API_KEY_ENV = "SESSION_API_KEY"
+agent_server\config.py:23: V1_SESSION_API_KEY_ENV = "OH_SESSION_API_KEYS_0"
+agent_server\config.py:30: def _default_session_api_keys():
+agent_server\config.py:33: variable. If new V1_SESSION_API_KEYS_0 environment variable exists,
+agent_server\config.py:38: session_api_key = os.getenv(V0_SESSION_API_KEY_ENV)
+agent_server\config.py:39: if session_api_key:
+agent_server\config.py:40: result.append(session_api_key)
+agent_server\config.py:48: available session_api_key - which we read from the environment.
+agent_server\config.py:51: session_api_key = os.getenv(V0_SESSION_API_KEY_ENV)
+agent_server\config.py:52: if session_api_key:
+agent_server\config.py:53: return SecretStr(session_api_key)
+agent_server\config.py:54: session_api_key = os.getenv(V1_SESSION_API_KEY_ENV)
+agent_server\config.py:55: if session_api_key:
+agent_server\config.py:56: return SecretStr(session_api_key)
+agent_server\config.py:120: session_api_keys: list[str] = Field(
+agent_server\config.py:121: default_factory=_default_session_api_keys,
+agent_server\conversation_service.py:489: session_api_key: str | None = field(default=None)
+agent_server\conversation_service.py:1233: session_api_key=self.session_api_key,
+agent_server\conversation_service.py:1296: session_api_key=(
+agent_server\conversation_service.py:1297: config.session_api_keys[0] if config.session_api_keys else None
+agent_server\conversation_service.py:1342: session_api_key=self.session_api_key,
+agent_server\conversation_service.py:1457: session_api_key: str | None = None
+agent_server\conversation_service.py:1496: if self.session_api_key:
+agent_server\conversation_service.py:1497: headers["X-Session-API-Key"] = self.session_api_key
+agent_server\conversation_service.py:1577: session_api_key: str | None = None
+agent_server\conversation_service.py:1587: if self.session_api_key:
+agent_server\conversation_service.py:1588: headers["X-Session-API-Key"] = self.session_api_key
+agent_server\dependencies.py:18: _SESSION_API_KEY_HEADER = APIKeyHeader(name="X-Session-API-Key", auto_error=False)
+agent_server\dependencies.py:24: def check_session_api_key(
+agent_server\dependencies.py:26: session_api_key: str | None = Depends(_SESSION_API_KEY_HEADER),
+agent_server\dependencies.py:30: Reads ``session_api_keys`` from ``request.app.state.config`` at request time
+agent_server\dependencies.py:35: if config.session_api_keys and session_api_key not in config.session_api_keys:
+agent_server\dependencies.py:41: header_key: str | None = Depends(_SESSION_API_KEY_HEADER),
+agent_server\dependencies.py:46: Accepts EITHER the standard ``X-Session-API-Key`` header OR the
+agent_server\dependencies.py:55: if not config.session_api_keys:
+agent_server\dependencies.py:58: if candidate and candidate in config.session_api_keys:
+agent_server\init_router.py:34: # The init endpoint uses its own header (distinct from X-Session-API-Key)
+agent_server\init_router.py:59: session_api_keys: list[str] | None = Field(
+agent_server\init_router.py:64: "X-Session-API-Key header."
+agent_server\init_router.py:71: "provided, falls back to the first session_api_key (matching the "
+agent_server\init_router.py:141: if req.session_api_keys is not None:
+agent_server\init_router.py:142: updates["session_api_keys"] = req.session_api_keys
+agent_server\init_router.py:145: elif req.session_api_keys and base.secret_key is None:
+agent_server\init_router.py:148: updates["secret_key"] = SecretStr(req.session_api_keys[0])
+agent_server\settings_router.py:116: When the server is configured with ``session_api_keys``, all endpoints
+agent_server\settings_router.py:117: under ``/api`` (including this one) require the ``X-Session-API-Key``
+agent_server\sockets.py:8: ``{"type": "auth", "session_api_key": "..."}`` as the very first WebSocket
+agent_server\sockets.py:11: 2. Query parameter ``session_api_key`` — deprecated, kept for backwards compat.
+agent_server\sockets.py:12: 3. ``X-Session-API-Key`` header — for non-browser clients.
+agent_server\sockets.py:104: def _resolve_websocket_session_api_key(
+agent_server\sockets.py:106: session_api_key: str | None,
+agent_server\sockets.py:111: 1. Query parameter (session_api_key) - for browser compatibility
+agent_server\sockets.py:112: 2. X-Session-API-Key header - for non-browser clients
+agent_server\sockets.py:116: if session_api_key is not None:
+agent_server\sockets.py:117: return session_api_key
+agent_server\sockets.py:119: header_key = websocket.headers.get("x-session-api-key")
+agent_server\sockets.py:134: session_api_key: str | None,
+agent_server\sockets.py:142: ``{"type": "auth", "session_api_key": "..."}`` as the first frame.
+agent_server\sockets.py:148: resolved_key = _resolve_websocket_session_api_key(websocket, session_api_key)
+agent_server\sockets.py:151: if not config.session_api_keys:
+agent_server\sockets.py:157: if resolved_key in config.session_api_keys:
+agent_server\sockets.py:159: "session_api_key passed via query param or header is deprecated. "
+agent_server\sockets.py:214: if data.get("session_api_key") not in config.session_api_keys:
+agent_server\sockets.py:229: session_api_key: Annotated[str | None, Query(alias="session_api_key")] = None,
+agent_server\sockets.py:264: session_api_key: Optional API key for authentication.
+agent_server\sockets.py:278: if not await _accept_authenticated_websocket(websocket, session_api_key):
+agent_server\sockets.py:381: session_api_key: Annotated[str | None, Query(alias="session_api_key")] = None,
+agent_server\sockets.py:404: session_api_key: Optional API key for authentication.
+agent_server\sockets.py:410: if not await _accept_authenticated_websocket(websocket, session_api_key):
+agent_server\vscode_service.py:238: if config.session_api_keys:
+agent_server\vscode_service.py:239: connection_token = config.session_api_keys[0]
+agent_server\openai\router.py:34: _SESSION_API_KEY_HEADER = APIKeyHeader(name="X-Session-API-Key", auto_error=False)
+agent_server\openai\router.py:43: session_api_key: str | None = Depends(_SESSION_API_KEY_HEADER),
+agent_server\openai\router.py:48: ``X-Session-API-Key`` preserves compatibility with existing agent-server
+agent_server\openai\router.py:51: ``config.session_api_keys``; this does not introduce a second credential
+agent_server\openai\router.py:59: if not config.session_api_keys:
+agent_server\openai\router.py:62: if session_api_key in config.session_api_keys:
+agent_server\openai\router.py:64: if bearer_token in config.session_api_keys:
+sdk\conversation\impl\remote_conversation.py:69: _WEBSOCKET_SESSION_API_KEY_FIELD: Final = "session_api_key"
+sdk\conversation\impl\remote_conversation.py:229: _WEBSOCKET_SESSION_API_KEY_FIELD: self.api_key,
+sdk\utils\command.py:19: _SENSITIVE_ENV_VARS = frozenset({"SESSION_API_KEY"})
+sdk\utils\command.py:32: Sensitive environment variables (e.g., ``SESSION_API_KEY``) are stripped
+sdk\utils\redact.py:293: - Authorization and X-Session-API-Key header values
+sdk\utils\redact.py:335: # X-Session-API-Key header values
+sdk\utils\redact.py:337: r"('X-Session-API-Key':\s*')[^']*(')",
+sdk\workspace\remote\remote_workspace_mixin.py:64: headers["X-Session-API-Key"] = self.api_key
+sdk\conversation\impl\remote_conversation.py:201: ws_url += f"?session_api_key={quote(self.api_key, safe='')}"
+sdk\utils\command.py:18: _SENSITIVE_ENV_VARS = frozenset({"SESSION_API_KEY"})
+sdk\utils\command.py:30: Sensitive environment variables (e.g., ``SESSION_API_KEY``) are stripped
+sdk\utils\redact.py:293: - Authorization and X-Session-API-Key header values
+sdk\utils\redact.py:333: # X-Session-API-Key header values
+sdk\utils\redact.py:335: r"('X-Session-API-Key':\s*')[^']*(')",
+sdk\workspace\remote\remote_workspace_mixin.py:64: headers["X-Session-API-Key"] = self.api_key
+sdk\conversation\impl\remote_conversation.py:69: _WEBSOCKET_SESSION_API_KEY_FIELD: Final = "session_api_key"
+sdk\conversation\impl\remote_conversation.py:229: _WEBSOCKET_SESSION_API_KEY_FIELD: self.api_key,
+sdk\utils\command.py:19: _SENSITIVE_ENV_VARS = frozenset({"SESSION_API_KEY"})
+sdk\utils\command.py:32: Sensitive environment variables (e.g., ``SESSION_API_KEY``) are stripped
+sdk\utils\redact.py:293: - Authorization and X-Session-API-Key header values
+sdk\utils\redact.py:333: # X-Session-API-Key header values
+sdk\utils\redact.py:335: r"('X-Session-API-Key':\s*')[^']*(')",
+sdk\workspace\remote\remote_workspace_mixin.py:64: headers["X-Session-API-Key"] = self.api_key
+agent_server\api.py:37: check_session_api_key,
+agent_server\api.py:419: # check_session_api_key reads config from request.app.state at request time,
+agent_server\api.py:422: Depends(check_session_api_key),
+agent_server\api.py:456: # EITHER the X-Session-API-Key header OR the workspace session cookie.
+agent_server\auth_router.py:5: be authenticated by the ``X-Session-API-Key`` header alone when the canvas
+agent_server\auth_router.py:14: continues to require the ``X-Session-API-Key`` header. This is deliberate:
+agent_server\auth_router.py:125: 401: {"description": "Missing or invalid X-Session-API-Key header"},
+agent_server\auth_router.py:131: Caller must already be authenticated by the ``X-Session-API-Key``
+agent_server\auth_router.py:136: session_api_key = request.headers.get("x-session-api-key", "")
+agent_server\auth_router.py:139: value=session_api_key,
+agent_server\config.py:22: V0_SESSION_API_KEY_ENV = "SESSION_API_KEY"
+agent_server\config.py:23: V1_SESSION_API_KEY_ENV = "OH_SESSION_API_KEYS_0"
+agent_server\config.py:32: def _default_session_api_keys():
+agent_server\config.py:35: variable. If new V1_SESSION_API_KEYS_0 environment variable exists,
+agent_server\config.py:40: session_api_key = os.getenv(V0_SESSION_API_KEY_ENV)
+agent_server\config.py:41: if session_api_key:
+agent_server\config.py:42: result.append(session_api_key)
+agent_server\config.py:50: available session_api_key - which we read from the environment.
+agent_server\config.py:53: session_api_key = os.getenv(V0_SESSION_API_KEY_ENV)
+agent_server\config.py:54: if session_api_key:
+agent_server\config.py:55: return SecretStr(session_api_key)
+agent_server\config.py:56: session_api_key = os.getenv(V1_SESSION_API_KEY_ENV)
+agent_server\config.py:57: if session_api_key:
+agent_server\config.py:58: return SecretStr(session_api_key)
+agent_server\config.py:216: session_api_keys: list[str] = Field(
+agent_server\config.py:217: default_factory=_default_session_api_keys,
+agent_server\conversation_service.py:593: session_api_key: str | None = field(default=None)
+agent_server\conversation_service.py:1820: session_api_key=self.session_api_key,
+agent_server\conversation_service.py:2027: session_api_key=(
+agent_server\conversation_service.py:2028: config.session_api_keys[0] if config.session_api_keys else None
+agent_server\conversation_service.py:2083: session_api_key=self.session_api_key,
+agent_server\conversation_service.py:2319: session_api_key: str | None = None
+agent_server\conversation_service.py:2378: if self.session_api_key:
+agent_server\conversation_service.py:2379: headers["X-Session-API-Key"] = self.session_api_key
+agent_server\conversation_service.py:2533: session_api_key: str | None = None
+agent_server\conversation_service.py:2543: if self.session_api_key:
+agent_server\conversation_service.py:2544: headers["X-Session-API-Key"] = self.session_api_key
+agent_server\dependencies.py:18: _SESSION_API_KEY_HEADER = APIKeyHeader(name="X-Session-API-Key", auto_error=False)
+agent_server\dependencies.py:24: def check_session_api_key(
+agent_server\dependencies.py:26: session_api_key: str | None = Depends(_SESSION_API_KEY_HEADER),
+agent_server\dependencies.py:30: Reads ``session_api_keys`` from ``request.app.state.config`` at request time
+agent_server\dependencies.py:35: if config.session_api_keys and session_api_key not in config.session_api_keys:
+agent_server\dependencies.py:41: header_key: str | None = Depends(_SESSION_API_KEY_HEADER),
+agent_server\dependencies.py:46: Accepts EITHER the standard ``X-Session-API-Key`` header OR the
+agent_server\dependencies.py:55: if not config.session_api_keys:
+agent_server\dependencies.py:58: if candidate and candidate in config.session_api_keys:
+agent_server\init_router.py:40: # The init endpoint uses its own header (distinct from X-Session-API-Key)
+agent_server\init_router.py:65: session_api_keys: list[str] | None = Field(
+agent_server\init_router.py:70: "X-Session-API-Key header."
+agent_server\init_router.py:77: "provided, falls back to the first session_api_key (matching the "
+agent_server\init_router.py:162: if req.session_api_keys is not None:
+agent_server\init_router.py:163: updates["session_api_keys"] = req.session_api_keys
+agent_server\init_router.py:166: elif req.session_api_keys and base.secret_key is None:
+agent_server\init_router.py:169: updates["secret_key"] = SecretStr(req.session_api_keys[0])
+agent_server\settings_router.py:124: When the server is configured with ``session_api_keys``, all endpoints
+agent_server\settings_router.py:125: under ``/api`` (including this one) require the ``X-Session-API-Key``
+agent_server\sockets.py:8: ``{"type": "auth", "session_api_key": "..."}`` as the very first WebSocket
+agent_server\sockets.py:11: 2. Query parameter ``session_api_key`` — deprecated, kept for backwards compat.
+agent_server\sockets.py:12: 3. ``X-Session-API-Key`` header — for non-browser clients.
+agent_server\sockets.py:105: def _resolve_websocket_session_api_key(
+agent_server\sockets.py:107: session_api_key: str | None,
+agent_server\sockets.py:112: 1. Query parameter (session_api_key) - for browser compatibility
+agent_server\sockets.py:113: 2. X-Session-API-Key header - for non-browser clients
+agent_server\sockets.py:117: if session_api_key is not None:
+agent_server\sockets.py:118: return session_api_key
+agent_server\sockets.py:120: header_key = websocket.headers.get("x-session-api-key")
+agent_server\sockets.py:135: session_api_key: str | None,
+agent_server\sockets.py:143: ``{"type": "auth", "session_api_key": "..."}`` as the first frame.
+agent_server\sockets.py:149: resolved_key = _resolve_websocket_session_api_key(websocket, session_api_key)
+agent_server\sockets.py:152: if not config.session_api_keys:
+agent_server\sockets.py:158: if resolved_key in config.session_api_keys:
+agent_server\sockets.py:160: "session_api_key passed via query param or header is deprecated. "
+agent_server\sockets.py:215: if data.get("session_api_key") not in config.session_api_keys:
+agent_server\sockets.py:230: session_api_key: Annotated[str | None, Query(alias="session_api_key")] = None,
+agent_server\sockets.py:265: session_api_key: Optional API key for authentication.
+agent_server\sockets.py:279: if not await _accept_authenticated_websocket(websocket, session_api_key):
+agent_server\sockets.py:389: session_api_key: Annotated[str | None, Query(alias="session_api_key")] = None,
+agent_server\sockets.py:412: session_api_key: Optional API key for authentication.
+agent_server\sockets.py:418: if not await _accept_authenticated_websocket(websocket, session_api_key):
+agent_server\sockets.py:502: and set(data) <= {"type", "session_api_key"}
+agent_server\vscode_service.py:248: if config.session_api_keys:
+agent_server\vscode_service.py:249: connection_token = config.session_api_keys[0]
+agent_server\__main__.py:33: Keys may come from the ``SESSION_API_KEY`` / ``OH_SESSION_API_KEYS_0``
+agent_server\__main__.py:48: return bool(config.session_api_keys)
+agent_server\__main__.py:221: "SESSION_API_KEY / OH_SESSION_API_KEYS_0."
+agent_server\__main__.py:290: "network. Set SESSION_API_KEY (or OH_SESSION_API_KEYS_0) to "
+agent_server\openai\router.py:34: _SESSION_API_KEY_HEADER = APIKeyHeader(name="X-Session-API-Key", auto_error=False)
+agent_server\openai\router.py:43: session_api_key: str | None = Depends(_SESSION_API_KEY_HEADER),
+agent_server\openai\router.py:48: ``X-Session-API-Key`` preserves compatibility with existing agent-server
+agent_server\openai\router.py:51: ``config.session_api_keys``; this does not introduce a second credential
+agent_server\openai\router.py:59: if not config.session_api_keys:
+agent_server\openai\router.py:62: if session_api_key in config.session_api_keys:
+agent_server\openai\router.py:64: if bearer_token in config.session_api_keys:
+app_server\app_conversation\app_conversation_models.py:207: session_api_key: str | None = Field(
+app_server\app_conversation\app_conversation_router.py:131: session_api_key: str | None
+app_server\app_conversation\app_conversation_router.py:216: session_api_key=sandbox.session_api_key,
+app_server\app_conversation\app_conversation_router.py:564: {'X-Session-API-Key': sandbox.session_api_key}
+app_server\app_conversation\app_conversation_router.py:565: if sandbox.session_api_key
+app_server\app_conversation\app_conversation_router.py:725: headers = {'X-Session-API-Key': ctx.session_api_key} if ctx.session_api_key else {}
+app_server\app_conversation\app_conversation_router.py:822: headers = {'X-Session-API-Key': ctx.session_api_key} if ctx.session_api_key else {}
+app_server\app_conversation\app_conversation_router.py:1175: api_key=sandbox.session_api_key,
+app_server\app_conversation\app_conversation_router.py:1247: headers = {'X-Session-API-Key': ctx.session_api_key} if ctx.session_api_key else {}
+app_server\app_conversation\app_conversation_router.py:1505: session_api_key=ctx.session_api_key,
+app_server\app_conversation\app_conversation_service_base.py:158: session_api_key=sandbox.session_api_key,
+app_server\app_conversation\app_conversation_service_base.py:369: session_api_key=sandbox.session_api_key,
+app_server\app_conversation\app_conversation_service_base.py:565: session_api_key="${{OH_SESSION_API_KEYS_0:-${{SESSION_API_KEY:-}}}}"
+app_server\app_conversation\app_conversation_service_base.py:573: if [ -z "$session_api_key" ] || [ -z "$base_url" ]; then
+app_server\app_conversation\app_conversation_service_base.py:579: -H "X-Session-API-Key: $session_api_key" \\
+app_server\app_conversation\app_conversation_service_base.py:766: session_api_key: str | None,
+app_server\app_conversation\app_conversation_service_base.py:775: session_api_key: Session API key for authentication
+app_server\app_conversation\app_conversation_service_base.py:780: if session_api_key is None:
+app_server\app_conversation\app_conversation_service_base.py:800: headers={'X-Session-API-Key': session_api_key},
+app_server\app_conversation\hook_loader.py:45: session_api_key: str | None,
+app_server\app_conversation\hook_loader.py:57: session_api_key: Session API key for authentication (optional)
+app_server\app_conversation\hook_loader.py:75: if session_api_key:
+app_server\app_conversation\hook_loader.py:76: headers['X-Session-API-Key'] = session_api_key
+app_server\app_conversation\hook_loader.py:105: session_api_key: str | None,
+app_server\app_conversation\hook_loader.py:120: session_api_key: Session API key for authentication (optional)
+app_server\app_conversation\hook_loader.py:129: agent_server_url, session_api_key, project_dir, httpx_client
+app_server\app_conversation\live_status_app_conversation_service.py:408: await self._seed_sandbox_profiles(agent_server_url, sandbox.session_api_key)
+app_server\app_conversation\live_status_app_conversation_service.py:430: api_key=sandbox.session_api_key,
+app_server\app_conversation\live_status_app_conversation_service.py:482: {'X-Session-API-Key': sandbox.session_api_key}
+app_server\app_conversation\live_status_app_conversation_service.py:483: if sandbox.session_api_key
+app_server\app_conversation\live_status_app_conversation_service.py:610: if sandbox.session_api_key:
+app_server\app_conversation\live_status_app_conversation_service.py:615: session_api_key=sandbox.session_api_key,
+app_server\app_conversation\live_status_app_conversation_service.py:688: if sandbox.session_api_key:
+app_server\app_conversation\live_status_app_conversation_service.py:689: headers['X-Session-API-Key'] = sandbox.session_api_key
+app_server\app_conversation\live_status_app_conversation_service.py:727: session_api_key = None
+app_server\app_conversation\live_status_app_conversation_service.py:739: session_api_key = sandbox.session_api_key
+app_server\app_conversation\live_status_app_conversation_service.py:746: session_api_key=session_api_key,
+app_server\app_conversation\live_status_app_conversation_service.py:959: self, agent_server_url: str, session_api_key: str | None
+app_server\app_conversation\live_status_app_conversation_service.py:974: headers = {'X-Session-API-Key': session_api_key} if session_api_key else {}
+app_server\app_conversation\live_status_app_conversation_service.py:1275: headers['X-Session-API-Key'] = SecretStr(mcp_api_key)
+app_server\app_conversation\live_status_app_conversation_service.py:1555: session_api_key=remote_workspace._headers.get('X-Session-API-Key'),
+app_server\app_conversation\live_status_app_conversation_service.py:2178: session_api_key: str,
+app_server\app_conversation\live_status_app_conversation_service.py:2189: session_api_key: API key for authenticating with agent server
+app_server\app_conversation\live_status_app_conversation_service.py:2237: headers={'X-Session-API-Key': session_api_key},
+app_server\app_conversation\live_status_app_conversation_service.py:2286: if sandbox.session_api_key:
+app_server\app_conversation\live_status_app_conversation_service.py:2287: headers['X-Session-API-Key'] = sandbox.session_api_key
+app_server\app_conversation\live_status_app_conversation_service.py:2493: and app_conversation.session_api_key
+app_server\app_conversation\live_status_app_conversation_service.py:2508: headers={'X-Session-API-Key': app_conversation.session_api_key},
+app_server\app_conversation\skill_loader.py:507: session_api_key: str | None,
+app_server\app_conversation\skill_loader.py:524: session_api_key: Session API key for authentication (optional)
+app_server\app_conversation\skill_loader.py:568: if session_api_key:
+app_server\app_conversation\skill_loader.py:569: headers['X-Session-API-Key'] = session_api_key
+app_server\app_lifespan\alembic\versions\006.py:1: """Add session_api_key_hash to v1_remote_sandbox table
+app_server\app_lifespan\alembic\versions\006.py:22: """Add session_api_key_hash column to v1_remote_sandbox table."""
+app_server\app_lifespan\alembic\versions\006.py:25: sa.Column('session_api_key_hash', sa.String(), nullable=True)
+app_server\app_lifespan\alembic\versions\006.py:28: 'ix_v1_remote_sandbox_session_api_key_hash',
+app_server\app_lifespan\alembic\versions\006.py:29: ['session_api_key_hash'],
+app_server\app_lifespan\alembic\versions\006.py:35: """Remove session_api_key_hash column from v1_remote_sandbox table."""
+app_server\app_lifespan\alembic\versions\006.py:37: batch_op.drop_index('ix_v1_remote_sandbox_session_api_key_hash')
+app_server\app_lifespan\alembic\versions\006.py:38: batch_op.drop_column('session_api_key_hash')
+app_server\event_callback\set_title_callback_processor.py:40: session_api_key: str | None,
+app_server\event_callback\set_title_callback_processor.py:47: session_api_key: The session API key for authentication.
+app_server\event_callback\set_title_callback_processor.py:57: 'X-Session-API-Key': session_api_key,
+app_server\event_callback\set_title_callback_processor.py:59: if session_api_key
+app_server\event_callback\set_title_callback_processor.py:129: app_conversation.session_api_key,
+app_server\event_callback\util.py:38: if not sandbox.session_api_key:
+app_server\event_callback\webhook_router.py:252: session_api_key: str = Depends(
+app_server\event_callback\webhook_router.py:253: APIKeyHeader(name='X-Session-API-Key', auto_error=False)
+app_server\event_callback\webhook_router.py:258: if not session_api_key:
+app_server\event_callback\webhook_router.py:260: status.HTTP_401_UNAUTHORIZED, detail='X-Session-API-Key header is required'
+app_server\event_callback\webhook_router.py:269: sandbox_record = await sandbox_service.get_sandbox_record_by_session_api_key(
+app_server\event_callback\webhook_router.py:270: session_api_key
+app_server\event_callback\webhook_router.py:278: # as the current user (Validated by the session_api_key they provided)
+app_server\integrations\provider.py:122: session_api_key: str | None = None,
+app_server\integrations\provider.py:142: self.session_api_key = session_api_key
+app_server\integrations\provider.py:195: {'X-Session-API-Key': self.session_api_key}
+app_server\integrations\provider.py:196: if self.session_api_key
+app_server\sandbox\docker_sandbox_service.py:31: SESSION_API_KEY_VARIABLE,
+app_server\sandbox\docker_sandbox_service.py:159: session_api_key = None
+app_server\sandbox\docker_sandbox_service.py:164: session_api_key = env.get(SESSION_API_KEY_VARIABLE)
+app_server\sandbox\docker_sandbox_service.py:181: url += f'/?tkn={session_api_key}&folder={container.attrs["Config"]["WorkingDir"]}'
+app_server\sandbox\docker_sandbox_service.py:212: url += f'/?tkn={session_api_key}&folder={container.attrs["Config"]["WorkingDir"]}'
+app_server\sandbox\docker_sandbox_service.py:233: session_api_key=session_api_key,
+app_server\sandbox\docker_sandbox_service.py:284: sandbox_info.session_api_key = None
+app_server\sandbox\docker_sandbox_service.py:342: async def get_sandbox_by_session_api_key(
+app_server\sandbox\docker_sandbox_service.py:343: self, session_api_key: str
+app_server\sandbox\docker_sandbox_service.py:356: container_session_key = env_vars.get(SESSION_API_KEY_VARIABLE)
+app_server\sandbox\docker_sandbox_service.py:358: if container_session_key == session_api_key:
+app_server\sandbox\docker_sandbox_service.py:365: async def get_sandbox_record_by_session_api_key(
+app_server\sandbox\docker_sandbox_service.py:366: self, session_api_key: str
+app_server\sandbox\docker_sandbox_service.py:376: if env_vars.get(SESSION_API_KEY_VARIABLE) == session_api_key:
+app_server\sandbox\docker_sandbox_service.py:414: session_api_key = base62.encodebytes(os.urandom(32))
+app_server\sandbox\docker_sandbox_service.py:418: env_vars[SESSION_API_KEY_VARIABLE] = session_api_key
+app_server\sandbox\process_sandbox_service.py:59: session_api_key: str
+app_server\sandbox\process_sandbox_service.py:119: session_api_key: str,
+app_server\sandbox\process_sandbox_service.py:127: env['SESSION_API_KEY'] = session_api_key
+app_server\sandbox\process_sandbox_service.py:207: session_api_key = None
+app_server\sandbox\process_sandbox_service.py:224: session_api_key = process_info.session_api_key
+app_server\sandbox\process_sandbox_service.py:235: session_api_key=session_api_key,
+app_server\sandbox\process_sandbox_service.py:284: async def get_sandbox_by_session_api_key(
+app_server\sandbox\process_sandbox_service.py:285: self, session_api_key: str
+app_server\sandbox\process_sandbox_service.py:288: # Search through all processes to find one with matching session_api_key
+app_server\sandbox\process_sandbox_service.py:290: if process_info.session_api_key == session_api_key:
+app_server\sandbox\process_sandbox_service.py:295: async def get_sandbox_record_by_session_api_key(
+app_server\sandbox\process_sandbox_service.py:296: self, session_api_key: str
+app_server\sandbox\process_sandbox_service.py:300: if process_info.session_api_key == session_api_key:
+app_server\sandbox\process_sandbox_service.py:323: session_api_key = base62.encodebytes(os.urandom(32))
+app_server\sandbox\process_sandbox_service.py:336: session_api_key=session_api_key,
+app_server\sandbox\process_sandbox_service.py:346: session_api_key=session_api_key,
+app_server\sandbox\remote_sandbox_service.py:76: def _hash_session_api_key(session_api_key: str) -> str:
+app_server\sandbox\remote_sandbox_service.py:78: return hashlib.sha256(session_api_key.encode()).hexdigest()
+app_server\sandbox\remote_sandbox_service.py:98: session_api_key_hash: Mapped[str | None] = mapped_column(
+app_server\sandbox\remote_sandbox_service.py:147: # Get session_api_key and exposed urls
+app_server\sandbox\remote_sandbox_service.py:149: session_api_key = runtime['session_api_key']
+app_server\sandbox\remote_sandbox_service.py:160: + f'?tkn={session_api_key}&folder=%2Fworkspace%2Fproject'
+app_server\sandbox\remote_sandbox_service.py:182: session_api_key = None
+app_server\sandbox\remote_sandbox_service.py:191: session_api_key=session_api_key,
+app_server\sandbox\remote_sandbox_service.py:357: async def get_sandbox_by_session_api_key(
+app_server\sandbox\remote_sandbox_service.py:358: self, session_api_key: str
+app_server\sandbox\remote_sandbox_service.py:361: session_api_key_hash = _hash_session_api_key(session_api_key)
+app_server\sandbox\remote_sandbox_service.py:365: StoredRemoteSandbox.session_api_key_hash == session_api_key_hash
+app_server\sandbox\remote_sandbox_service.py:406: async def get_sandbox_record_by_session_api_key(
+app_server\sandbox\remote_sandbox_service.py:407: self, session_api_key: str
+app_server\sandbox\remote_sandbox_service.py:410: session_api_key_hash = _hash_session_api_key(session_api_key)
+app_server\sandbox\remote_sandbox_service.py:414: StoredRemoteSandbox.session_api_key_hash == session_api_key_hash
+app_server\sandbox\remote_sandbox_service.py:488: # Store the session_api_key hash for efficient lookups
+app_server\sandbox\remote_sandbox_service.py:489: session_api_key = runtime_data.get('session_api_key')
+app_server\sandbox\remote_sandbox_service.py:490: if session_api_key:
+app_server\sandbox\remote_sandbox_service.py:491: stored_sandbox.session_api_key_hash = _hash_session_api_key(
+app_server\sandbox\remote_sandbox_service.py:492: session_api_key
+app_server\sandbox\remote_sandbox_service.py:509: session_api_key and returns it. This invalidates any previously leaked
+app_server\sandbox\remote_sandbox_service.py:529: # Security: Update stored session_api_key with the new key returned
+app_server\sandbox\remote_sandbox_service.py:532: new_session_api_key = response_data.get('session_api_key')
+app_server\sandbox\remote_sandbox_service.py:533: if new_session_api_key:
+app_server\sandbox\remote_sandbox_service.py:534: stored_sandbox.session_api_key_hash = _hash_session_api_key(
+app_server\sandbox\remote_sandbox_service.py:535: new_session_api_key
+app_server\sandbox\remote_sandbox_service.py:538: f'Updated session_api_key_hash for sandbox {sandbox_id} after resume'
+app_server\sandbox\remote_sandbox_service.py:549: Security: Clears the session_api_key_hash to invalidate any existing
+app_server\sandbox\remote_sandbox_service.py:559: stored_sandbox.session_api_key_hash = None
+app_server\sandbox\remote_sandbox_service.py:593: Security: the session_api_key_hash is invalidated UP FRONT (like
+app_server\sandbox\remote_sandbox_service.py:607: had_key = stored_sandbox.session_api_key_hash is not None
+app_server\sandbox\remote_sandbox_service.py:608: stored_sandbox.session_api_key_hash = None
+app_server\sandbox\remote_sandbox_service.py:983: conversation_url, headers={'X-Session-API-Key': runtime['session_api_key']}
+app_server\sandbox\remote_sandbox_service.py:1026: headers={'X-Session-API-Key': runtime['session_api_key']},
+app_server\sandbox\sandbox_models.py:55: session_api_key: str | None = Field(
+app_server\sandbox\sandbox_models.py:57: 'Key to access sandbox, to be added as an `X-Session-API-Key` header '
+app_server\sandbox\sandbox_models.py:60: 'the session_api_key will be None.'
+app_server\sandbox\sandbox_router.py:123: # Sandbox-scoped secrets (authenticated via X-Session-API-Key)
+app_server\sandbox\sandbox_router.py:130: session_api_key: str = Depends(
+app_server\sandbox\sandbox_router.py:131: APIKeyHeader(name='X-Session-API-Key', auto_error=False)
+app_server\sandbox\sandbox_router.py:134: """Authenticate via ``X-Session-API-Key`` and verify sandbox ownership."""
+app_server\sandbox\sandbox_router.py:135: sandbox_info = await validate_session_key(session_api_key)
+app_server\sandbox\sandbox_service.py:25: SESSION_API_KEY_VARIABLE = 'OH_SESSION_API_KEYS_0'
+app_server\sandbox\sandbox_service.py:46: async def get_sandbox_by_session_api_key(
+app_server\sandbox\sandbox_service.py:47: self, session_api_key: str
+app_server\sandbox\sandbox_service.py:52: async def get_sandbox_record_by_session_api_key(
+app_server\sandbox\sandbox_service.py:53: self, session_api_key: str
+app_server\sandbox\session_auth.py:4: ``X-Session-API-Key`` headers.  This module centralises that logic so
+app_server\sandbox\session_auth.py:37: async def validate_session_key(session_api_key: str | None) -> SandboxInfo:
+app_server\sandbox\session_auth.py:38: """Validate an ``X-Session-API-Key`` and return the associated sandbox.
+app_server\sandbox\session_auth.py:51: if not session_api_key:
+app_server\sandbox\session_auth.py:54: detail='X-Session-API-Key header is required',
+app_server\sandbox\session_auth.py:64: sandbox_info = await sandbox_service.get_sandbox_by_session_api_key(
+app_server\sandbox\session_auth.py:65: session_api_key
+app_server\sandbox\session_auth.py:105: session_api_key: str | None,
+app_server\sandbox\session_auth.py:114: session_api_key: The session API key to validate.
+app_server\sandbox\session_auth.py:120: sandbox_info = await validate_session_key(session_api_key)
+app_server\sandbox\workspace_archive.py:207: session_api_key = runtime.get('session_api_key')
+app_server\sandbox\workspace_archive.py:241: headers = {'X-Session-API-Key': session_api_key} if session_api_key else {}
+app_server\sandbox\workspace_archive.py:403: session_api_key: str | None,
+app_server\sandbox\workspace_archive.py:448: headers = {'X-Session-API-Key': session_api_key} if session_api_key else {}
+app_server\user\user_router.py:27: 'Requires a valid X-Session-API-Key header for an active sandbox '
+app_server\user\user_router.py:30: x_session_api_key: str | None = Header(default=None),
+app_server\user\user_router.py:37: await validate_session_key_ownership(user_context, x_session_api_key)
+app_server\utils\dependencies.py:9: _SESSION_API_KEY = os.getenv('SESSION_API_KEY')
+app_server\utils\dependencies.py:10: _SESSION_API_KEY_HEADER = APIKeyHeader(name='X-Session-API-Key', auto_error=False)
+app_server\utils\dependencies.py:13: def check_session_api_key(
+app_server\utils\dependencies.py:14: session_api_key: str | None = Depends(_SESSION_API_KEY_HEADER),
+app_server\utils\dependencies.py:19: if session_api_key != _SESSION_API_KEY:
+app_server\utils\dependencies.py:25: if _SESSION_API_KEY:
+app_server\utils\dependencies.py:26: result.append(Depends(check_session_api_key))
+app_server\utils\dependencies.py:28: # This merely lets the OpenAPI Docs know that an X-Session-API-Key can be
+app_server\utils\logger.py:553: ``session_api_key`` from appearing in uvicorn access logs.
+app_server\utils\logger.py:587: that sensitive query parameters (e.g. ``session_api_key``) are never
+workspace\apptainer\workspace.py:75: default_factory=lambda: ["DEBUG", "SESSION_API_KEY", "OH_SESSION_API_KEYS_0"],
+workspace\apptainer\workspace.py:211: # Apptainer inherits SESSION_API_KEY from environment by default
+workspace\apptainer\workspace.py:213: session_api_key = os.environ.get("SESSION_API_KEY")
+workspace\apptainer\workspace.py:214: object.__setattr__(self, "api_key", session_api_key)
+workspace\cloud\workspace.py:156: _session_api_key: str | None = PrivateAttr(default=None)
+workspace\cloud\workspace.py:229: ``SESSION_API_KEY``           — session key for sandbox settings auth
+workspace\cloud\workspace.py:233: Falls back to ``OH_SESSION_API_KEYS_0`` (set by the runtime)
+workspace\cloud\workspace.py:234: if ``SESSION_API_KEY`` is not present.
+workspace\cloud\workspace.py:244: self._session_api_key = os.environ.get(
+workspace\cloud\workspace.py:245: "SESSION_API_KEY", os.environ.get("OH_SESSION_API_KEYS_0")
+workspace\cloud\workspace.py:258: if not self._session_api_key:
+workspace\cloud\workspace.py:260: "SESSION_API_KEY env var not set — sandbox settings "
+workspace\cloud\workspace.py:265: # client (used by RemoteConversation) includes X-Session-API-Key.
+workspace\cloud\workspace.py:266: self.api_key = self._session_api_key
+workspace\cloud\workspace.py:297: self.api_key = self._session_api_key
+workspace\cloud\workspace.py:325: self._session_api_key = data.get("session_api_key")
+workspace\cloud\workspace.py:366: # Update session_api_key and exposed_urls from response
+workspace\cloud\workspace.py:367: self._session_api_key = sandbox.get("session_api_key")
+workspace\cloud\workspace.py:526: self._session_api_key = None
+workspace\cloud\workspace.py:545: """Headers for settings requests (SESSION_API_KEY auth)."""
+workspace\cloud\workspace.py:546: return {"X-Session-API-Key": self._session_api_key or ""}
+workspace\cloud\workspace.py:591: headers={"X-Session-API-Key": self._session_api_key or ""},
+workspace\cloud\workspace.py:669: headers={"X-Session-API-Key": self._session_api_key or ""},
+workspace\cloud\workspace.py:707: headers={"X-Session-API-Key": self._session_api_key or ""},
+workspace\cloud\workspace.py:753: """Send a request to sandbox settings endpoints (SESSION_API_KEY auth).
+workspace\cloud\workspace.py:866: if not self._sandbox_id or not self._session_api_key:
+workspace\cloud\workspace.py:969: if self._session_api_key:
+workspace\cloud\workspace.py:970: headers["X-Session-API-Key"] = self._session_api_key
+workspace\docker\workspace.py:90: default_factory=lambda: ["DEBUG", "SESSION_API_KEY", "OH_SESSION_API_KEYS_0"],
+workspace\remote_api\workspace.py:90: _session_api_key: str | None = PrivateAttr(default=None)
+workspace\remote_api\workspace.py:150: self.api_key = self._session_api_key
+workspace\remote_api\workspace.py:288: self._session_api_key = data.get("session_api_key")
+workspace\remote_api\workspace.py:412: self._session_api_key = None
+automation\auth.py:5: 2. API key via X-Session-API-Key header (matches agent-server convention,
+automation\auth.py:314: Checks Authorization: Bearer first, then X-Session-API-Key as a fallback
+automation\auth.py:328: session_key = request.headers.get("X-Session-API-Key", "").strip()
+Traceback (most recent call last):
+  File "d:\zt lounge\zt-lounge-demo\zt-lounge-admin\scripts\oh_find_auth.py", line 43, in <module>
+    print(f"{rel}:{i+1}: {line.strip()[:160]}")
+  File "C:\Users\Fluxtech\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2192' in position 56: character maps to <undefined>

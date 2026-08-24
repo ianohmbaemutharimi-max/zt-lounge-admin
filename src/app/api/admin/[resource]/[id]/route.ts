@@ -56,6 +56,44 @@ export const GET = async (req: NextRequest, ctx: any) => {
          data = resolved[0];
        }
 
+        // Special handling for business_settings: resolve logo and favicon
+        if (table === "business-settings") {
+          const mediaIds = new Set<string>();
+          if (data.logo_media_id) mediaIds.add(data.logo_media_id);
+          if (data.favicon_media_id) mediaIds.add(data.favicon_media_id);
+
+          if (mediaIds.size > 0) {
+            const { data: assets, error } = await auth.supabase
+              .from("media_assets")
+              .select("id, public_url")
+              .in("id", Array.from(mediaIds));
+
+            if (!error && assets) {
+              const mediaMap = new Map(assets.map((a: any) => [a.id, a.public_url]));
+              
+              // Resolve logo: prioritize media_assets.public_url, fallback to logo_url
+              data.resolved_logo_url = data.logo_media_id && mediaMap.has(data.logo_media_id)
+                ? mediaMap.get(data.logo_media_id)
+                : data.logo_url || null;
+              
+              // Resolve favicon: prioritize media_assets.public_url, fallback to favicon_url
+              data.resolved_favicon_url = data.favicon_media_id && mediaMap.has(data.favicon_media_id)
+                ? mediaMap.get(data.favicon_media_id)
+                : data.favicon_url || null;
+            } else {
+              // Fallback to legacy URLs on error
+              data.resolved_logo_url = data.logo_url || null;
+              data.resolved_favicon_url = data.favicon_url || null;
+            }
+          } else {
+            // No media_ids, use legacy URLs
+            data.resolved_logo_url = data.logo_url || null;
+            data.resolved_favicon_url = data.favicon_url || null;
+          }
+        }
+
+
+
        return NextResponse.json(data);
      } catch (error) {
        console.error(`[${table}] GET /${id} error:`, error);

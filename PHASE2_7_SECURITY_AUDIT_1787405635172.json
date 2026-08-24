@@ -1,0 +1,120 @@
+{
+  "timestamp": "2026-08-22T13:33:51.835Z",
+  "project": "jczwilrysvnhcjzjztbi",
+  "phases": {
+    "phase2": {
+      "note": "PostgREST does not expose pg_proc directly",
+      "findings": {
+        "function_works": true,
+        "signature_confirmed": {
+          "p_full_name": "TEXT",
+          "p_phone": "TEXT",
+          "p_booking_date": "DATE",
+          "p_start_time": "TEXT",
+          "p_guests": "INTEGER",
+          "p_email": "TEXT (optional)",
+          "p_service_slug": "TEXT",
+          "p_special_requests": "TEXT (optional)"
+        },
+        "return_structure": {
+          "booking_id": "UUID",
+          "booking_number": "TEXT",
+          "customer_id": "UUID",
+          "service_id": "UUID",
+          "booking_date": "DATE",
+          "start_time": "TIME",
+          "end_time": "TIME",
+          "guests": "INTEGER",
+          "status": "TEXT"
+        }
+      }
+    },
+    "phase7": {
+      "rls_tests": [
+        {
+          "test": "Anonymous SELECT bookings",
+          "operation": "SELECT",
+          "table": "bookings",
+          "allowed": true,
+          "data_count": 0,
+          "expected": "DENIED",
+          "result": "FAIL (allowed)"
+        },
+        {
+          "test": "Anonymous SELECT customers",
+          "operation": "SELECT",
+          "table": "customers",
+          "allowed": true,
+          "data_count": 0,
+          "expected": "DENIED",
+          "result": "FAIL (allowed)"
+        },
+        {
+          "test": "Anonymous INSERT bookings",
+          "operation": "INSERT",
+          "table": "bookings",
+          "allowed": false,
+          "error": "new row violates row-level security policy for table \"bookings\"",
+          "expected": "DENIED",
+          "result": "PASS (denied)"
+        },
+        {
+          "test": "Anonymous UPDATE bookings",
+          "operation": "UPDATE",
+          "table": "bookings",
+          "allowed": true,
+          "expected": "DENIED",
+          "result": "FAIL (allowed)"
+        },
+        {
+          "test": "Anonymous DELETE bookings",
+          "operation": "DELETE",
+          "table": "bookings",
+          "allowed": true,
+          "expected": "DENIED",
+          "result": "FAIL (allowed)"
+        },
+        {
+          "test": "Anonymous INSERT customers",
+          "operation": "INSERT",
+          "table": "customers",
+          "allowed": false,
+          "error": "new row violates row-level security policy for table \"customers\"",
+          "expected": "DENIED",
+          "result": "PASS (denied)"
+        },
+        {
+          "test": "Anonymous UPDATE customers",
+          "operation": "UPDATE",
+          "table": "customers",
+          "allowed": true,
+          "expected": "DENIED",
+          "result": "FAIL (allowed)"
+        },
+        {
+          "test": "Anonymous DELETE customers",
+          "operation": "DELETE",
+          "table": "customers",
+          "allowed": true,
+          "expected": "DENIED",
+          "result": "FAIL (allowed)"
+        },
+        {
+          "test": "Anonymous create_booking RPC",
+          "operation": "RPC EXECUTE",
+          "function": "create_booking",
+          "allowed": false,
+          "error": "The requested time slot (09:00:00) is already booked. Please choose another time.",
+          "data": null,
+          "expected": "ALLOWED (via SECURITY DEFINER)",
+          "result": "FAIL (denied)"
+        }
+      ],
+      "summary": {
+        "total_tests": 9,
+        "passed": 2,
+        "failed": 7
+      }
+    }
+  }
+}

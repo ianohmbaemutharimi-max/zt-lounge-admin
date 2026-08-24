@@ -73,9 +73,26 @@ export function BookingsView() {
 
   const save = useMutation({
     mutationFn: (values: BookingForm) => {
+      const normalizeOptionalUuid = (value?: string | null) => {
+        if (!value || value === "") return null;
+        return value;
+      };
+
+      const payload: any = {
+        booking_number: `ZT-${1000 + Date.now() % 100000}`,
+        status: "pending",
+        customer_id: normalizeOptionalUuid(values.customerId ?? editing?.customer_id),
+        service_id: values.serviceId,
+        staff_id: normalizeOptionalUuid(values.staffId),
+      };
+
+      if (values.full_name && values.full_name.trim()) payload.full_name = values.full_name.trim();
+      if (values.email && values.email.trim()) payload.email = values.email.trim();
+      if (values.phone && values.phone.trim()) payload.phone = values.phone.trim();
+
       return editing
-        ? api.update("bookings", editing.id, values)
-        : api.create("bookings", { ...values, bookingNumber: `ZT-${1000 + Date.now() % 100000}` });
+        ? api.update("bookings", editing.id, { ...values, ...payload })
+        : api.create("bookings", { ...values, ...payload });
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.bookings.all() });
@@ -85,7 +102,7 @@ export function BookingsView() {
 
   const form = useForm<BookingForm>({
     resolver: zodResolver(bookingValidationSchema) as any,
-    defaultValues: { status: "pending", guests: 2, customerId: "", serviceId: "", staffId: "", bookingDate: "", startTime: "", endTime: "" } as any,
+    defaultValues: { status: "pending", guests: 2, customerId: "", serviceId: "", staffId: "", bookingDate: "", startTime: "", endTime: "", full_name: "", email: "", phone: "" } as any,
   });
 
   function openForm(booking?: any) {
@@ -93,7 +110,7 @@ export function BookingsView() {
     form.reset(
       booking
         ? {
-            customerId: booking.customerId,
+            customerId: booking.customer_id,
             serviceId: booking.serviceId,
             staffId: booking.staffId,
             bookingDate: booking.bookingDate,
@@ -101,6 +118,9 @@ export function BookingsView() {
             endTime: booking.endTime?.slice(0, 5) || "",
             guests: booking.guests,
             status: booking.status,
+            full_name: booking.full_name || "",
+            email: booking.email || "",
+            phone: booking.phone || "",
           }
         : { 
             customerId: "", 
@@ -110,7 +130,10 @@ export function BookingsView() {
             startTime: "", 
             endTime: "", 
             guests: 2, 
-            status: "pending" 
+            status: "pending",
+            full_name: "",
+            email: "",
+            phone: ""
           }
     );
     setFormOpen(true);
@@ -299,6 +322,10 @@ export function BookingsView() {
                 <option value={0}>Select customer…</option>
                 {(customers.data ?? []).map((c: any) => <option key={c.id} value={c.id}>{c.fullName}</option>)}
               </Select>
+              <p className="text-xs text-muted mt-1">
+                New bookings start as pending with no customer linkage.
+                Select an existing customer or leave blank.
+              </p>
             </Field>
             <Field label="Service" error={form.formState.errors.serviceId?.message}>
               <Select {...form.register("serviceId")}>
@@ -326,6 +353,15 @@ export function BookingsView() {
             <div className="grid grid-cols-2 gap-3">
               <Field label="Guests" error={form.formState.errors.guests?.message}>
                 <Input type="number" min={1} max={50} {...form.register("guests")} />
+              </Field>
+              <Field label="Full Name" error={form.formState.errors.full_name?.message}>
+                <Input {...form.register("full_name")} placeholder="e.g. Alice Nkatha" />
+              </Field>
+              <Field label="Email" error={form.formState.errors.email?.message}>
+                <Input type="email" {...form.register("email")} placeholder="customer@email.com" />
+              </Field>
+              <Field label="Phone" error={form.formState.errors.phone?.message}>
+                <Input {...form.register("phone")} placeholder="+254 7XX XXX XXX" />
               </Field>
               <Field label="Status">
                 <Select {...form.register("status")}>

@@ -1,0 +1,125 @@
+{
+  "timestamp": "2026-08-22T13:40:38.706Z",
+  "project": "jczwilrysvnhcjzjztbi",
+  "phase": "PHASE 1: PRE-REMEDIATION INSPECTION",
+  "findings": {
+    "rls_status": {
+      "note": "RLS status cannot be queried directly via PostgREST",
+      "bookings_accessible": false,
+      "customers_accessible": false
+    },
+    "bookings_policies": [],
+    "customers_policies": [],
+    "bookings_grants": [],
+    "customers_grants": [],
+    "create_booking_function": null,
+    "create_booking_grants": [],
+    "roles": [
+      {
+        "id": "7fe4b84b-c770-4e4b-a4dc-87c7c57db16a",
+        "name": "super_admin",
+        "description": "System Owner"
+      },
+      {
+        "id": "d92ddefd-8935-420b-81c8-f5bff5530b02",
+        "name": "admin",
+        "description": "Business Administrator"
+      },
+      {
+        "id": "9687d7ef-5679-4fd5-99bc-f7f53d1c9843",
+        "name": "manager",
+        "description": "Manager access"
+      },
+      {
+        "id": "6cd6e3c2-ce4b-4d96-8373-1c388892eb6b",
+        "name": "receptionist",
+        "description": "Receptionist with front-desk access"
+      },
+      {
+        "id": "ace767e9-8cf4-4878-8ea5-24c160c12279",
+        "name": "staff",
+        "description": "General staff -- access scoped to assigned duties"
+      },
+      {
+        "id": "7d562660-5ab3-4706-a877-1b4d638ccc8a",
+        "name": "customer",
+        "description": "Customer with public booking access"
+      }
+    ],
+    "profiles_columns": [
+      "id",
+      "role_id",
+      "full_name",
+      "phone",
+      "avatar_url",
+      "is_active",
+      "created_at",
+      "updated_at",
+      "user_id"
+    ],
+    "bookings_sample": [
+      {
+        "id": "ad5ef796-8c0c-41a4-a760-a65e75e12168",
+        "booking_number": "ZT-55B6A1AA",
+        "status": "pending",
+        "created_at": "2026-08-22T13:31:21.397611+00:00"
+      },
+      {
+        "id": "a22bf9b1-4eb4-41d9-92fb-1991a231ddaa",
+        "booking_number": "ZT-69CD13EC",
+        "status": "pending",
+        "created_at": "2026-08-22T13:23:32.657407+00:00"
+      },
+      {
+        "id": "3739e3de-d840-4561-93da-6d997b264fca",
+        "booking_number": "ZT-96424AFD",
+        "status": "confirmed",
+        "created_at": "2026-08-22T12:15:24.77952+00:00"
+      },
+      {
+        "id": "5c383744-4397-41f4-915c-f5a769ca3946",
+        "booking_number": "ZT-895F027B",
+        "status": "pending",
+        "created_at": "2026-08-22T12:10:32.48935+00:00"
+      },
+      {
+        "id": "e968b6f1-701c-4d86-b13d-b8736fe7d915",
+        "booking_number": "ZT-A6724165",
+        "status": "pending",
+        "created_at": "2026-08-22T12:10:32.125507+00:00"
+      }
+    ],
+    "customers_sample": [
+      {
+        "id": "7a43c712-c989-42f2-ae94-fa0502d83164",
+        "full_name": "Test Investigation 3",
+        "phone": "+254705481150",
+        "created_at": "2026-08-22T13:31:21.397611+00:00"
+      },
+      {
+        "id": "b3d9a018-63ee-472d-9f79-f338a866c42d",
+        "full_name": "RLS Verification Test",
+        "phone": "+254705012450",
+        "created_at": "2026-08-22T13:23:32.657407+00:00"
+      },
+      {
+        "id": "2c7d77cd-a0ab-451f-bbf6-20c877a52f81",
+        "full_name": "Hacker",
+        "phone": "+254700000999",
+        "created_at": "2026-08-22T13:23:31.615413+00:00"
+      },
+      {
+        "id": "82bdcc38-87fb-4b0b-a379-98e56fae4b57",
+        "full_name": "LIFECYCLE_TEST_1787400924678",
+        "phone": "+254700924678",
+        "created_at": "2026-08-22T12:15:24.77952+00:00"
+      },
+      {
+        "id": "38c3880e-f05d-4499-9ea3-86dc6f328cd6",
+        "full_name": "TEST_BOOKING_1787400632095",
+        "phone": "+254700632095",
+        "created_at": "2026-08-22T12:10:32.125507+00:00"
+      }
+    ]
+  }
+}

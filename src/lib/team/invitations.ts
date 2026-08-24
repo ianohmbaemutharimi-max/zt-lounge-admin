@@ -11,6 +11,7 @@
 
 import { createHash, randomBytes } from "crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 // RBAC hierarchy: who can invite whom
 const INVITE_PERMISSIONS: Record<string, string[]> = {
@@ -53,7 +54,12 @@ export function canInviteRole(currentUserRole: string, targetRole: string): bool
 /**
  * Check if email already exists in active accounts or accepted invitations
  * 
- * Uses auth.users for active accounts (authoritative source)
+ * Uses auth.users for active accounts (authoritative source) — reached via the
+ * GoTrue Admin API because `auth.users` is NOT exposed through PostgREST
+ * (.from("auth.users") fails with PGRST205 in every client, service role
+ * included) and auth.admin.getUserByEmail is not available in this
+ * supabase-js version. `listUsers()` + case-insensitive email match is the
+ * established pattern used elsewhere in this codebase.
  * Uses invitations table for accepted invitations (users who completed onboarding)
  */
 export async function emailExists(
@@ -61,17 +67,27 @@ export async function emailExists(
   email: string
 ): Promise<boolean> {
   const normalizedEmail = normalizeEmail(email);
-  
-  // Check if email exists in auth.users (active account)
-  // Note: This requires service role key to access auth.users
-  const { data: authUsers, error: authError } = await supabase
-    .from("auth.users")
-    .select("id", { count: "exact" })
-    .ilike("email", normalizedEmail)
-    .limit(1);
 
-  if (authUsers && authUsers.length > 0) {
-    return true;
+  // Check if email exists in auth.users (active account)
+  try {
+    const admin = await getSupabaseAdmin();
+    const { data, error } = await admin.auth.admin.listUsers();
+
+    if (error) {
+      console.error("[emailExists] auth.users lookup failed:", error.message);
+    } else {
+      const activeUsers = data?.users || [];
+      const hasAccount = activeUsers.some(
+        (user) => user.email != null && normalizeEmail(user.email) === normalizedEmail
+      );
+      if (hasAccount) {
+        return true;
+      }
+    }
+  } catch (err) {
+    console.error("[emailExists] auth.users lookup threw:", err);
+    // Fall through to invitation-only check; never block invitation creation
+    // because of an admin API failure.
   }
 
   // Check if email has an accepted invitation (already completed onboarding)
@@ -141,6 +157,8 @@ export async function createInvitation(
   const normalizedEmail = normalizeEmail(email);
   const token = generateInvitationToken();
   const tokenHash = hashToken(token);
+  
+  // Calculate expiration date
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + expirationDays);
 

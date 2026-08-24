@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-08-21T11:33:46.379Z",
+  "filesModified": [
+    "assets/js/repositories/BusinessRepository.js",
+    "assets/js/business-config.js"
+  ],
+  "changes": [
+    {
+      "file": "assets/js/repositories/BusinessRepository.js",
+      "changes": [
+        "Added resolveMediaId() function",
+        "Added logo_media_id, favicon_media_id to mapToUI()",
+        "Integrated media resolution into getAll()",
+        "Fallback chain: media_id → legacy_url → static"
+      ]
+    },
+    {
+      "file": "assets/js/business-config.js",
+      "changes": [
+        "Converted from static object to dynamic loader",
+        "Fetches from BusinessRepository (CMS-backed)",
+        "Auto-initializes on DOMContentLoaded",
+        "Updates favicon dynamically",
+        "Triple fallback: CMS → legacy → static",
+        "Emits \"business-config-loaded\" event"
+      ]
+    }
+  ],
+  "logoFlow": [
+    "business_settings.logo_media_id",
+    "media_assets.public_url",
+    "business_settings.logo_url",
+    "Static fallback"
+  ],
+  "faviconFlow": [
+    "business_settings.favicon_media_id",
+    "media_assets.public_url",
+    "business_settings.favicon_url",
+    "Static fallback"
+  ],
+  "status": "COMPLETE"
+}

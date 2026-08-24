@@ -1,0 +1,53 @@
+{
+  "findings": [
+    {
+      "area": "Supabase Client",
+      "current": "Initialized with anon key, business_settings table configured",
+      "finding": "PUBLIC anon key used (correct for browser)",
+      "required": "None - properly configured"
+    },
+    {
+      "area": "BusinessRepository",
+      "current": "Fetches business_settings.logo_url",
+      "finding": "Missing logo_media_id and favicon_media_id fields",
+      "required": "Add media_id fields to mapToUI(), add media resolution"
+    },
+    {
+      "area": "BusinessConfig",
+      "current": "Static object with hardcoded logo URLs",
+      "finding": "Logo changes in CMS do not reflect on website",
+      "required": "Transform to dynamic loader using BusinessRepository"
+    },
+    {
+      "area": "Logo Consumers",
+      "current": "Multiple files reference BusinessConfig.logo",
+      "finding": "All consumers depend on static BusinessConfig",
+      "required": "Keep BusinessConfig as interface, make it dynamic"
+    },
+    {
+      "area": "Database Schema",
+      "current": "business_settings has logo_media_id, favicon_media_id; media_assets exists",
+      "finding": "Public website can safely query these fields",
+      "required": "None - schema is correct"
+    },
+    {
+      "area": "Asset URL Utility",
+      "current": "Exists for Storage URL generation",
+      "finding": "No media_id resolution",
+      "required": "Add media resolution function"
+    },
+    {
+      "area": "Initialization",
+      "current": "Scripts load in sequence, BusinessConfig loaded early",
+      "finding": "Static config loads before any database queries",
+      "required": "Defer BusinessConfig init, integrate with BusinessRepository"
+    },
+    {
+      "area": "Favicon",
+      "current": "Static <link rel=\"icon\"> in HTML",
+      "finding": "Not CMS-managed, hardcoded href",
+      "required": "Inject favicon dynamically after fetching business_settings"
+    }
+  ],
+  "timestamp": "2026-08-21T11:31:48.864Z"
+}

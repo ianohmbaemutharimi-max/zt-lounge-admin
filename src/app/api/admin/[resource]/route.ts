@@ -92,19 +92,41 @@ export const GET = async (req: NextRequest, context: { params: Promise<{ resourc
          }
        }
 
-       const result = await repo.findAll(resource, {
-         limit: validatedLimit,
-         offset: validatedOffset,
-         orderBy: orderBy ? { column: orderBy, ascending: url.searchParams.get("ascending") !== "false" } : undefined,
-         search: search ?? undefined,
-         searchFields: searchFieldsParam ? searchFieldsParam.split(",") : undefined,
-         filters,
-       });
+const result = await repo.findAll(resource, {
+          limit: validatedLimit,
+          offset: validatedOffset,
+          orderBy: orderBy ? { column: orderBy, ascending: url.searchParams.get("ascending") !== "false" } : undefined,
+          search: search ?? undefined,
+          searchFields: searchFieldsParam ? searchFieldsParam.split(",") : undefined,
+          filters,
+        });
 
-        // Resolve media URLs for resources that support media_id
-        const MEDIA_RESOURCES = new Set(["menu-items", "services", "gallery", "hero-slides"]);
-        let data = result.data ?? [];
-        if (MEDIA_RESOURCES.has(resource) && data.length > 0) {
+        // Build totalVisits per-customer for customers resource
+        // source is preserved from the database; do not recalculate origin based on current bookings
+        let processedData = result.data ?? [];
+        if (resource === "customers" && auth.supabase) {
+          const { data: allBookings, error } = await auth.supabase
+            .from("bookings")
+            .select("customerId, status")
+            .in("status", ["confirmed", "completed"]);
+          const countsMap: Record<string, number> = {};
+          if (!error && allBookings) {
+            for (const b of allBookings) {
+              countsMap[b.customerId] = (countsMap[b.customerId] ?? 0) + 1;
+            }
+          }
+          processedData = result.data?.map((customer: any) => ({
+            ...customer,
+            totalVisits: countsMap[customer.id] ?? 0,
+          })) ?? [];
+        } else {
+          processedData = result.data ?? [];
+        }
+
+         // Resolve media URLs for resources that support media_id
+         const MEDIA_RESOURCES = new Set(["menu-items", "services", "gallery", "hero-slides"]);
+         let data = processedData ?? [];
+         if (MEDIA_RESOURCES.has(resource) && data.length > 0) {
           try {
             data = await resolveImageUrls(auth.supabase as any, data);
           } catch (resolveError) {
@@ -113,7 +135,10 @@ export const GET = async (req: NextRequest, context: { params: Promise<{ resourc
           }
         }
 
-        return NextResponse.json(data, {
+        return NextResponse.json({
+          data,
+          pagination: result.pagination,
+        }, {
           headers: {
             "X-Total-Count": String(result.pagination?.total ?? 0),
             "X-Page": String(result.pagination?.page ?? 1),

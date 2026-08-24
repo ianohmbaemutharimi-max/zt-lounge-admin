@@ -6,16 +6,21 @@ import { X, AlertCircle, Image as ImageIcon, Loader } from "lucide-react";
 import { Modal, Button, Input, Field, Spinner } from "@/components/ui";
 import { MediaPickerModal } from "./media-picker-modal";
 import type { SelectableMediaAsset } from "@/types/media";
+import type { ImageCategory } from "@/lib/storage/paths";
 import { cn } from "@/lib/utils";
 
 export interface ImageChangeDialogProps {
   open: boolean;
   onClose: () => void;
+  currentMediaId?: string | null;
   currentImageUrl?: string | null;
-  onSave: (imageUrl: string | null) => Promise<void>;
+  onSave: (result: { media_id: string | null; image_url: string | null }) => Promise<void>;
   title?: string;
-  uploadBucket?: string;
+  /** Canonical upload category validated by /api/admin/upload (hero|gallery|menu|services|testimonials|branding) */
+  uploadCategory: ImageCategory;
   allowRemove?: boolean;
+  /** When true, hides the URL paste option (canonical mode) */
+  canonicalOnly?: boolean;
 }
 
 type EditMode = "browse" | "upload" | "link";
@@ -23,11 +28,13 @@ type EditMode = "browse" | "upload" | "link";
 export function ImageChangeDialog({
   open,
   onClose,
+  currentMediaId,
   currentImageUrl,
   onSave,
   title = "Change image",
-  uploadBucket = "media-content",
+  uploadCategory,
   allowRemove = true,
+  canonicalOnly = false,
 }: ImageChangeDialogProps) {
   const qc = useQueryClient();
   const [selectedImage, setSelectedImage] = useState<SelectableMediaAsset | null>(null);
@@ -52,13 +59,13 @@ export function ImageChangeDialog({
     }
   }, [open, currentImageUrl]);
 
-  // Save mutation
+    // Save mutation
   const saveMutation = useMutation({
-    mutationFn: async (imageUrl: string | null) => {
-      await onSave(imageUrl);
+    mutationFn: async ({ media_id, image_url }: { media_id: string | null; image_url: string | null }) => {
+      await onSave({ media_id, image_url });
     },
     onSuccess: () => {
-      qc.invalidateQueries(); // Invalidate all queries to refresh data
+      qc.invalidateQueries();
       onClose();
     },
   });
@@ -68,11 +75,11 @@ export function ImageChangeDialog({
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("bucket", uploadBucket);
+      formData.append("category", uploadCategory);
 
       const xhr = new XMLHttpRequest();
 
-      return new Promise<string>((resolve, reject) => {
+      return new Promise<{ media_id: string; public_url: string }>((resolve, reject) => {
         xhr.upload.addEventListener("progress", (e) => {
           if (e.lengthComputable) {
             setUploadProgress(Math.round((e.loaded / e.total) * 100));
@@ -80,10 +87,14 @@ export function ImageChangeDialog({
         });
 
         xhr.addEventListener("load", () => {
-          if (xhr.status === 200) {
+          if (xhr.status === 200 || xhr.status === 201) {
             try {
               const response = JSON.parse(xhr.responseText);
-              resolve(response.url);
+              // Return both media_id and public_url for canonical handling
+              resolve({
+                media_id: response.data.id,
+                public_url: response.data.publicUrl
+              });
             } catch (e) {
               reject(new Error("Invalid response"));
             }
@@ -100,8 +111,9 @@ export function ImageChangeDialog({
         xhr.send(formData);
       });
     },
-    onSuccess: (url) => {
-      setPreviewUrl(url);
+    onSuccess: (result) => {
+      setSelectedImage({ id: result.media_id, public_url: result.public_url } as SelectableMediaAsset);
+      setPreviewUrl(result.public_url);
       setUploadedFile(null);
       setUploadProgress(0);
       setMode("browse");
@@ -114,6 +126,7 @@ export function ImageChangeDialog({
     setMediaPickerOpen(false);
   }, []);
 
+  // Handle legacy URL fallback for backwards compatibility
   const handleLinkPaste = useCallback(() => {
     setLinkError("");
     
@@ -125,8 +138,11 @@ export function ImageChangeDialog({
     // Simple URL validation
     try {
       new URL(linkUrl);
+      // Legacy support: store URL only, media_id remains null
       setPreviewUrl(linkUrl);
       setLinkUrl("");
+      setSelectedImage(null);
+      setMediaPickerOpen(false);
       setMode("browse");
     } catch {
       setLinkError("Please enter a valid image link (must start with http:// or https://)");
@@ -161,8 +177,11 @@ export function ImageChangeDialog({
   }, []);
 
   const handleSave = useCallback(() => {
-    saveMutation.mutate(previewUrl);
-  }, [previewUrl, saveMutation]);
+    saveMutation.mutate({
+      media_id: selectedImage?.id ?? null,
+      image_url: previewUrl && !selectedImage ? previewUrl : null
+    });
+  }, [previewUrl, saveMutation, selectedImage]);
 
   const isLoading = saveMutation.isPending || uploadMutation.isPending;
 
@@ -218,19 +237,21 @@ export function ImageChangeDialog({
                   : "text-stone-400 hover:text-stone-300"
               )}
             >
-              Upload image
+                            Upload image
             </button>
-            <button
-              onClick={() => setMode("link")}
-              className={cn(
-                "flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                mode === "link"
-                  ? "bg-gold/15 text-gold"
-                  : "text-stone-400 hover:text-stone-300"
-              )}
-            >
-              Paste image link
-            </button>
+            {!canonicalOnly && (
+              <button
+                onClick={() => setMode("link")}
+                className={cn(
+                  "flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  mode === "link"
+                    ? "bg-gold/15 text-gold"
+                    : "text-stone-400 hover:text-stone-300"
+                )}
+              >
+                Paste image link
+              </button>
+            )}
           </div>
 
           {/* Browse mode */}

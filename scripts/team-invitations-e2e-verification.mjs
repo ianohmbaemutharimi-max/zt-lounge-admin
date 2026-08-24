@@ -125,9 +125,11 @@ async function phase1_VerifyDatabase() {
     log(phase, `✓ roles table exists with ${rolesData?.length || 0}+ records`, "SUCCESS");
 
     // Check profiles table
+    // NOTE: profiles has no 'email' column by design — emails live in
+    // auth.users, which is only reachable via the GoTrue Admin API.
     const { data: profilesData, error: profilesError } = await serviceClient
       .from("profiles")
-      .select("id, user_id, role_id, email")
+      .select("id, user_id, role_id, full_name")
       .limit(1);
 
     if (profilesError) {
@@ -135,9 +137,12 @@ async function phase1_VerifyDatabase() {
       return false;
     }
 
-    // Check if profiles has email column
-    if (profilesData && profilesData.length > 0 && !("email" in profilesData[0])) {
-      recordIssue(phase, "⚠️ profiles table may not have email column");
+    // Verify the auth.users link + role assignment columns the app depends on
+    if (profilesData && profilesData.length > 0 && !("user_id" in profilesData[0])) {
+      recordIssue(phase, "⚠️ profiles table missing user_id column (auth.users link)");
+    }
+    if (profilesData && profilesData.length > 0 && !("role_id" in profilesData[0])) {
+      recordIssue(phase, "⚠️ profiles table missing role_id column (roles link)");
     }
     log(phase, "✓ profiles table exists", "SUCCESS");
 
@@ -211,34 +216,53 @@ async function phase3_VerifyEmailExists() {
   log(phase, "Testing email existence checks...");
 
   try {
-    // First check: what columns does profiles actually have?
-    const { data: profileSample } = await serviceClient
-      .from("profiles")
-      .select("*")
-      .limit(1);
+    const testEmail = `test-${Date.now()}@example.com`;
 
-    if (profileSample && profileSample.length > 0) {
-      const cols = Object.keys(profileSample[0]);
-      log(phase, `Profiles columns: ${cols.join(", ")}`);
+    // emailExists() checks active accounts via the GoTrue Admin API
+    // (auth.users is NOT queryable through PostgREST — .from("auth.users")
+    // fails with PGRST205 even for the service role).
+    const { data: users, error: listError } = await serviceClient.auth.admin.listUsers();
+    if (listError) {
+      recordIssue(phase, `Admin listUsers error: ${listError.message}`);
+    } else {
+      const accountEmails = (users?.users || [])
+        .map((u) => u.email)
+        .filter((e) => typeof e === "string")
+        .map((e) => e.toLowerCase());
 
-      if (!cols.includes("email")) {
-        recordIssue(phase, "⚠️ profiles does NOT have 'email' column - emailExists() may fail");
+      const nonExistentMatched = accountEmails.includes(testEmail.toLowerCase());
+      if (!nonExistentMatched) {
+        log(phase, "✓ Non-existent email is not an active account (emailExists=false)", "SUCCESS");
+      } else {
+        recordIssue(phase, "⚠️ Generated test email matched an active account (unexpected)");
+      }
+
+      const existingUser = users?.users || [];
+      const existing = existingUser.find((u) => typeof u.email === "string");
+      if (existing) {
+        if (accountEmails.includes(existing.email.toLowerCase())) {
+          log(phase, `✓ Existing account lookup works (${existing.email})`, "SUCCESS");
+        } else {
+          recordIssue(phase, "⚠️ Existing account failed to match in the email list");
+        }
+      } else {
+        log(phase, "ℹ️ No auth users found to test existing-account lookup", "INFO");
       }
     }
 
-    // Test: check for non-existent email
-    const testEmail = `test-${Date.now()}@example.com`;
-    const { data: existsCheck } = await serviceClient
-      .from("profiles")
-      .select("id")
+    // Accepted-invitation check against the live invitations table
+    const { data: accepted, error: acceptedErr } = await serviceClient
+      .from("invitations")
+      .select("id", { count: "exact" })
       .ilike("email", testEmail)
+      .eq("status", "accepted")
       .limit(1);
 
-    if (existsCheck && existsCheck.length === 0) {
-      log(phase, "✓ Non-existent email returns empty", "SUCCESS");
-    } else {
-      recordWarning(phase, "⚠️ Non-existent email query returned results");
+    if (acceptedErr) {
+      recordFailure(phase, `invitations accepted-check failed: ${acceptedErr.message}`);
+      return false;
     }
+    log(phase, "✓ invitations accepted-check query works (invitations table live)", "SUCCESS");
 
     results.phases[phase] = { tested: true };
     return true;

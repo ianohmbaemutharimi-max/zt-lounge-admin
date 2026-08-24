@@ -10,7 +10,7 @@ export default function ServicesPage() {
       itemResource="services"
       categoryResource="service-categories"
       itemLabel="Service"
-      activeField="isActive"
+      activeField="is_active"
       showDuration
     />
   );

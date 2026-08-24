@@ -34,8 +34,10 @@ export function formatTime(value: string | null | undefined) {
   return `${h12}:${m} ${suffix}`;
 }
 
-export function timeAgo(value: string | Date) {
+export function timeAgo(value: string | Date | null | undefined) {
+  if (!value) return "—";
   const d = typeof value === "string" ? new Date(value) : value;
+  if (Number.isNaN(d.getTime())) return "—";
   const secs = Math.floor((Date.now() - d.getTime()) / 1000);
   if (secs < 60) return "just now";
   const mins = Math.floor(secs / 60);

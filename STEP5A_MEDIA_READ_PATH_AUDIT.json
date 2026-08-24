@@ -1,0 +1,234 @@
+{
+  "timestamp": "2026-08-20T12:26:30.000Z",
+  "summary": {
+    "totalFilesScanned": 25,
+    "affectedFiles": 6,
+    "existingResolvers": [
+      {
+        "file": "src/lib/media/resolver.ts",
+        "exists": true,
+        "functions": [
+          "resolveImageUrl",
+          "resolveImageUrls"
+        ],
+        "supportsMediaId": true,
+        "supportsFallback": true,
+        "capabilities": [
+          "media_id resolution",
+          "image_url fallback",
+          "media_assets lookup",
+          "URL resolution"
+        ]
+      }
+    ],
+    "apiRoutes": [
+      {
+        "file": "/src/app/api/admin/[resource]/route.ts",
+        "type": "api",
+        "currentBehavior": "unknown",
+        "usesImageUrl": false,
+        "usesMediaId": true,
+        "hasMediaJoin": false,
+        "selectsMediaId": false,
+        "selectsImageUrl": false,
+        "hasTransform": false,
+        "affectsTestimonials": true,
+        "riskLevel": "EXCLUDED",
+        "requiredChange": "NONE - testimonials must not be modified",
+        "implementationOrder": 999
+      },
+      {
+        "file": "/src/app/api/admin/[resource]/[id]/route.ts",
+        "type": "api",
+        "currentBehavior": "unknown",
+        "usesImageUrl": false,
+        "usesMediaId": true,
+        "hasMediaJoin": false,
+        "selectsMediaId": false,
+        "selectsImageUrl": false,
+        "hasTransform": false,
+        "affectsTestimonials": true,
+        "riskLevel": "EXCLUDED",
+        "requiredChange": "NONE - testimonials must not be modified",
+        "implementationOrder": 999
+      },
+      {
+        "file": "/src/lib/repository.ts",
+        "type": "api",
+        "currentBehavior": "References image_url but selection unclear",
+        "usesImageUrl": true,
+        "usesMediaId": true,
+        "hasMediaJoin": true,
+        "selectsMediaId": false,
+        "selectsImageUrl": false,
+        "hasTransform": true,
+        "affectsTestimonials": true,
+        "riskLevel": "EXCLUDED",
+        "requiredChange": "NONE - testimonials must not be modified",
+        "implementationOrder": 999
+      }
+    ],
+    "components": [
+      {
+        "file": "/src/features/cms/website-cms.tsx",
+        "type": "component",
+        "currentBehavior": "Reads image_url and renders directly",
+        "readsImageUrl": true,
+        "readsMediaId": true,
+        "rendersImage": true,
+        "usesResolver": false,
+        "constructsStorageUrl": false,
+        "affectsTestimonials": false,
+        "isPublicWebsite": false,
+        "riskLevel": "MEDIUM",
+        "requiredChange": "Add resolver to support media_id → URL",
+        "implementationOrder": 3
+      },
+      {
+        "file": "/src/features/gallery/gallery-view.tsx",
+        "type": "component",
+        "currentBehavior": "Reads image_url and renders directly",
+        "readsImageUrl": true,
+        "readsMediaId": true,
+        "rendersImage": true,
+        "usesResolver": false,
+        "constructsStorageUrl": false,
+        "affectsTestimonials": false,
+        "isPublicWebsite": false,
+        "riskLevel": "MEDIUM",
+        "requiredChange": "Add resolver to support media_id → URL",
+        "implementationOrder": 3
+      },
+      {
+        "file": "/src/features/services/catalog-manager.tsx",
+        "type": "component",
+        "currentBehavior": "Reads image_url and renders directly",
+        "readsImageUrl": true,
+        "readsMediaId": true,
+        "rendersImage": true,
+        "usesResolver": false,
+        "constructsStorageUrl": false,
+        "affectsTestimonials": false,
+        "isPublicWebsite": false,
+        "riskLevel": "MEDIUM",
+        "requiredChange": "Add resolver to support media_id → URL",
+        "implementationOrder": 3
+      }
+    ],
+    "publicWebsitePaths": [],
+    "duplicateResolutionLogic": [
+      {
+        "file": "/src/app/api/admin/[resource]/route.ts",
+        "patterns": [
+          "getImageUrl|resolveImage|resolveMedia"
+        ]
+      },
+      {
+        "file": "/src/app/api/admin/[resource]/[id]/route.ts",
+        "patterns": [
+          "getImageUrl|resolveImage|resolveMedia"
+        ]
+      },
+      {
+        "file": "/src/lib/repository.ts",
+        "patterns": [
+          "media_assets.*public_url"
+        ]
+      }
+    ],
+    "testimonialsChecked": true,
+    "testimonialsUntouched": true
+  },
+  "readPaths": [
+    {
+      "file": "/src/features/cms/website-cms.tsx",
+      "type": "component",
+      "currentBehavior": "Reads image_url and renders directly",
+      "readsImageUrl": true,
+      "readsMediaId": true,
+      "rendersImage": true,
+      "usesResolver": false,
+      "constructsStorageUrl": false,
+      "affectsTestimonials": false,
+      "isPublicWebsite": false,
+      "riskLevel": "MEDIUM",
+      "requiredChange": "Add resolver to support media_id → URL",
+      "implementationOrder": 3
+    },
+    {
+      "file": "/src/features/gallery/gallery-view.tsx",
+      "type": "component",
+      "currentBehavior": "Reads image_url and renders directly",
+      "readsImageUrl": true,
+      "readsMediaId": true,
+      "rendersImage": true,
+      "usesResolver": false,
+      "constructsStorageUrl": false,
+      "affectsTestimonials": false,
+      "isPublicWebsite": false,
+      "riskLevel": "MEDIUM",
+      "requiredChange": "Add resolver to support media_id → URL",
+      "implementationOrder": 3
+    },
+    {
+      "file": "/src/features/services/catalog-manager.tsx",
+      "type": "component",
+      "currentBehavior": "Reads image_url and renders directly",
+      "readsImageUrl": true,
+      "readsMediaId": true,
+      "rendersImage": true,
+      "usesResolver": false,
+      "constructsStorageUrl": false,
+      "affectsTestimonials": false,
+      "isPublicWebsite": false,
+      "riskLevel": "MEDIUM",
+      "requiredChange": "Add resolver to support media_id → URL",
+      "implementationOrder": 3
+    },
+    {
+      "file": "/src/app/api/admin/[resource]/route.ts",
+      "type": "api",
+      "currentBehavior": "unknown",
+      "usesImageUrl": false,
+      "usesMediaId": true,
+      "hasMediaJoin": false,
+      "selectsMediaId": false,
+      "selectsImageUrl": false,
+      "hasTransform": false,
+      "affectsTestimonials": true,
+      "riskLevel": "EXCLUDED",
+      "requiredChange": "NONE - testimonials must not be modified",
+      "implementationOrder": 999
+    },
+    {
+      "file": "/src/app/api/admin/[resource]/[id]/route.ts",
+      "type": "api",
+      "currentBehavior": "unknown",
+      "usesImageUrl": false,
+      "usesMediaId": true,
+      "hasMediaJoin": false,
+      "selectsMediaId": false,
+      "selectsImageUrl": false,
+      "hasTransform": false,
+      "affectsTestimonials": true,
+      "riskLevel": "EXCLUDED",
+      "requiredChange": "NONE - testimonials must not be modified",
+      "implementationOrder": 999
+    },
+    {
+      "file": "/src/lib/repository.ts",
+      "type": "api",
+      "currentBehavior": "References image_url but selection unclear",
+      "usesImageUrl": true,
+      "usesMediaId": true,
+      "hasMediaJoin": true,
+      "selectsMediaId": false,
+      "selectsImageUrl": false,
+      "hasTransform": true,
+      "affectsTestimonials": true,
+      "riskLevel": "EXCLUDED",
+      "requiredChange": "NONE - testimonials must not be modified",
+      "implementationOrder": 999
+    }
+  ]
+}

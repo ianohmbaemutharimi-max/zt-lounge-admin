@@ -56,9 +56,19 @@ export function isEndTimeAfterStart(startTime: string, endTime: string): boolean
 
 export const bookingValidationSchema = z
   .object({
-    customerId: z.string().uuid("Customer ID must be a valid UUID"),
+    customerId: z
+      .string()
+      .uuid("Customer ID must be a valid UUID")
+      .nullable()
+      .optional()
+      .or(z.literal("")),
     serviceId: z.string().uuid("Service ID must be a valid UUID"),
-    staffId: z.string().uuid("Staff ID must be a valid UUID"),
+    staffId: z
+      .string()
+      .uuid("Staff ID must be a valid UUID")
+      .nullable()
+      .optional()
+      .or(z.literal("")),
     bookingDate: z
       .string()
       .min(1, "Booking date is required")
@@ -79,6 +89,9 @@ export const bookingValidationSchema = z
     status: z.enum(["pending", "confirmed", "completed", "cancelled", "no_show"], {
       message: "Invalid booking status",
     }),
+    full_name: z.string().min(2, "Full name is required").optional().or(z.literal("")),
+    email: z.string().email("Invalid email").or(z.literal("")),
+    phone: z.string().min(7, "Phone is required").optional().or(z.literal("")),
     specialRequests: z.string().optional(),
     cancellationReason: z.string().optional(),
     internalNotes: z.string().optional(),

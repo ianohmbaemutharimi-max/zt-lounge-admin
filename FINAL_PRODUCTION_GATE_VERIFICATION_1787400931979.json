@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-08-22T12:15:19.126Z",
+  "project": "jczwilrysvnhcjzjztbi",
+  "gates": {
+    "gate1_security": {
+      "anonymous_select_bookings_blocked": false,
+      "anonymous_select_customers_blocked": false,
+      "anonymous_insert_blocked": true,
+      "anonymous_update_blocked": false,
+      "anonymous_rpc_allowed": false,
+      "rls_status": null,
+      "verdict": "FAIL"
+    },
+    "gate2_lifecycle": {
+      "booking_created": true,
+      "booking_id": "3739e3de-d840-4561-93da-6d997b264fca",
+      "customer_id": "82bdcc38-87fb-4b0b-a379-98e56fae4b57",
+      "booking_exists": true,
+      "customer_exists": true,
+      "linkage_valid": true,
+      "initial_status_pending": true,
+      "status_updated": true,
+      "status_confirmed": true,
+      "dashboard_stats_working": true,
+      "verdict": "PASS"
+    },
+    "gate3_public_website": {
+      "files_found_in_admin_repo": false,
+      "services_api_working": true,
+      "service_count": 6,
+      "all_six_slugs_queryable": true,
+      "slug_query_results": [
+        {
+          "slug": "restaurant",
+          "success": {
+            "id": "e38ef721-2a57-4c05-88aa-5509d766ca66",
+            "slug": "restaurant",
+            "name": "Restaurant"
+          },
+          "id": "e38ef721-2a57-4c05-88aa-5509d766ca66"
+        },
+        {
+          "slug": "conference",
+          "success": {
+            "id": "a21bdd86-ad9c-4845-9dc7-a2d5e96e8c00",
+            "slug": "conference",
+            "name": "Conference"
+          },
+          "id": "a21bdd86-ad9c-4845-9dc7-a2d5e96e8c00"
+        },
+        {
+          "slug": "lounge-bar",
+          "success": {
+            "id": "8df2b696-241b-49fc-8c9b-95a6bacc547d",
+            "slug": "lounge-bar",
+            "name": "Lounge & Bar"
+          },
+          "id": "8df2b696-241b-49fc-8c9b-95a6bacc547d"
+        },
+        {
+          "slug": "vip-cabins",
+          "success": {
+            "id": "3139fc1e-fa7f-4f19-8822-c9aabf0bcf46",
+            "slug": "vip-cabins",
+            "name": "VIP Cabins"
+          },
+          "id": "3139fc1e-fa7f-4f19-8822-c9aabf0bcf46"
+        },
+        {
+          "slug": "events",
+          "success": {
+            "id": "033640c1-bbad-4890-82f6-2b1cbfcae896",
+            "slug": "events",
+            "name": "Events"
+          },
+          "id": "033640c1-bbad-4890-82f6-2b1cbfcae896"
+        },
+        {
+          "slug": "auto-spa",
+          "success": {
+            "id": "f12be083-6b42-4fa4-a534-de6846a07029",
+            "slug": "auto-spa",
+            "name": "Auto Spa"
+          },
+          "id": "f12be083-6b42-4fa4-a534-de6846a07029"
+        }
+      ],
+      "verdict": "UNVERIFIED",
+      "reason": "Public website files not found in this Next.js admin repository. Separate deployment suspected."
+    }
+  }
+}

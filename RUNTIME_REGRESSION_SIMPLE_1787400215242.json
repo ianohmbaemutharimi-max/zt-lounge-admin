@@ -1,0 +1,75 @@
+{
+  "timestamp": "2026-08-22T12:03:31.634Z",
+  "findings": {
+    "services_schema": {
+      "columns": [
+        "id",
+        "category_id",
+        "name",
+        "slug",
+        "description",
+        "duration_minutes",
+        "price",
+        "image_url",
+        "featured",
+        "is_active",
+        "created_at",
+        "updated_at",
+        "alt_text",
+        "tag",
+        "href",
+        "type",
+        "display_order",
+        "page_id",
+        "icon",
+        "media_id"
+      ],
+      "has_active": false,
+      "has_is_active": true,
+      "sample_service": "Restaurant"
+    },
+    "is_active_query": {
+      "success": true,
+      "count": 6
+    },
+    "all_services": {
+      "count": 6,
+      "services": [
+        {
+          "id": "e38ef721-2a57-4c05-88aa-5509d766ca66",
+          "slug": "restaurant",
+          "name": "Restaurant"
+        },
+        {
+          "id": "033640c1-bbad-4890-82f6-2b1cbfcae896",
+          "slug": "events",
+          "name": "Events"
+        },
+        {
+          "id": "a21bdd86-ad9c-4845-9dc7-a2d5e96e8c00",
+          "slug": "conference",
+          "name": "Conference"
+        },
+        {
+          "id": "8df2b696-241b-49fc-8c9b-95a6bacc547d",
+          "slug": "lounge-bar",
+          "name": "Lounge & Bar"
+        },
+        {
+          "id": "3139fc1e-fa7f-4f19-8822-c9aabf0bcf46",
+          "slug": "vip-cabins",
+          "name": "VIP Cabins"
+        },
+        {
+          "id": "f12be083-6b42-4fa4-a534-de6846a07029",
+          "slug": "auto-spa",
+          "name": "Auto Spa"
+        }
+      ]
+    },
+    "create_booking": {
+      "exists": true,
+      "callable": true
+    }
+  }
+}

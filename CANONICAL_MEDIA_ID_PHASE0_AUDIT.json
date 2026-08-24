@@ -1,0 +1,517 @@
+{
+  "timestamp": "2026-08-20T06:31:18.549Z",
+  "database": {
+    "media_assets": {
+      "exists": true,
+      "sample": {
+        "id": "c8c306df-aed5-485a-91b0-c346768525e2",
+        "bucket": "menu-images",
+        "path": "beef-steak.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/beef-steak.webp",
+        "original_name": "menu_items",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": "Premium Beef Steak prime cuts grilled to preference",
+        "title": "Premium Beef Steak",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      }
+    },
+    "tables_with_media": [
+      {
+        "table": "menu_items",
+        "exists": true,
+        "has_media_id": true,
+        "has_legacy_url": true,
+        "sample": {
+          "id": "553cfbbf-fa6d-43b9-ae1f-310387f6a6c8",
+          "page_id": null,
+          "category_id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+          "name": "Premium Beef Steak",
+          "description": "Prime cuts grilled to your preference. Tender & juicy.",
+          "price": 1650,
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/menu-images/beef-steak.webp",
+          "display_order": 2,
+          "is_active": true,
+          "created_at": "2026-08-03T09:59:25.968718+00:00",
+          "updated_at": "2026-08-11T20:51:53.488246+00:00",
+          "slug": null,
+          "alt_text": "Premium Beef Steak prime cuts grilled to preference",
+          "category": "Signature Grills",
+          "type": "item",
+          "is_featured": false,
+          "media_id": null
+        }
+      },
+      {
+        "table": "services",
+        "exists": true,
+        "has_media_id": true,
+        "has_legacy_url": true,
+        "sample": {
+          "id": "8df2b696-241b-49fc-8c9b-95a6bacc547d",
+          "category_id": "e27f42c0-b627-411b-af58-a500c68c7c0d",
+          "name": "Lounge & Bar",
+          "slug": "lounge-bar",
+          "description": "Premium cocktails, live entertainment, and sophisticated atmosphere",
+          "duration_minutes": 60,
+          "price": 0,
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/lounge-interior-main.webp",
+          "featured": true,
+          "is_active": true,
+          "created_at": "2026-08-03T09:59:25.968718+00:00",
+          "updated_at": "2026-08-11T20:51:51.526411+00:00",
+          "alt_text": "Luxury lounge and bar at ZT Lounge with premium seating and sophisticated atmosphere",
+          "tag": "Nightlife",
+          "href": "pages/experiences/lounge.html",
+          "type": "experience",
+          "display_order": 1,
+          "page_id": null,
+          "icon": "",
+          "media_id": null
+        }
+      },
+      {
+        "table": "hero_slides",
+        "exists": true,
+        "has_media_id": true,
+        "has_legacy_url": true,
+        "sample": {
+          "id": "0125fb9e-0b5c-4a15-b698-3be79aa0d0bf",
+          "page_id": "e5186de1-a199-476f-abe2-a3f8b21c6120",
+          "badge": "Meru's Finest",
+          "title": "ZT Lounge Meru",
+          "highlight": "Premium Dining &bull; VIP Cabins &bull; Pool Table &bull; Lounge & Bar &bull; Events &bull; Conference &bull; Auto Spa",
+          "subtitle": "Experience premium hospitality at ZT Lounge Meru",
+          "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/hero-images/hero-restaurant.webp",
+          "buttons": [
+            {
+              "link": "#services",
+              "text": "Explore Services",
+              "type": "btn btn-primary"
+            },
+            {
+              "link": "pages/contact/contact.html",
+              "text": "Contact Us",
+              "type": "btn btn-secondary"
+            }
+          ],
+          "display_order": 0,
+          "is_active": true,
+          "created_at": "2026-08-03T09:59:25.968718+00:00",
+          "updated_at": "2026-08-11T20:51:47.599751+00:00",
+          "alt_text": "ZT Lounge Meru - Premium Hospitality Logo",
+          "cta_text": "Explore Services",
+          "cta_link": "pages/contact/contact.html",
+          "media_id": null
+        }
+      },
+      {
+        "table": "testimonials",
+        "exists": true
+      },
+      {
+        "table": "business_settings",
+        "exists": true,
+        "has_media_id": false,
+        "has_legacy_url": true,
+        "sample": {
+          "id": 1,
+          "business_name": "ZT Lounge Meru",
+          "email": "ztloungemeru@gmail.com",
+          "phone": "+254143542601",
+          "address": "Milimani Road, Meru, Kenya",
+          "google_maps_url": "https://maps.app.goo.gl/HqTbiiU4q2jRFoPg6",
+          "whatsapp": "+254143542601",
+          "facebook": "https://facebook.com/ztlounge",
+          "instagram": "https://instagram.com/ztlounge",
+          "opening_hours": {
+            "friday": "10:00 AM - 2:00 AM",
+            "monday": "10:00 AM - 2:00 AM",
+            "sunday": "10:00 AM - 2:00 AM",
+            "tuesday": "10:00 AM - 2:00 AM",
+            "saturday": "10:00 AM - 2:00 AM",
+            "thursday": "10:00 AM - 2:00 AM",
+            "wednesday": "10:00 AM - 2:00 AM"
+          },
+          "logo_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/logos/logo.webp",
+          "favicon_url": "/favicon.ico",
+          "timezone": "Africa/Nairobi",
+          "currency": "KES",
+          "created_at": "2026-07-13T15:39:06.478736+00:00",
+          "updated_at": "2026-08-11T21:07:21.183939+00:00",
+          "tagline": "Premium Lounge Experience in Meru",
+          "description": "ZT Lounge Meru offers premium dining, entertainment, events, and hospitality experiences.",
+          "twitter": "https://x.com/ztlounge_meru",
+          "youtube": "https://youtube.com/@ztlounge",
+          "city": "Meru",
+          "country": "Kenya",
+          "latitude": 0.0476,
+          "longitude": 37.6822
+        }
+      }
+    ]
+  },
+  "codebase": {
+    "media_id": [
+      {
+        "file": "src\\app\\api\\admin\\[resource]\\route.ts",
+        "matches": 1,
+        "preview": [
+          "media_id"
+        ]
+      },
+      {
+        "file": "src\\app\\api\\admin\\[resource]\\[id]\\route.ts",
+        "matches": 1,
+        "preview": [
+          "media_id"
+        ]
+      },
+      {
+        "file": "src\\db\\schema.ts",
+        "matches": 6,
+        "preview": [
+          "media_id",
+          "media_id",
+          "media_id"
+        ]
+      },
+      {
+        "file": "src\\features\\cms\\website-cms.tsx",
+        "matches": 26,
+        "preview": [
+          "media_id",
+          "media_id",
+          "media_id"
+        ]
+      },
+      {
+        "file": "src\\lib\\media\\resolver.ts",
+        "matches": 9,
+        "preview": [
+          "media_id",
+          "media_id",
+          "media_id"
+        ]
+      },
+      {
+        "file": "src\\lib\\media\\selection.ts",
+        "matches": 1,
+        "preview": [
+          "media_id"
+        ]
+      },
+      {
+        "file": "src\\lib\\repository.ts",
+        "matches": 12,
+        "preview": [
+          "media_id",
+          "media_id",
+          "media_id"
+        ]
+      },
+      {
+        "file": "src\\types\\media.ts",
+        "matches": 2,
+        "preview": [
+          "media_id",
+          "media_id"
+        ]
+      }
+    ],
+    "resolveImageUrl": [
+      {
+        "file": "src\\app\\api\\admin\\[resource]\\route.ts",
+        "matches": 3,
+        "preview": [
+          "resolveImageUrl",
+          "resolveImageUrl",
+          "resolveImageUrl"
+        ]
+      },
+      {
+        "file": "src\\app\\api\\admin\\[resource]\\[id]\\route.ts",
+        "matches": 2,
+        "preview": [
+          "resolveImageUrl",
+          "resolveImageUrl"
+        ]
+      },
+      {
+        "file": "src\\lib\\media\\resolver.ts",
+        "matches": 4,
+        "preview": [
+          "resolveImageUrl",
+          "resolveImageUrl",
+          "resolveImageUrl"
+        ]
+      }
+    ],
+    "resolveImageUrls": [
+      {
+        "file": "src\\app\\api\\admin\\[resource]\\route.ts",
+        "matches": 3,
+        "preview": [
+          "resolveImageUrls",
+          "resolveImageUrls",
+          "resolveImageUrls"
+        ]
+      },
+      {
+        "file": "src\\app\\api\\admin\\[resource]\\[id]\\route.ts",
+        "matches": 2,
+        "preview": [
+          "resolveImageUrls",
+          "resolveImageUrls"
+        ]
+      },
+      {
+        "file": "src\\lib\\media\\resolver.ts",
+        "matches": 3,
+        "preview": [
+          "resolveImageUrls",
+          "resolveImageUrls",
+          "resolveImageUrls"
+        ]
+      }
+    ],
+    "logo_url": [
+      {
+        "file": "src\\db\\schema.ts",
+        "matches": 1,
+        "preview": [
+          "logo_url"
+        ]
+      },
+      {
+        "file": "src\\features\\cms\\website-cms.tsx",
+        "matches": 4,
+        "preview": [
+          "logo_url",
+          "logo_url",
+          "logo_url"
+        ]
+      },
+      {
+        "file": "src\\lib\\repository.ts",
+        "matches": 2,
+        "preview": [
+          "logo_url",
+          "logo_url"
+        ]
+      }
+    ],
+    "favicon_url": [
+      {
+        "file": "src\\db\\schema.ts",
+        "matches": 1,
+        "preview": [
+          "favicon_url"
+        ]
+      },
+      {
+        "file": "src\\features\\cms\\website-cms.tsx",
+        "matches": 4,
+        "preview": [
+          "favicon_url",
+          "favicon_url",
+          "favicon_url"
+        ]
+      },
+      {
+        "file": "src\\lib\\repository.ts",
+        "matches": 2,
+        "preview": [
+          "favicon_url",
+          "favicon_url"
+        ]
+      }
+    ],
+    "image_url": [
+      {
+        "file": "src\\db\\schema.ts",
+        "matches": 5,
+        "preview": [
+          "image_url",
+          "image_url",
+          "image_url"
+        ]
+      },
+      {
+        "file": "src\\features\\cms\\website-cms.tsx",
+        "matches": 2,
+        "preview": [
+          "image_url",
+          "image_url"
+        ]
+      },
+      {
+        "file": "src\\integrations\\google-business-profile\\mapper.ts",
+        "matches": 1,
+        "preview": [
+          "image_url"
+        ]
+      },
+      {
+        "file": "src\\integrations\\google-business-profile\\sync.ts",
+        "matches": 3,
+        "preview": [
+          "image_url",
+          "image_url",
+          "image_url"
+        ]
+      },
+      {
+        "file": "src\\integrations\\google-business-profile\\types.ts",
+        "matches": 2,
+        "preview": [
+          "image_url",
+          "image_url"
+        ]
+      },
+      {
+        "file": "src\\lib\\media\\resolver.ts",
+        "matches": 14,
+        "preview": [
+          "image_url",
+          "image_url",
+          "image_url"
+        ]
+      },
+      {
+        "file": "src\\lib\\repository.ts",
+        "matches": 10,
+        "preview": [
+          "image_url",
+          "image_url",
+          "image_url"
+        ]
+      },
+      {
+        "file": "src\\types\\supabase.ts",
+        "matches": 3,
+        "preview": [
+          "image_url",
+          "image_url",
+          "image_url"
+        ]
+      }
+    ],
+    "hardcoded_images": [
+      {
+        "file": "src\\app\\layout.tsx",
+        "matches": 1,
+        "preview": [
+          "/images/logo/zt-lounge-logo.svg"
+        ]
+      },
+      {
+        "file": "src\\app\\login\\page.tsx",
+        "matches": 1,
+        "preview": [
+          "/images/logo/zt-lounge-logo.svg"
+        ]
+      },
+      {
+        "file": "src\\app\\unauthorized\\page.tsx",
+        "matches": 1,
+        "preview": [
+          "/images/logo/zt-lounge-logo.svg"
+        ]
+      },
+      {
+        "file": "src\\components\\sidebar.tsx",
+        "matches": 1,
+        "preview": [
+          "/images/logo/zt-lounge-logo.svg"
+        ]
+      }
+    ],
+    "public_url": [
+      {
+        "file": "src\\app\\api\\admin\\upload\\route.ts",
+        "matches": 1,
+        "preview": [
+          "public_url"
+        ]
+      },
+      {
+        "file": "src\\db\\schema.ts",
+        "matches": 1,
+        "preview": [
+          "public_url"
+        ]
+      },
+      {
+        "file": "src\\features\\media\\image-change-dialog.tsx",
+        "matches": 1,
+        "preview": [
+          "public_url"
+        ]
+      },
+      {
+        "file": "src\\features\\media\\image-editor-modal.tsx",
+        "matches": 1,
+        "preview": [
+          "public_url"
+        ]
+      },
+      {
+        "file": "src\\features\\media\\media-library-view.tsx",
+        "matches": 2,
+        "preview": [
+          "public_url",
+          "public_url"
+        ]
+      },
+      {
+        "file": "src\\features\\media\\media-picker-modal.tsx",
+        "matches": 2,
+        "preview": [
+          "public_url",
+          "public_url"
+        ]
+      },
+      {
+        "file": "src\\lib\\media\\resolver.ts",
+        "matches": 8,
+        "preview": [
+          "public_url",
+          "public_url",
+          "public_url"
+        ]
+      },
+      {
+        "file": "src\\lib\\repository.ts",
+        "matches": 1,
+        "preview": [
+          "public_url"
+        ]
+      },
+      {
+        "file": "src\\types\\media.ts",
+        "matches": 1,
+        "preview": [
+          "public_url"
+        ]
+      }
+    ]
+  },
+  "storage": {},
+  "architecture": {
+    "resolver": {
+      "exists": true,
+      "has_resolveImageUrl": true,
+      "has_resolveImageUrls": true,
+      "has_video_support": false,
+      "size": 4354
+    }
+  },
+  "issues": [],
+  "recommendations": []
+}

@@ -1,0 +1,474 @@
+{
+  "timestamp": "2026-08-22T14:46:33.688Z",
+  "database": {
+    "schema": {
+      "menu_categories": [],
+      "menu_items": []
+    },
+    "categories": [
+      {
+        "id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+        "name": "Signature Grills",
+        "slug": "signature-grills",
+        "description": "Premium grilled specialties",
+        "display_order": 0,
+        "is_active": true,
+        "created_at": "2026-08-03T09:59:25.968718+00:00",
+        "updated_at": "2026-08-03T09:59:25.968718+00:00"
+      },
+      {
+        "id": "5259cf18-9423-44ac-9863-c5a95a7f787a",
+        "name": "Appetizers",
+        "slug": "appetizers",
+        "description": "Starters and small plates",
+        "display_order": 1,
+        "is_active": true,
+        "created_at": "2026-08-03T09:59:25.968718+00:00",
+        "updated_at": "2026-08-03T09:59:25.968718+00:00"
+      },
+      {
+        "id": "bc75af73-62db-45e4-a4bf-4f9b81496452",
+        "name": "Main Dishes",
+        "slug": "main-dishes",
+        "description": "Hearty main course options",
+        "display_order": 2,
+        "is_active": true,
+        "created_at": "2026-08-03T09:59:25.968718+00:00",
+        "updated_at": "2026-08-03T09:59:25.968718+00:00"
+      },
+      {
+        "id": "30486357-3063-494a-93fb-899cbc156fb1",
+        "name": "Desserts",
+        "slug": "desserts",
+        "description": "Sweet endings",
+        "display_order": 3,
+        "is_active": true,
+        "created_at": "2026-08-03T09:59:25.968718+00:00",
+        "updated_at": "2026-08-03T09:59:25.968718+00:00"
+      },
+      {
+        "id": "a597f4fa-5dc9-4988-9b8a-e61e774c84ed",
+        "name": "Beverages",
+        "slug": "beverages",
+        "description": "Fresh drinks and sodas",
+        "display_order": 4,
+        "is_active": true,
+        "created_at": "2026-08-03T09:59:25.968718+00:00",
+        "updated_at": "2026-08-03T09:59:25.968718+00:00"
+      },
+      {
+        "id": "c5abd7f4-ea04-4f9f-83b9-e5588a6d2ac9",
+        "name": "Bar Menu",
+        "slug": "bar-menu",
+        "description": "Cocktails and bar favorites",
+        "display_order": 5,
+        "is_active": true,
+        "created_at": "2026-08-03T09:59:25.968718+00:00",
+        "updated_at": "2026-08-03T09:59:25.968718+00:00"
+      }
+    ],
+    "menuItems": {
+      "total": 13,
+      "active": 13,
+      "withCategory": 13,
+      "withMedia": 13,
+      "items": [
+        {
+          "id": "553cfbbf-fa6d-43b9-ae1f-310387f6a6c8",
+          "name": "Premium Beef Steak",
+          "category_id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+          "media_id": "c8c306df-aed5-485a-91b0-c346768525e2",
+          "is_active": true
+        },
+        {
+          "id": "8d768393-c52c-438f-884e-9910ba78a27e",
+          "name": "Mixed Grill Platter",
+          "category_id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+          "media_id": "9e66cc0a-59d2-482c-8137-f7ca081901c8",
+          "is_active": true
+        },
+        {
+          "id": "2ff55c17-750d-4bdc-9a2f-bbe93eb17dd4",
+          "name": "Cocktail Selection",
+          "category_id": "c5abd7f4-ea04-4f9f-83b9-e5588a6d2ac9",
+          "media_id": "319e829a-b819-4dff-ad7e-7fa50ad2146d",
+          "is_active": true
+        },
+        {
+          "id": "2c66bd38-9986-4078-b1a4-b2b5a9a1f885",
+          "name": "Signature Nyama Choma",
+          "category_id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+          "media_id": "610bcb3e-c2ed-4914-aff5-850aa8de859e",
+          "is_active": true
+        },
+        {
+          "id": "a88ed411-bf78-4985-a41f-31cfc5e4ff44",
+          "name": "ZT Signature Pilau",
+          "category_id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+          "media_id": "897b3a61-9bf0-4e4e-ba55-4bf824eea35e",
+          "is_active": true
+        },
+        {
+          "id": "ebd98cc3-927c-42f1-9e88-f28b749c8e08",
+          "name": "Loaded Fries",
+          "category_id": "5259cf18-9423-44ac-9863-c5a95a7f787a",
+          "media_id": "3d421b49-9533-4f92-9930-638a8bdce110",
+          "is_active": true
+        },
+        {
+          "id": "be61cf75-6bf7-4eb5-a0c6-739d48e22640",
+          "name": "Chicken Tikka",
+          "category_id": "5259cf18-9423-44ac-9863-c5a95a7f787a",
+          "media_id": "1ed186c3-cde7-464d-a284-b640f78be679",
+          "is_active": true
+        },
+        {
+          "id": "123d283c-860c-490d-b071-ad1261127ca0",
+          "name": "Grilled Chicken",
+          "category_id": "bc75af73-62db-45e4-a4bf-4f9b81496452",
+          "media_id": "a3157f18-fb56-4473-95c6-b2d259d9c707",
+          "is_active": true
+        },
+        {
+          "id": "fbb9bcdf-9b6a-4b1e-9d75-658b952b86c5",
+          "name": "Premium Sides",
+          "category_id": "bc75af73-62db-45e4-a4bf-4f9b81496452",
+          "media_id": "6b8bb3dc-a7ec-40ca-bd4f-4898b746121a",
+          "is_active": true
+        },
+        {
+          "id": "3d43e076-2ddb-49bf-8ce5-c02e26a11df8",
+          "name": "Goat Ribs",
+          "category_id": "bc75af73-62db-45e4-a4bf-4f9b81496452",
+          "media_id": "8d01dc78-26b2-4f02-bbc6-c37db2520233",
+          "is_active": true
+        },
+        {
+          "id": "1489a80d-0633-46a0-b88c-4c7ed6c63b8f",
+          "name": "Fresh Juice",
+          "category_id": "30486357-3063-494a-93fb-899cbc156fb1",
+          "media_id": "379dfca9-e67c-4b2f-b921-76ac2030d934",
+          "is_active": true
+        },
+        {
+          "id": "be858af1-a273-4675-a41c-d4cc54ab24d9",
+          "name": "Coffee",
+          "category_id": "a597f4fa-5dc9-4988-9b8a-e61e774c84ed",
+          "media_id": "d898e851-fd7a-4744-8494-e1cbb620a8a1",
+          "is_active": true
+        },
+        {
+          "id": "444e00b3-955e-4b21-b745-1b85712b6223",
+          "name": "Signature Cocktail",
+          "category_id": "c5abd7f4-ea04-4f9f-83b9-e5588a6d2ac9",
+          "media_id": "611ade4f-5c7b-4018-900a-abb7afca0e76",
+          "is_active": true
+        }
+      ]
+    },
+    "foreignKeys": null,
+    "constraints": null
+  },
+  "analysis": {
+    "canonicalMatch": [],
+    "duplicates": [
+      {
+        "category": {
+          "id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+          "name": "Signature Grills",
+          "slug": "signature-grills",
+          "description": "Premium grilled specialties",
+          "display_order": 0,
+          "is_active": true,
+          "created_at": "2026-08-03T09:59:25.968718+00:00",
+          "updated_at": "2026-08-03T09:59:25.968718+00:00"
+        },
+        "itemCount": 4
+      },
+      {
+        "category": {
+          "id": "5259cf18-9423-44ac-9863-c5a95a7f787a",
+          "name": "Appetizers",
+          "slug": "appetizers",
+          "description": "Starters and small plates",
+          "display_order": 1,
+          "is_active": true,
+          "created_at": "2026-08-03T09:59:25.968718+00:00",
+          "updated_at": "2026-08-03T09:59:25.968718+00:00"
+        },
+        "itemCount": 2
+      },
+      {
+        "category": {
+          "id": "bc75af73-62db-45e4-a4bf-4f9b81496452",
+          "name": "Main Dishes",
+          "slug": "main-dishes",
+          "description": "Hearty main course options",
+          "display_order": 2,
+          "is_active": true,
+          "created_at": "2026-08-03T09:59:25.968718+00:00",
+          "updated_at": "2026-08-03T09:59:25.968718+00:00"
+        },
+        "itemCount": 3
+      },
+      {
+        "category": {
+          "id": "30486357-3063-494a-93fb-899cbc156fb1",
+          "name": "Desserts",
+          "slug": "desserts",
+          "description": "Sweet endings",
+          "display_order": 3,
+          "is_active": true,
+          "created_at": "2026-08-03T09:59:25.968718+00:00",
+          "updated_at": "2026-08-03T09:59:25.968718+00:00"
+        },
+        "itemCount": 1
+      },
+      {
+        "category": {
+          "id": "a597f4fa-5dc9-4988-9b8a-e61e774c84ed",
+          "name": "Beverages",
+          "slug": "beverages",
+          "description": "Fresh drinks and sodas",
+          "display_order": 4,
+          "is_active": true,
+          "created_at": "2026-08-03T09:59:25.968718+00:00",
+          "updated_at": "2026-08-03T09:59:25.968718+00:00"
+        },
+        "itemCount": 1
+      },
+      {
+        "category": {
+          "id": "c5abd7f4-ea04-4f9f-83b9-e5588a6d2ac9",
+          "name": "Bar Menu",
+          "slug": "bar-menu",
+          "description": "Cocktails and bar favorites",
+          "display_order": 5,
+          "is_active": true,
+          "created_at": "2026-08-03T09:59:25.968718+00:00",
+          "updated_at": "2026-08-03T09:59:25.968718+00:00"
+        },
+        "itemCount": 2
+      }
+    ],
+    "wrongSlugs": [],
+    "missing": [
+      {
+        "name": "Accompaniments",
+        "slug": "accompaniments",
+        "sort_order": 1
+      },
+      {
+        "name": "Specialty Dishes",
+        "slug": "specialty-dishes",
+        "sort_order": 2
+      },
+      {
+        "name": "Choma Zone",
+        "slug": "choma-zone",
+        "sort_order": 3
+      },
+      {
+        "name": "Main Dishes (Wet/Dry Fry)",
+        "slug": "main-dishes-wet-dry-fry",
+        "sort_order": 4
+      },
+      {
+        "name": "Hot Beverages and Breakfast",
+        "slug": "hot-beverages-and-breakfast",
+        "sort_order": 5
+      },
+      {
+        "name": "Raw Goods/Items",
+        "slug": "raw-goods-items",
+        "sort_order": 6
+      },
+      {
+        "name": "Quick Bites & Snack",
+        "slug": "quick-bites-snack",
+        "sort_order": 7
+      },
+      {
+        "name": "Vegetables",
+        "slug": "vegetables",
+        "sort_order": 8
+      },
+      {
+        "name": "Fast Foods",
+        "slug": "fast-foods",
+        "sort_order": 9
+      },
+      {
+        "name": "Indian Corner",
+        "slug": "indian-corner",
+        "sort_order": 10
+      }
+    ],
+    "orphaned": [],
+    "categoryDistribution": {
+      "2706bfd2-d9dd-41ec-8ecc-20893327ff9d": [
+        {
+          "id": "553cfbbf-fa6d-43b9-ae1f-310387f6a6c8",
+          "name": "Premium Beef Steak",
+          "category_id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+          "media_id": "c8c306df-aed5-485a-91b0-c346768525e2",
+          "is_active": true
+        },
+        {
+          "id": "8d768393-c52c-438f-884e-9910ba78a27e",
+          "name": "Mixed Grill Platter",
+          "category_id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+          "media_id": "9e66cc0a-59d2-482c-8137-f7ca081901c8",
+          "is_active": true
+        },
+        {
+          "id": "2c66bd38-9986-4078-b1a4-b2b5a9a1f885",
+          "name": "Signature Nyama Choma",
+          "category_id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+          "media_id": "610bcb3e-c2ed-4914-aff5-850aa8de859e",
+          "is_active": true
+        },
+        {
+          "id": "a88ed411-bf78-4985-a41f-31cfc5e4ff44",
+          "name": "ZT Signature Pilau",
+          "category_id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+          "media_id": "897b3a61-9bf0-4e4e-ba55-4bf824eea35e",
+          "is_active": true
+        }
+      ],
+      "c5abd7f4-ea04-4f9f-83b9-e5588a6d2ac9": [
+        {
+          "id": "2ff55c17-750d-4bdc-9a2f-bbe93eb17dd4",
+          "name": "Cocktail Selection",
+          "category_id": "c5abd7f4-ea04-4f9f-83b9-e5588a6d2ac9",
+          "media_id": "319e829a-b819-4dff-ad7e-7fa50ad2146d",
+          "is_active": true
+        },
+        {
+          "id": "444e00b3-955e-4b21-b745-1b85712b6223",
+          "name": "Signature Cocktail",
+          "category_id": "c5abd7f4-ea04-4f9f-83b9-e5588a6d2ac9",
+          "media_id": "611ade4f-5c7b-4018-900a-abb7afca0e76",
+          "is_active": true
+        }
+      ],
+      "5259cf18-9423-44ac-9863-c5a95a7f787a": [
+        {
+          "id": "ebd98cc3-927c-42f1-9e88-f28b749c8e08",
+          "name": "Loaded Fries",
+          "category_id": "5259cf18-9423-44ac-9863-c5a95a7f787a",
+          "media_id": "3d421b49-9533-4f92-9930-638a8bdce110",
+          "is_active": true
+        },
+        {
+          "id": "be61cf75-6bf7-4eb5-a0c6-739d48e22640",
+          "name": "Chicken Tikka",
+          "category_id": "5259cf18-9423-44ac-9863-c5a95a7f787a",
+          "media_id": "1ed186c3-cde7-464d-a284-b640f78be679",
+          "is_active": true
+        }
+      ],
+      "bc75af73-62db-45e4-a4bf-4f9b81496452": [
+        {
+          "id": "123d283c-860c-490d-b071-ad1261127ca0",
+          "name": "Grilled Chicken",
+          "category_id": "bc75af73-62db-45e4-a4bf-4f9b81496452",
+          "media_id": "a3157f18-fb56-4473-95c6-b2d259d9c707",
+          "is_active": true
+        },
+        {
+          "id": "fbb9bcdf-9b6a-4b1e-9d75-658b952b86c5",
+          "name": "Premium Sides",
+          "category_id": "bc75af73-62db-45e4-a4bf-4f9b81496452",
+          "media_id": "6b8bb3dc-a7ec-40ca-bd4f-4898b746121a",
+          "is_active": true
+        },
+        {
+          "id": "3d43e076-2ddb-49bf-8ce5-c02e26a11df8",
+          "name": "Goat Ribs",
+          "category_id": "bc75af73-62db-45e4-a4bf-4f9b81496452",
+          "media_id": "8d01dc78-26b2-4f02-bbc6-c37db2520233",
+          "is_active": true
+        }
+      ],
+      "30486357-3063-494a-93fb-899cbc156fb1": [
+        {
+          "id": "1489a80d-0633-46a0-b88c-4c7ed6c63b8f",
+          "name": "Fresh Juice",
+          "category_id": "30486357-3063-494a-93fb-899cbc156fb1",
+          "media_id": "379dfca9-e67c-4b2f-b921-76ac2030d934",
+          "is_active": true
+        }
+      ],
+      "a597f4fa-5dc9-4988-9b8a-e61e774c84ed": [
+        {
+          "id": "be858af1-a273-4675-a41c-d4cc54ab24d9",
+          "name": "Coffee",
+          "category_id": "a597f4fa-5dc9-4988-9b8a-e61e774c84ed",
+          "media_id": "d898e851-fd7a-4744-8494-e1cbb620a8a1",
+          "is_active": true
+        }
+      ]
+    }
+  },
+  "codebase": {
+    "hardcodedCategories": [],
+    "categoryReferences": []
+  },
+  "recommendations": [
+    {
+      "priority": "HIGH",
+      "action": "CREATE_MISSING_CATEGORIES",
+      "description": "Create 10 missing canonical categories",
+      "categories": [
+        "Accompaniments",
+        "Specialty Dishes",
+        "Choma Zone",
+        "Main Dishes (Wet/Dry Fry)",
+        "Hot Beverages and Breakfast",
+        "Raw Goods/Items",
+        "Quick Bites & Snack",
+        "Vegetables",
+        "Fast Foods",
+        "Indian Corner"
+      ]
+    },
+    {
+      "priority": "MEDIUM",
+      "action": "RECONCILE_DUPLICATES",
+      "description": "Handle 6 non-canonical categories",
+      "categories": [
+        {
+          "name": "Signature Grills",
+          "id": "2706bfd2-d9dd-41ec-8ecc-20893327ff9d",
+          "itemCount": 4
+        },
+        {
+          "name": "Appetizers",
+          "id": "5259cf18-9423-44ac-9863-c5a95a7f787a",
+          "itemCount": 2
+        },
+        {
+          "name": "Main Dishes",
+          "id": "bc75af73-62db-45e4-a4bf-4f9b81496452",
+          "itemCount": 3
+        },
+        {
+          "name": "Desserts",
+          "id": "30486357-3063-494a-93fb-899cbc156fb1",
+          "itemCount": 1
+        },
+        {
+          "name": "Beverages",
+          "id": "a597f4fa-5dc9-4988-9b8a-e61e774c84ed",
+          "itemCount": 1
+        },
+        {
+          "name": "Bar Menu",
+          "id": "c5abd7f4-ea04-4f9f-83b9-e5588a6d2ac9",
+          "itemCount": 2
+        }
+      ]
+    }
+  ]
+}

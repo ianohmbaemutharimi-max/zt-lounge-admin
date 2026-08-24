@@ -7,7 +7,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "ZT Lounge Admin",
   description: "Admin control center for ZT Lounge Meru — bookings, menu, CMS and analytics.",
-  icons: { icon: "/images/logo/zt-lounge-logo.png" },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/images/logo/zt-lounge-logo.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

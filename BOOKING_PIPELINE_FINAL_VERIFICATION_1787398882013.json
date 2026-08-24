@@ -1,0 +1,804 @@
+{
+  "timestamp": "2026-08-22T11:41:08.201Z",
+  "project": "jczwilrysvnhcjzjztbi",
+  "phases": {
+    "phase1": {
+      "findings": {
+        "services": {
+          "count": 6,
+          "data": [
+            {
+              "id": "f12be083-6b42-4fa4-a534-de6846a07029",
+              "category_id": "92efcbe4-22ab-4acd-95a4-6e733dc069e1",
+              "name": "Auto Spa",
+              "slug": "auto-spa",
+              "description": "Professional detailing, washing, and premium car care services",
+              "duration_minutes": 60,
+              "price": 0,
+              "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/car-detailing.webp",
+              "featured": false,
+              "is_active": true,
+              "created_at": "2026-08-03T09:59:25.968718+00:00",
+              "updated_at": "2026-08-20T12:09:33.920933+00:00",
+              "alt_text": "Professional auto detailing at ZT Lounge with premium car care services",
+              "tag": "Premium",
+              "href": "pages/business/autospa.html",
+              "type": "experience",
+              "display_order": 5,
+              "page_id": null,
+              "icon": "",
+              "media_id": "774bf8d2-1404-4735-b656-786fdd1d9898"
+            },
+            {
+              "id": "a21bdd86-ad9c-4845-9dc7-a2d5e96e8c00",
+              "category_id": "98ae55ff-3ecf-4589-86b0-4f413c4eb4dc",
+              "name": "Conference",
+              "slug": "conference",
+              "description": "State-of-the-art facilities for corporate meetings and seminars",
+              "duration_minutes": 60,
+              "price": 0,
+              "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/conference-hall.webp",
+              "featured": false,
+              "is_active": true,
+              "created_at": "2026-08-03T09:59:25.968718+00:00",
+              "updated_at": "2026-08-20T12:09:35.310268+00:00",
+              "alt_text": "Modern conference hall at ZT Lounge with state-of-the-art audiovisual equipment",
+              "tag": "Corporate",
+              "href": "pages/business/conference.html",
+              "type": "experience",
+              "display_order": 4,
+              "page_id": "5974b756-733a-4160-837a-4d28973e2f4b",
+              "icon": "",
+              "media_id": "78c4936d-8a71-418d-9209-304ef5faed63"
+            },
+            {
+              "id": "033640c1-bbad-4890-82f6-2b1cbfcae896",
+              "category_id": "08537c46-d2e6-4d44-b589-878ef2a0c51b",
+              "name": "Events",
+              "slug": "events",
+              "description": "Weddings, birthdays, graduations, and private celebrations",
+              "duration_minutes": 60,
+              "price": 0,
+              "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/wedding.webp",
+              "featured": false,
+              "is_active": true,
+              "created_at": "2026-08-03T09:59:25.968718+00:00",
+              "updated_at": "2026-08-20T12:09:35.019106+00:00",
+              "alt_text": "Elegant event setup at ZT Lounge with floral arrangements and celebratory decor",
+              "tag": "Celebrations",
+              "href": "pages/business/events.html",
+              "type": "experience",
+              "display_order": 3,
+              "page_id": "e64ede2a-63c5-402d-a50d-21b0b0b2673a",
+              "icon": "",
+              "media_id": "3fe9fbae-27ac-49ee-af18-5f1d78993cb1"
+            },
+            {
+              "id": "8df2b696-241b-49fc-8c9b-95a6bacc547d",
+              "category_id": "e27f42c0-b627-411b-af58-a500c68c7c0d",
+              "name": "Lounge & Bar",
+              "slug": "lounge-bar",
+              "description": "Premium cocktails, live entertainment, and sophisticated atmosphere",
+              "duration_minutes": 60,
+              "price": 0,
+              "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/lounge-interior-main.webp",
+              "featured": true,
+              "is_active": true,
+              "created_at": "2026-08-03T09:59:25.968718+00:00",
+              "updated_at": "2026-08-20T12:09:33.237208+00:00",
+              "alt_text": "Luxury lounge and bar at ZT Lounge with premium seating and sophisticated atmosphere",
+              "tag": "Nightlife",
+              "href": "pages/experiences/lounge.html",
+              "type": "experience",
+              "display_order": 1,
+              "page_id": null,
+              "icon": "",
+              "media_id": "40fe55fd-3969-4b12-af10-163008ec18c1"
+            },
+            {
+              "id": "e38ef721-2a57-4c05-88aa-5509d766ca66",
+              "category_id": "be8b2520-8ef8-4420-979a-134356005329",
+              "name": "Restaurant",
+              "slug": "restaurant",
+              "description": "Fine dining with exquisite cuisine and elegant ambiance",
+              "duration_minutes": 60,
+              "price": 0,
+              "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/interior.webp",
+              "featured": true,
+              "is_active": true,
+              "created_at": "2026-08-03T09:59:25.968718+00:00",
+              "updated_at": "2026-08-20T12:09:34.293438+00:00",
+              "alt_text": "Fine dining restaurant at ZT Lounge with elegant table setting and ambient lighting",
+              "tag": "Signature",
+              "href": "pages/experiences/restaurant.html",
+              "type": "experience",
+              "display_order": 0,
+              "page_id": "a3490e73-ef00-4063-8d25-dcdc2772ddb4",
+              "icon": "",
+              "media_id": "31c61869-6843-41ba-9af9-fa5f0be77399"
+            },
+            {
+              "id": "3139fc1e-fa7f-4f19-8822-c9aabf0bcf46",
+              "category_id": "ff8038a6-3fe8-4a6e-897a-3ada6cf9ad9d",
+              "name": "VIP Cabins",
+              "slug": "vip-cabins",
+              "description": "Private, exclusive cabins for intimate dining and celebrations",
+              "duration_minutes": 60,
+              "price": 0,
+              "image_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/service-images/vip-fireplace-lounge.webp",
+              "featured": true,
+              "is_active": true,
+              "created_at": "2026-08-03T09:59:25.968718+00:00",
+              "updated_at": "2026-08-20T12:09:33.529499+00:00",
+              "alt_text": "Luxury VIP cabin at ZT Lounge with private dining and exclusive amenities",
+              "tag": "Private",
+              "href": "pages/experiences/vip.html",
+              "type": "experience",
+              "display_order": 2,
+              "page_id": null,
+              "icon": "",
+              "media_id": "e9eb1f40-1093-4dd8-8c36-f5dbee824870"
+            }
+          ],
+          "error": null
+        },
+        "bookingsColumns": [
+          "id",
+          "booking_number",
+          "customer_id",
+          "service_id",
+          "staff_id",
+          "booking_date",
+          "start_time",
+          "end_time",
+          "guests",
+          "status",
+          "special_requests",
+          "internal_notes",
+          "cancellation_reason",
+          "created_by",
+          "created_at",
+          "updated_at",
+          "during"
+        ],
+        "customersColumns": [
+          "id",
+          "full_name",
+          "phone",
+          "email",
+          "gender",
+          "date_of_birth",
+          "notes",
+          "marketing_opt_in",
+          "created_at",
+          "updated_at",
+          "is_active"
+        ],
+        "phoneUniqueness": {
+          "totalCustomers": 14,
+          "uniquePhones": 14,
+          "hasDuplicates": false
+        },
+        "createBookingTest": {
+          "success": true,
+          "result": {
+            "guests": 2,
+            "status": "pending",
+            "end_time": "15:00:00",
+            "booking_id": "4dffed69-52f1-42c9-8d2c-de7de68722fd",
+            "service_id": "e38ef721-2a57-4c05-88aa-5509d766ca66",
+            "start_time": "14:00:00",
+            "customer_id": "e420f611-c1de-4038-9dd0-55a2e4f3ce17",
+            "booking_date": "2026-09-01",
+            "booking_number": "ZT-5414F0FC"
+          },
+          "error": null
+        },
+        "dashboardStats": {
+          "success": true,
+          "stats": {
+            "cards": {
+              "todays_bookings": 0,
+              "pending_bookings": 16,
+              "total_customers": 0,
+              "active_services": 6,
+              "staff_members": 8,
+              "pending_messages": 0
+            },
+            "trends": [
+              {
+                "day": "2026-08-20",
+                "bookings": 2
+              }
+            ],
+            "recentBookings": [
+              {
+                "id": "4dffed69-52f1-42c9-8d2c-de7de68722fd",
+                "bookingNumber": "ZT-5414F0FC",
+                "customerName": "AUDIT_TEST",
+                "serviceName": "Restaurant",
+                "bookingDate": "2026-09-01",
+                "bookingTime": "14:00:00",
+                "status": "pending"
+              },
+              {
+                "id": "3b103d89-9c11-4057-b049-021ae9dd453d",
+                "bookingNumber": "ZT-D6363277",
+                "customerName": "Service Test restaurant",
+                "serviceName": "Restaurant",
+                "bookingDate": "2026-09-05",
+                "bookingTime": "14:00:00",
+                "status": "pending"
+              },
+              {
+                "id": "0870cf38-fb49-4a81-a2f2-a0ecbae28402",
+                "bookingNumber": "ZT-EF3CA9FF",
+                "customerName": "Lifecycle Test Customer",
+                "serviceName": "Restaurant",
+                "bookingDate": "2026-09-02",
+                "bookingTime": "12:00:00",
+                "status": "pending"
+              },
+              {
+                "id": "1222a9b1-b84a-4c8e-b893-5950fc6e2680",
+                "bookingNumber": "ZT-5D86B260",
+                "customerName": "Lifecycle Test Customer",
+                "serviceName": "VIP Cabins",
+                "bookingDate": "2026-09-01",
+                "bookingTime": "11:00:00",
+                "status": "pending"
+              },
+              {
+                "id": "40b10c67-7e5f-4e7c-9e7e-90e1d57e6ac9",
+                "bookingNumber": "ZT-C1CD0DF7",
+                "customerName": "Remediation Test Customer",
+                "serviceName": "Restaurant",
+                "bookingDate": "2026-08-30",
+                "bookingTime": "15:30:00",
+                "status": "pending"
+              },
+              {
+                "id": "4d1953dc-d4a2-4f30-adb9-d555247dd03f",
+                "bookingNumber": "ZT-261F6FE5",
+                "customerName": "Ian Mutharimi",
+                "serviceName": "Conference",
+                "bookingDate": "2026-08-25",
+                "bookingTime": "09:00:00",
+                "status": "pending"
+              },
+              {
+                "id": "516eca0b-6928-4710-85f6-92bd51a9e227",
+                "bookingNumber": "ZT-0467C302",
+                "customerName": "ZT RUNTIME TEST Restaurant",
+                "serviceName": "Restaurant",
+                "bookingDate": "2099-12-31",
+                "bookingTime": "09:00:00",
+                "status": "pending"
+              },
+              {
+                "id": "341f729f-276a-4e56-8a56-131578b0e0b8",
+                "bookingNumber": "ZT-E11A5D9C",
+                "customerName": "ZT RUNTIME TEST Lounge",
+                "serviceName": "Lounge & Bar",
+                "bookingDate": "2099-12-31",
+                "bookingTime": "10:00:00",
+                "status": "pending"
+              },
+              {
+                "id": "aac86272-7e03-4f62-88c5-64bbae4cad45",
+                "bookingNumber": "ZT-2AE6A019",
+                "customerName": "ZT RUNTIME TEST VIP",
+                "serviceName": "VIP Cabins",
+                "bookingDate": "2099-12-31",
+                "bookingTime": "11:00:00",
+                "status": "pending"
+              },
+              {
+                "id": "0023c4f7-8d7e-4890-9162-722e2d938a6a",
+                "bookingNumber": "ZT-AE2A1D22",
+                "customerName": "ZT RUNTIME TEST Events",
+                "serviceName": "Events",
+                "bookingDate": "2099-12-31",
+                "bookingTime": "12:00:00",
+                "status": "pending"
+              }
+            ],
+            "activity": [
+              {
+                "id": "ee6b5844-1959-4633-908d-3313c8062d0a",
+                "actor": "System",
+                "action": "LOGIN_SUCCESS",
+                "details": "auth",
+                "createdAt": "2026-08-21 12:47:02.676395+00"
+              },
+              {
+                "id": "53f5d19a-4ba8-46cb-9116-85b5364ed95a",
+                "actor": "System",
+                "action": "INSERT",
+                "details": "profiles #0bbac68d-f879-4a13-aa72-ecd9ef68a60a",
+                "createdAt": "2026-08-18 17:15:21.781611+00"
+              },
+              {
+                "id": "903d86f9-302d-4032-bc1e-454c75447a36",
+                "actor": "System",
+                "action": "INSERT",
+                "details": "profiles #df884d77-7cbc-4e73-8b63-955dbaab4e55",
+                "createdAt": "2026-08-18 17:15:20.56295+00"
+              },
+              {
+                "id": "208e26e1-3864-49f7-ad18-36c105b88fcc",
+                "actor": "System",
+                "action": "INSERT",
+                "details": "profiles #71c862f6-f6b0-42c8-a173-a220e1e19e2e",
+                "createdAt": "2026-08-18 17:15:19.320471+00"
+              },
+              {
+                "id": "72b4d0bc-7329-4d60-a77f-10ce83f46823",
+                "actor": "System",
+                "action": "INSERT",
+                "details": "profiles #774963c3-4050-448f-8df7-8d8ee936946d",
+                "createdAt": "2026-08-18 17:15:17.886386+00"
+              },
+              {
+                "id": "474f9968-cd81-4131-9628-f35480c3d0be",
+                "actor": "System",
+                "action": "LOGIN_SUCCESS",
+                "details": "auth",
+                "createdAt": "2026-08-17 07:39:13.877996+00"
+              },
+              {
+                "id": "a22211d0-ddc7-4604-9129-febf0f48f72c",
+                "actor": "System",
+                "action": "LOGIN_SUCCESS",
+                "details": "auth",
+                "createdAt": "2026-08-17 07:33:17.144596+00"
+              },
+              {
+                "id": "37fe27ef-7956-4ed8-b7cb-3473b1f70ba2",
+                "actor": "System",
+                "action": "LOGIN_SUCCESS",
+                "details": "auth",
+                "createdAt": "2026-08-17 07:32:47.392889+00"
+              },
+              {
+                "id": "443d79c0-8840-4c70-9005-00a593ac9af9",
+                "actor": "System",
+                "action": "LOGIN_SUCCESS",
+                "details": "auth",
+                "createdAt": "2026-08-17 07:32:05.430378+00"
+              },
+              {
+                "id": "06b5c8a5-ba9d-4781-9e89-08c540470bd4",
+                "actor": "System",
+                "action": "LOGIN_SUCCESS",
+                "details": "auth",
+                "createdAt": "2026-08-17 07:31:58.471345+00"
+              }
+            ],
+            "notifications": [
+              {
+                "id": "3bf5c545-eb40-45b0-82dc-2ed0496811eb",
+                "title": "New Booking",
+                "body": "Booking ZT-5414F0FC has been created.",
+                "isRead": false,
+                "createdAt": "2026-08-22 11:41:13.956968+00"
+              },
+              {
+                "id": "87dacd79-ab2f-4af7-ba0d-12a78d05f6aa",
+                "title": "New Booking",
+                "body": "Booking ZT-D6363277 has been created.",
+                "isRead": false,
+                "createdAt": "2026-08-22 10:56:47.812539+00"
+              },
+              {
+                "id": "fd8c34ac-1684-4498-9b6e-94dac8b8d2c6",
+                "title": "New Booking",
+                "body": "Booking ZT-EF3CA9FF has been created.",
+                "isRead": false,
+                "createdAt": "2026-08-22 10:56:46.905114+00"
+              },
+              {
+                "id": "46d8e1a2-946c-4797-a567-91a2d77e5a39",
+                "title": "New Booking",
+                "body": "Booking ZT-5D86B260 has been created.",
+                "isRead": false,
+                "createdAt": "2026-08-22 10:56:46.361428+00"
+              },
+              {
+                "id": "f173d2f6-85f9-47ca-bc27-18d7631016b8",
+                "title": "New Booking",
+                "body": "Booking ZT-C1CD0DF7 has been created.",
+                "isRead": false,
+                "createdAt": "2026-08-22 10:56:37.566419+00"
+              },
+              {
+                "id": "20b7ce3b-b208-482b-b110-ac93938f43c2",
+                "title": "New Booking",
+                "body": "Booking ZT-261F6FE5 has been created.",
+                "isRead": false,
+                "createdAt": "2026-08-22 10:38:10.148668+00"
+              },
+              {
+                "id": "401f06c3-a7f9-447c-916e-1b681524741b",
+                "title": "New Booking",
+                "body": "Booking ZT-0467C302 has been created.",
+                "isRead": false,
+                "createdAt": "2026-08-22 09:03:46.051826+00"
+              },
+              {
+                "id": "127da1f9-8517-4709-b938-10b0690eee81",
+                "title": "New Booking",
+                "body": "Booking ZT-E11A5D9C has been created.",
+                "isRead": false,
+                "createdAt": "2026-08-22 09:03:46.051826+00"
+              },
+              {
+                "id": "b8b270a1-0384-4810-8f1e-d5bfd69a2a3d",
+                "title": "New Booking",
+                "body": "Booking ZT-2AE6A019 has been created.",
+                "isRead": false,
+                "createdAt": "2026-08-22 09:03:46.051826+00"
+              },
+              {
+                "id": "79bd57ad-b328-4f31-911c-5e6268ade46c",
+                "title": "New Booking",
+                "body": "Booking ZT-AE2A1D22 has been created.",
+                "isRead": false,
+                "createdAt": "2026-08-22 09:03:46.051826+00"
+              }
+            ]
+          },
+          "error": null
+        }
+      }
+    },
+    "phase2": {
+      "findings": {
+        "anonBookingsAccess": {
+          "blocked": false,
+          "error": null,
+          "dataReturned": 0
+        },
+        "anonCustomersAccess": {
+          "blocked": false,
+          "error": null,
+          "dataReturned": 0
+        },
+        "anonCreateBooking": {
+          "success": true,
+          "result": {
+            "guests": 3,
+            "status": "pending",
+            "end_time": "16:00:00",
+            "booking_id": "8f984eed-2f8b-485a-a5f4-244e7b4600b0",
+            "service_id": "e38ef721-2a57-4c05-88aa-5509d766ca66",
+            "start_time": "15:00:00",
+            "customer_id": "21bb10c9-e247-4ead-a5f4-9ec507377228",
+            "booking_date": "2026-09-02",
+            "booking_number": "ZT-6CC0719E"
+          },
+          "error": null
+        }
+      }
+    },
+    "phase3": {
+      "findings": {
+        "deduplication": {
+          "testPhone": "+254799877150",
+          "booking1CustomerId": "c432f212-9d0c-4299-8b22-f804bd7e2df0",
+          "booking2CustomerId": "c432f212-9d0c-4299-8b22-f804bd7e2df0",
+          "deduplicationWorks": true,
+          "booking1Id": "9f454bbe-5eaf-469e-b021-45165514ebab",
+          "booking2Id": "1b9f0aec-b609-41af-a0a2-18023bc4347e"
+        }
+      }
+    },
+    "phase4": {
+      "findings": {
+        "confirmation": {
+          "success": true,
+          "updatedStatus": "confirmed",
+          "error": null
+        },
+        "statsAfterConfirmation": {
+          "cards": {
+            "todays_bookings": 0,
+            "pending_bookings": 18,
+            "total_customers": 1,
+            "active_services": 6,
+            "staff_members": 8,
+            "pending_messages": 0
+          },
+          "trends": [
+            {
+              "day": "2026-08-20",
+              "bookings": 2
+            }
+          ],
+          "recentBookings": [
+            {
+              "id": "1b9f0aec-b609-41af-a0a2-18023bc4347e",
+              "bookingNumber": "ZT-EC626B2D",
+              "customerName": "John Doe",
+              "serviceName": "Lounge & Bar",
+              "bookingDate": "2026-09-06",
+              "bookingTime": "13:00:00",
+              "status": "pending"
+            },
+            {
+              "id": "9f454bbe-5eaf-469e-b021-45165514ebab",
+              "bookingNumber": "ZT-398AACCF",
+              "customerName": "John Doe",
+              "serviceName": "Restaurant",
+              "bookingDate": "2026-09-05",
+              "bookingTime": "12:00:00",
+              "status": "confirmed"
+            },
+            {
+              "id": "8f984eed-2f8b-485a-a5f4-244e7b4600b0",
+              "bookingNumber": "ZT-6CC0719E",
+              "customerName": "Test Customer",
+              "serviceName": "Restaurant",
+              "bookingDate": "2026-09-02",
+              "bookingTime": "15:00:00",
+              "status": "pending"
+            },
+            {
+              "id": "4dffed69-52f1-42c9-8d2c-de7de68722fd",
+              "bookingNumber": "ZT-5414F0FC",
+              "customerName": "AUDIT_TEST",
+              "serviceName": "Restaurant",
+              "bookingDate": "2026-09-01",
+              "bookingTime": "14:00:00",
+              "status": "pending"
+            },
+            {
+              "id": "3b103d89-9c11-4057-b049-021ae9dd453d",
+              "bookingNumber": "ZT-D6363277",
+              "customerName": "Service Test restaurant",
+              "serviceName": "Restaurant",
+              "bookingDate": "2026-09-05",
+              "bookingTime": "14:00:00",
+              "status": "pending"
+            },
+            {
+              "id": "0870cf38-fb49-4a81-a2f2-a0ecbae28402",
+              "bookingNumber": "ZT-EF3CA9FF",
+              "customerName": "Lifecycle Test Customer",
+              "serviceName": "Restaurant",
+              "bookingDate": "2026-09-02",
+              "bookingTime": "12:00:00",
+              "status": "pending"
+            },
+            {
+              "id": "1222a9b1-b84a-4c8e-b893-5950fc6e2680",
+              "bookingNumber": "ZT-5D86B260",
+              "customerName": "Lifecycle Test Customer",
+              "serviceName": "VIP Cabins",
+              "bookingDate": "2026-09-01",
+              "bookingTime": "11:00:00",
+              "status": "pending"
+            },
+            {
+              "id": "40b10c67-7e5f-4e7c-9e7e-90e1d57e6ac9",
+              "bookingNumber": "ZT-C1CD0DF7",
+              "customerName": "Remediation Test Customer",
+              "serviceName": "Restaurant",
+              "bookingDate": "2026-08-30",
+              "bookingTime": "15:30:00",
+              "status": "pending"
+            },
+            {
+              "id": "4d1953dc-d4a2-4f30-adb9-d555247dd03f",
+              "bookingNumber": "ZT-261F6FE5",
+              "customerName": "Ian Mutharimi",
+              "serviceName": "Conference",
+              "bookingDate": "2026-08-25",
+              "bookingTime": "09:00:00",
+              "status": "pending"
+            },
+            {
+              "id": "516eca0b-6928-4710-85f6-92bd51a9e227",
+              "bookingNumber": "ZT-0467C302",
+              "customerName": "ZT RUNTIME TEST Restaurant",
+              "serviceName": "Restaurant",
+              "bookingDate": "2099-12-31",
+              "bookingTime": "09:00:00",
+              "status": "pending"
+            }
+          ],
+          "activity": [
+            {
+              "id": "ee6b5844-1959-4633-908d-3313c8062d0a",
+              "actor": "System",
+              "action": "LOGIN_SUCCESS",
+              "details": "auth",
+              "createdAt": "2026-08-21 12:47:02.676395+00"
+            },
+            {
+              "id": "53f5d19a-4ba8-46cb-9116-85b5364ed95a",
+              "actor": "System",
+              "action": "INSERT",
+              "details": "profiles #0bbac68d-f879-4a13-aa72-ecd9ef68a60a",
+              "createdAt": "2026-08-18 17:15:21.781611+00"
+            },
+            {
+              "id": "903d86f9-302d-4032-bc1e-454c75447a36",
+              "actor": "System",
+              "action": "INSERT",
+              "details": "profiles #df884d77-7cbc-4e73-8b63-955dbaab4e55",
+              "createdAt": "2026-08-18 17:15:20.56295+00"
+            },
+            {
+              "id": "208e26e1-3864-49f7-ad18-36c105b88fcc",
+              "actor": "System",
+              "action": "INSERT",
+              "details": "profiles #71c862f6-f6b0-42c8-a173-a220e1e19e2e",
+              "createdAt": "2026-08-18 17:15:19.320471+00"
+            },
+            {
+              "id": "72b4d0bc-7329-4d60-a77f-10ce83f46823",
+              "actor": "System",
+              "action": "INSERT",
+              "details": "profiles #774963c3-4050-448f-8df7-8d8ee936946d",
+              "createdAt": "2026-08-18 17:15:17.886386+00"
+            },
+            {
+              "id": "474f9968-cd81-4131-9628-f35480c3d0be",
+              "actor": "System",
+              "action": "LOGIN_SUCCESS",
+              "details": "auth",
+              "createdAt": "2026-08-17 07:39:13.877996+00"
+            },
+            {
+              "id": "a22211d0-ddc7-4604-9129-febf0f48f72c",
+              "actor": "System",
+              "action": "LOGIN_SUCCESS",
+              "details": "auth",
+              "createdAt": "2026-08-17 07:33:17.144596+00"
+            },
+            {
+              "id": "37fe27ef-7956-4ed8-b7cb-3473b1f70ba2",
+              "actor": "System",
+              "action": "LOGIN_SUCCESS",
+              "details": "auth",
+              "createdAt": "2026-08-17 07:32:47.392889+00"
+            },
+            {
+              "id": "443d79c0-8840-4c70-9005-00a593ac9af9",
+              "actor": "System",
+              "action": "LOGIN_SUCCESS",
+              "details": "auth",
+              "createdAt": "2026-08-17 07:32:05.430378+00"
+            },
+            {
+              "id": "06b5c8a5-ba9d-4781-9e89-08c540470bd4",
+              "actor": "System",
+              "action": "LOGIN_SUCCESS",
+              "details": "auth",
+              "createdAt": "2026-08-17 07:31:58.471345+00"
+            }
+          ],
+          "notifications": [
+            {
+              "id": "74fd018f-726e-4839-b4cc-56791aff2d00",
+              "title": "New Booking",
+              "body": "Booking ZT-EC626B2D has been created.",
+              "isRead": false,
+              "createdAt": "2026-08-22 11:41:17.695495+00"
+            },
+            {
+              "id": "41944ffe-c8e5-46ed-9c94-e13c8dedd3f4",
+              "title": "New Booking",
+              "body": "Booking ZT-398AACCF has been created.",
+              "isRead": false,
+              "createdAt": "2026-08-22 11:41:17.166078+00"
+            },
+            {
+              "id": "277f3a11-35bd-49cc-bf09-568829fa0505",
+              "title": "New Booking",
+              "body": "Booking ZT-6CC0719E has been created.",
+              "isRead": false,
+              "createdAt": "2026-08-22 11:41:16.815509+00"
+            },
+            {
+              "id": "3bf5c545-eb40-45b0-82dc-2ed0496811eb",
+              "title": "New Booking",
+              "body": "Booking ZT-5414F0FC has been created.",
+              "isRead": false,
+              "createdAt": "2026-08-22 11:41:13.956968+00"
+            },
+            {
+              "id": "87dacd79-ab2f-4af7-ba0d-12a78d05f6aa",
+              "title": "New Booking",
+              "body": "Booking ZT-D6363277 has been created.",
+              "isRead": false,
+              "createdAt": "2026-08-22 10:56:47.812539+00"
+            },
+            {
+              "id": "fd8c34ac-1684-4498-9b6e-94dac8b8d2c6",
+              "title": "New Booking",
+              "body": "Booking ZT-EF3CA9FF has been created.",
+              "isRead": false,
+              "createdAt": "2026-08-22 10:56:46.905114+00"
+            },
+            {
+              "id": "46d8e1a2-946c-4797-a567-91a2d77e5a39",
+              "title": "New Booking",
+              "body": "Booking ZT-5D86B260 has been created.",
+              "isRead": false,
+              "createdAt": "2026-08-22 10:56:46.361428+00"
+            },
+            {
+              "id": "f173d2f6-85f9-47ca-bc27-18d7631016b8",
+              "title": "New Booking",
+              "body": "Booking ZT-C1CD0DF7 has been created.",
+              "isRead": false,
+              "createdAt": "2026-08-22 10:56:37.566419+00"
+            },
+            {
+              "id": "20b7ce3b-b208-482b-b110-ac93938f43c2",
+              "title": "New Booking",
+              "body": "Booking ZT-261F6FE5 has been created.",
+              "isRead": false,
+              "createdAt": "2026-08-22 10:38:10.148668+00"
+            },
+            {
+              "id": "401f06c3-a7f9-447c-916e-1b681524741b",
+              "title": "New Booking",
+              "body": "Booking ZT-0467C302 has been created.",
+              "isRead": false,
+              "createdAt": "2026-08-22 09:03:46.051826+00"
+            }
+          ]
+        }
+      }
+    },
+    "phase5": {
+      "findings": {
+        "serviceTests": {
+          "restaurant": {
+            "success": true,
+            "bookingId": "c6ee41e3-fe49-432d-808f-dc9403027412",
+            "error": null
+          },
+          "lounge-bar": {
+            "success": false,
+            "error": "The requested time slot (14:00:00) is already booked. Please choose another time."
+          },
+          "vip-cabins": {
+            "success": false,
+            "error": "The requested time slot (14:00:00) is already booked. Please choose another time."
+          },
+          "events": {
+            "success": false,
+            "error": "The requested time slot (14:00:00) is already booked. Please choose another time."
+          },
+          "conference": {
+            "success": false,
+            "error": "The requested time slot (14:00:00) is already booked. Please choose another time."
+          },
+          "auto-spa": {
+            "success": false,
+            "error": "The requested time slot (14:00:00) is already booked. Please choose another time."
+          }
+        }
+      }
+    }
+  },
+  "testBookingId": "4dffed69-52f1-42c9-8d2c-de7de68722fd",
+  "testBookingId2": "8f984eed-2f8b-485a-a5f4-244e7b4600b0",
+  "verdict": {
+    "tables": "PASS",
+    "functions": "PASS",
+    "createBooking": "PASS",
+    "dashboardStats": "PASS",
+    "rlsBookings": "FAIL",
+    "rlsCustomers": "FAIL",
+    "anonBookingAllowed": "PASS",
+    "customerDeduplication": "PASS",
+    "adminConfirmation": "PASS",
+    "sixServices": "PARTIAL"
+  },
+  "productionReadiness": "NOT PRODUCTION READY"
+}

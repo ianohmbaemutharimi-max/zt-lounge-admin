@@ -24,28 +24,41 @@ ALTER TABLE hero_slides ADD COLUMN media_id uuid;
 
 -- ============================================================================
 -- PHASE 2: Create foreign key constraints
--- Use ON DELETE SET NULL to allow media_assets deletion without cascading
+-- Use ON DELETE RESTRICT to prevent media deletion while referenced
+-- A referenced media asset must not silently disappear from its consumer
 -- ============================================================================
 
 -- menu_items.media_id -> media_assets.id
 ALTER TABLE menu_items
+DROP CONSTRAINT IF EXISTS fk_menu_items_media_id;
+
+ALTER TABLE menu_items
 ADD CONSTRAINT fk_menu_items_media_id
-FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE SET NULL;
+FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE RESTRICT;
 
 -- services.media_id -> media_assets.id
 ALTER TABLE services
+DROP CONSTRAINT IF EXISTS fk_services_media_id;
+
+ALTER TABLE services
 ADD CONSTRAINT fk_services_media_id
-FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE SET NULL;
+FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE RESTRICT;
 
 -- gallery.media_id -> media_assets.id
 ALTER TABLE gallery
+DROP CONSTRAINT IF EXISTS fk_gallery_media_id;
+
+ALTER TABLE gallery
 ADD CONSTRAINT fk_gallery_media_id
-FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE SET NULL;
+FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE RESTRICT;
 
 -- hero_slides.media_id -> media_assets.id
 ALTER TABLE hero_slides
+DROP CONSTRAINT IF EXISTS fk_hero_slides_media_id;
+
+ALTER TABLE hero_slides
 ADD CONSTRAINT fk_hero_slides_media_id
-FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE SET NULL;
+FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE RESTRICT;
 
 -- ============================================================================
 -- PHASE 3: Create indexes on media_id columns for query performance

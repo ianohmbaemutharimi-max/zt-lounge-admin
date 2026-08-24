@@ -1,0 +1,99 @@
+{
+  "timestamp": "2026-08-20T06:51:03.258Z",
+  "logo": {
+    "local_files": [
+      {
+        "file": "zt-lounge-logo.png",
+        "relative_path": "images/logo/zt-lounge-logo.png",
+        "absolute_path": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\public\\images\\logo\\zt-lounge-logo.png",
+        "size_bytes": 67,
+        "is_logo": true,
+        "is_favicon": false
+      },
+      {
+        "file": "zt-lounge-logo.svg",
+        "relative_path": "images/logo/zt-lounge-logo.svg",
+        "absolute_path": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\public\\images\\logo\\zt-lounge-logo.svg",
+        "size_bytes": 1568,
+        "is_logo": true,
+        "is_favicon": false
+      }
+    ],
+    "storage_objects": [
+      {
+        "bucket": "logos",
+        "objects": [
+          {
+            "name": "logo.webp",
+            "id": "9501b640-23f2-4b2b-9533-65f86774a223",
+            "updated_at": "2026-08-11T20:50:54.807Z",
+            "created_at": "2026-08-11T20:50:54.807Z",
+            "last_accessed_at": "2026-08-11T20:50:54.807Z",
+            "metadata": {
+              "eTag": "\"67055015459bde4eb4b5b9e19292c94e\"",
+              "size": 16114,
+              "mimetype": "image/webp",
+              "cacheControl": "max-age=3600",
+              "lastModified": "2026-08-11T20:50:55.000Z",
+              "contentLength": 16114,
+              "httpStatusCode": 200
+            }
+          }
+        ]
+      }
+    ],
+    "media_assets_records": [
+      {
+        "id": "a5fb7148-8562-4d82-9fc1-d979fc19a323",
+        "bucket": "logos",
+        "path": "logo.webp",
+        "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/logos/logo.webp",
+        "original_name": "business_settings",
+        "mime_type": null,
+        "file_size": null,
+        "width": null,
+        "height": null,
+        "alt_text": null,
+        "title": "ZT Lounge Logo",
+        "content_hash": null,
+        "uploaded_by": null,
+        "created_at": "2026-08-13T14:52:46.791065+00:00",
+        "updated_at": "2026-08-13T14:52:46.791065+00:00"
+      }
+    ],
+    "canonical_match": {
+      "id": "a5fb7148-8562-4d82-9fc1-d979fc19a323",
+      "bucket": "logos",
+      "path": "logo.webp",
+      "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/logos/logo.webp",
+      "original_name": "business_settings",
+      "mime_type": null,
+      "file_size": null,
+      "width": null,
+      "height": null,
+      "alt_text": null,
+      "title": "ZT Lounge Logo",
+      "content_hash": null,
+      "uploaded_by": null,
+      "created_at": "2026-08-13T14:52:46.791065+00:00",
+      "updated_at": "2026-08-13T14:52:46.791065+00:00"
+    },
+    "storage_verified": true
+  },
+  "favicon": {
+    "local_files": [
+      {
+        "file": "favicon.ico",
+        "relative_path": "favicon.ico",
+        "absolute_path": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\public\\favicon.ico",
+        "size_bytes": 87,
+        "is_logo": false,
+        "is_favicon": true
+      }
+    ],
+    "storage_objects": [],
+    "media_assets_records": [],
+    "canonical_match": null,
+    "local_verified": true
+  }
+}

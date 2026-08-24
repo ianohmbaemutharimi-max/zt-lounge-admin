@@ -1,0 +1,80 @@
+{
+  "timestamp": "2026-08-22T10:53:39.565Z",
+  "phase": "A - READ-ONLY RECONCILIATION",
+  "findings": {
+    "bookings_schema": {
+      "method": "table_structure_inference",
+      "note": "Direct schema query failed, inferring from table structure",
+      "error": "Could not find the function public.exec_sql(sql) in the schema cache"
+    },
+    "bookings_constraints": [],
+    "bookings_indexes": [],
+    "bookings_triggers": [],
+    "booking_functions": [],
+    "booking_status_enum": [],
+    "rls_status": {},
+    "bookings_policies": [],
+    "bookings_grants": [],
+    "create_booking_grants": [],
+    "create_booking_signature": {},
+    "create_booking_implementation": null,
+    "profiles_schema": [],
+    "roles": [
+      {
+        "id": "7fe4b84b-c770-4e4b-a4dc-87c7c57db16a",
+        "name": "super_admin",
+        "description": "System Owner"
+      },
+      {
+        "id": "d92ddefd-8935-420b-81c8-f5bff5530b02",
+        "name": "admin",
+        "description": "Business Administrator"
+      },
+      {
+        "id": "9687d7ef-5679-4fd5-99bc-f7f53d1c9843",
+        "name": "manager",
+        "description": "Manager access"
+      },
+      {
+        "id": "6cd6e3c2-ce4b-4d96-8373-1c388892eb6b",
+        "name": "receptionist",
+        "description": "Receptionist with front-desk access"
+      },
+      {
+        "id": "ace767e9-8cf4-4878-8ea5-24c160c12279",
+        "name": "staff",
+        "description": "General staff -- access scoped to assigned duties"
+      },
+      {
+        "id": "7d562660-5ab3-4706-a877-1b4d638ccc8a",
+        "name": "customer",
+        "description": "Customer with public booking access"
+      }
+    ],
+    "customers_constraints": [],
+    "customer_phone_formats": {
+      "sample_size": 11,
+      "formats": {
+        "international (+254)": 5,
+        "local (07/01)": 6
+      },
+      "examples": [
+        "+254700000001",
+        "+254700000002",
+        "+254700000000",
+        "+254799999999",
+        "0712345001",
+        "0712345002",
+        "0712345003",
+        "0712345004",
+        "0712345005",
+        "0712345006"
+      ]
+    },
+    "customer_email_analysis": {
+      "stats": {},
+      "duplicate_emails": [],
+      "has_unique_constraint": false
+    }
+  }
+}

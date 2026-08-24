@@ -4,11 +4,23 @@
  */
 
 import { chromium, FullConfig } from '@playwright/test';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+import * as fs from 'fs';
 
 async function globalSetup(config: FullConfig) {
   console.log('\n' + '='.repeat(60));
   console.log('ZT LOUNGE E2E TEST SUITE - GLOBAL SETUP');
   console.log('='.repeat(60));
+
+  // Load .env.local if it exists
+  const envLocalPath = path.resolve(process.cwd(), '.env.local');
+  if (fs.existsSync(envLocalPath)) {
+    console.log('\n📁 Loading environment from .env.local');
+    dotenv.config({ path: envLocalPath });
+  } else {
+    console.log('\n⚠️  .env.local not found - using system environment variables');
+  }
 
   // Verify environment
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;

@@ -1,0 +1,619 @@
+{
+  "timestamp": "2026-08-20T12:09:48.907Z",
+  "project": "jczwilrysvnhcjzjztbi",
+  "status": "SUCCESS",
+  "before": {
+    "menu": {
+      "total": 13,
+      "withImageUrl": 13,
+      "withMediaId": 0
+    },
+    "services": {
+      "total": 6,
+      "withImageUrl": 6,
+      "withMediaId": 0
+    },
+    "gallery": {
+      "total": 14,
+      "withImageUrl": 14,
+      "withMediaId": 0
+    },
+    "hero": {
+      "total": 8,
+      "withImageUrl": 2,
+      "withMediaId": 0
+    },
+    "brand": {
+      "logoMediaId": null,
+      "faviconMediaId": null
+    }
+  },
+  "after": {
+    "menu": {
+      "total": 13,
+      "withImageUrl": 13,
+      "withMediaId": 13
+    },
+    "services": {
+      "total": 6,
+      "withImageUrl": 6,
+      "withMediaId": 6
+    },
+    "gallery": {
+      "total": 14,
+      "withImageUrl": 14,
+      "withMediaId": 14
+    },
+    "hero": {
+      "total": 8,
+      "withImageUrl": 2,
+      "withMediaId": 2
+    },
+    "brand": {
+      "logoMediaId": "a5fb7148-8562-4d82-9fc1-d979fc19a323",
+      "faviconMediaId": null
+    }
+  },
+  "applied_updates": 36,
+  "verification": {
+    "menu": {
+      "expected": 13,
+      "verified": 13,
+      "failed": []
+    },
+    "services": {
+      "expected": 6,
+      "verified": 6,
+      "failed": []
+    },
+    "gallery": {
+      "expected": 14,
+      "verified": 14,
+      "failed": []
+    },
+    "hero": {
+      "expected": 2,
+      "verified": 2,
+      "failed": []
+    },
+    "brand": {
+      "logo": {
+        "verified": true,
+        "media_id": "a5fb7148-8562-4d82-9fc1-d979fc19a323"
+      },
+      "favicon": {
+        "verified": true,
+        "media_id": null,
+        "note": "No mapping found (expected for /favicon.ico)"
+      },
+      "failed": []
+    },
+    "referentialIntegrity": {
+      "valid": 36,
+      "invalid": []
+    },
+    "sourcePreservation": {
+      "verified": true,
+      "changed": []
+    },
+    "testimonialBoundary": {
+      "verified": true,
+      "touched": false
+    },
+    "storage": {
+      "verified": true,
+      "modified": false
+    }
+  },
+  "reference_count": {
+    "totalAssets": 37,
+    "referencedAssets": 36,
+    "unreferencedAssets": 1,
+    "reusedAssets": 0,
+    "details": [
+      {
+        "media_id": "c8c306df-aed5-485a-91b0-c346768525e2",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "553cfbbf-fa6d-43b9-ae1f-310387f6a6c8",
+            "entity_name": "Premium Beef Steak"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "beef-steak.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "9e66cc0a-59d2-482c-8137-f7ca081901c8",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "8d768393-c52c-438f-884e-9910ba78a27e",
+            "entity_name": "Mixed Grill Platter"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "mixed-grill.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "319e829a-b819-4dff-ad7e-7fa50ad2146d",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "2ff55c17-750d-4bdc-9a2f-bbe93eb17dd4",
+            "entity_name": "Cocktail Selection"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "cocktail.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "610bcb3e-c2ed-4914-aff5-850aa8de859e",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "2c66bd38-9986-4078-b1a4-b2b5a9a1f885",
+            "entity_name": "Signature Nyama Choma"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "nyama-choma.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "897b3a61-9bf0-4e4e-ba55-4bf824eea35e",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "a88ed411-bf78-4985-a41f-31cfc5e4ff44",
+            "entity_name": "ZT Signature Pilau"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "signature-pilau.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "3d421b49-9533-4f92-9930-638a8bdce110",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "ebd98cc3-927c-42f1-9e88-f28b749c8e08",
+            "entity_name": "Loaded Fries"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "loaded-fries.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "1ed186c3-cde7-464d-a284-b640f78be679",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "be61cf75-6bf7-4eb5-a0c6-739d48e22640",
+            "entity_name": "Chicken Tikka"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "chicken-tikka.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "a3157f18-fb56-4473-95c6-b2d259d9c707",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "123d283c-860c-490d-b071-ad1261127ca0",
+            "entity_name": "Grilled Chicken"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "grilled-chicken.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "6b8bb3dc-a7ec-40ca-bd4f-4898b746121a",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "fbb9bcdf-9b6a-4b1e-9d75-658b952b86c5",
+            "entity_name": "Premium Sides"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "premium-sides.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "8d01dc78-26b2-4f02-bbc6-c37db2520233",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "3d43e076-2ddb-49bf-8ce5-c02e26a11df8",
+            "entity_name": "Goat Ribs"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "goat-ribs.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "379dfca9-e67c-4b2f-b921-76ac2030d934",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "1489a80d-0633-46a0-b88c-4c7ed6c63b8f",
+            "entity_name": "Fresh Juice"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "fresh-juice.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "d898e851-fd7a-4744-8494-e1cbb620a8a1",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "be858af1-a273-4675-a41c-d4cc54ab24d9",
+            "entity_name": "Coffee"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "coffee.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "611ade4f-5c7b-4018-900a-abb7afca0e76",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "menu_item",
+            "entity_id": "444e00b3-955e-4b21-b745-1b85712b6223",
+            "entity_name": "Signature Cocktail"
+          }
+        ],
+        "bucket": "menu-images",
+        "path": "signature-cocktail.webp",
+        "original_name": "menu_items"
+      },
+      {
+        "media_id": "31c61869-6843-41ba-9af9-fa5f0be77399",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "service",
+            "entity_id": "e38ef721-2a57-4c05-88aa-5509d766ca66",
+            "entity_name": "Restaurant"
+          }
+        ],
+        "bucket": "service-images",
+        "path": "interior.webp",
+        "original_name": "services"
+      },
+      {
+        "media_id": "3fe9fbae-27ac-49ee-af18-5f1d78993cb1",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "service",
+            "entity_id": "033640c1-bbad-4890-82f6-2b1cbfcae896",
+            "entity_name": "Events"
+          }
+        ],
+        "bucket": "service-images",
+        "path": "wedding.webp",
+        "original_name": "services"
+      },
+      {
+        "media_id": "78c4936d-8a71-418d-9209-304ef5faed63",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "service",
+            "entity_id": "a21bdd86-ad9c-4845-9dc7-a2d5e96e8c00",
+            "entity_name": "Conference"
+          }
+        ],
+        "bucket": "service-images",
+        "path": "conference-hall.webp",
+        "original_name": "services"
+      },
+      {
+        "media_id": "40fe55fd-3969-4b12-af10-163008ec18c1",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "service",
+            "entity_id": "8df2b696-241b-49fc-8c9b-95a6bacc547d",
+            "entity_name": "Lounge & Bar"
+          }
+        ],
+        "bucket": "service-images",
+        "path": "lounge-interior-main.webp",
+        "original_name": "services"
+      },
+      {
+        "media_id": "e9eb1f40-1093-4dd8-8c36-f5dbee824870",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "service",
+            "entity_id": "3139fc1e-fa7f-4f19-8822-c9aabf0bcf46",
+            "entity_name": "VIP Cabins"
+          }
+        ],
+        "bucket": "service-images",
+        "path": "vip-fireplace-lounge.webp",
+        "original_name": "services"
+      },
+      {
+        "media_id": "774bf8d2-1404-4735-b656-786fdd1d9898",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "service",
+            "entity_id": "f12be083-6b42-4fa4-a534-de6846a07029",
+            "entity_name": "Auto Spa"
+          }
+        ],
+        "bucket": "service-images",
+        "path": "car-detailing.webp",
+        "original_name": "services"
+      },
+      {
+        "media_id": "2ea6d47f-c739-4cc3-8d79-659bc529d11c",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "2b8f9ada-4ca3-4677-aaac-2723c4756b1a",
+            "entity_name": "VIP Suite"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-09.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "acf772a5-f6af-4375-b725-e1c33d4012e5",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "479e33c3-a0eb-456c-8bbe-ea0371c63449",
+            "entity_name": "Conference Tech"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-10.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "f22949ee-1cb7-4807-80c9-249cc1ae66ae",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "56055378-2f54-45df-bfff-c6f9d6b71305",
+            "entity_name": "Outdoor Patio"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-11.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "1831f945-64bf-4048-b3ba-4505a1310bc0",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "6b8d31fe-6d4f-4c50-9f95-3d90786a92bd",
+            "entity_name": "Private Dining"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-12.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "1b8a64af-b730-4291-8f06-1f66db8018b1",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "99bb88f5-a23a-4cb0-9043-1ec23734c702",
+            "entity_name": "Elegant Dining"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-01.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "b44a10fc-b446-4b74-a379-8345d2687bea",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "018ae57b-ce61-442b-bc6c-e1fea7c87367",
+            "entity_name": "VIP Cabin"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-02.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "a8b741dd-fa4c-46b0-a0b7-b9d484590619",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "13dfb794-4c26-457b-95fe-69a638ceac62",
+            "entity_name": "Conference Hall"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-03.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "e55d3b83-1681-4abf-932c-f0843abf3fd1",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "4c31ac75-6d05-4577-ab3c-7a1548f0566b",
+            "entity_name": "Car Detailing"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-13.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "6468fd9e-783a-4097-a813-408133971afd",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "a6654f84-dc0e-438e-b9e6-d6573f9a8df8",
+            "entity_name": "Exterior"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-14.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "5ce9ae31-a4b3-487f-b313-1b747b550ab8",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "8c783778-ec58-43df-b2c1-02a6e99d145c",
+            "entity_name": "Premium Lounge"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-04.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "a1086978-8bbd-4b49-a11e-cc3f65a88f7b",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "e073851e-a6fd-4ed3-abb8-aa5060666920",
+            "entity_name": "Event Setup"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-05.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "872936a8-63ce-4b6d-869c-e1612ad68364",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "151bcc5a-60a6-4ffc-b29a-bfe0fc5ebb28",
+            "entity_name": "Nightlife"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-06.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "af2c33c5-743b-462d-9882-fe82610c1b41",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "4eb85a61-c272-40fa-9eeb-dcb7bab1bdc6",
+            "entity_name": "Auto Spa"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-07.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "2626a8ba-4683-42c3-a531-913c890014ba",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "gallery",
+            "entity_id": "40c1637c-5cdd-4d66-8f1b-c1f5f5af29b5",
+            "entity_name": "Restaurant Interior"
+          }
+        ],
+        "bucket": "gallery-images",
+        "path": "gallery-08.webp",
+        "original_name": "gallery"
+      },
+      {
+        "media_id": "ce0458d4-2275-40a7-b82c-f367922d1d0b",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "hero_slide",
+            "entity_id": "0125fb9e-0b5c-4a15-b698-3be79aa0d0bf",
+            "entity_name": "ZT Lounge Meru"
+          }
+        ],
+        "bucket": "hero-images",
+        "path": "hero-restaurant.webp",
+        "original_name": "hero_slides"
+      },
+      {
+        "media_id": "141ce2ea-6bf1-463d-a390-5faf426a74d4",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "hero_slide",
+            "entity_id": "78eeb5cb-5070-42b0-9959-66e76cb0ba4f",
+            "entity_name": "Unforgettable Evenings Await"
+          }
+        ],
+        "bucket": "hero-images",
+        "path": "hero-lounge.webp",
+        "original_name": "hero_slides"
+      },
+      {
+        "media_id": "a5fb7148-8562-4d82-9fc1-d979fc19a323",
+        "count": 1,
+        "references": [
+          {
+            "entity_type": "business_settings",
+            "field": "logo_media_id"
+          }
+        ],
+        "bucket": "logos",
+        "path": "logo.webp",
+        "original_name": "business_settings"
+      }
+    ]
+  }
+}

@@ -8,14 +8,20 @@ import { z } from "zod";
 import { CheckCircle2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { queryKeys } from "@/lib/query-keys";
-import { PageHeader, Card, Spinner, EmptyState, Button, Field, Input, Select } from "@/components/ui";
+import { PageHeader, Card, Spinner, EmptyState, Button, Field, Input, Select, Textarea } from "@/components/ui";
 
 const schema = z.object({
-  businessName: z.string().min(2, "Business name is required"),
+  business_name: z.string().min(2, "Business name is required"),
+  description: z.string().optional(),
   phone: z.string().min(7, "Phone is required"),
   whatsapp: z.string().optional(),
   email: z.string().email("Invalid email"),
   address: z.string().min(3, "Address is required"),
+  city: z.string().optional(),
+  country: z.string().optional(),
+  google_maps_url: z.union([z.string().url("Invalid URL"), z.literal("")]).optional(),
+  latitude: z.union([z.coerce.number().min(-90, "Latitude must be between -90 and 90").max(90, "Latitude must be between -90 and 90"), z.literal("")]).optional(),
+  longitude: z.union([z.coerce.number().min(-180, "Longitude must be between -180 and 180").max(180, "Longitude must be between -180 and 180"), z.literal("")]).optional(),
   currency: z.string().min(2),
   timezone: z.string().min(2),
 });
@@ -30,13 +36,25 @@ export function SettingsView() {
   const system = useQuery({ queryKey: queryKeys["system-settings"].all(), queryFn: () => api.list("system-settings") });
   const biz = settings.data?.[0];
 
-  const form = useForm<FormValues>({ resolver: zodResolver(schema) });
+  const form = useForm<FormValues>({ 
+    resolver: zodResolver(schema) as any,
+  });
 
   useEffect(() => {
     if (biz) {
       form.reset({
-        businessName: biz.businessName, phone: biz.phone ?? "", whatsapp: biz.whatsapp ?? "",
-        email: biz.email ?? "", address: biz.address ?? "", currency: biz.currency ?? "KES",
+        business_name: biz.business_name,
+        description: biz.description ?? "",
+        phone: biz.phone ?? "",
+        whatsapp: biz.whatsapp ?? "",
+        email: biz.email ?? "",
+        address: biz.address ?? "",
+        city: biz.city ?? "",
+        country: biz.country ?? "",
+        google_maps_url: biz.google_maps_url ?? "",
+        latitude: biz.latitude ?? "",
+        longitude: biz.longitude ?? "",
+        currency: biz.currency ?? "KES",
         timezone: biz.timezone ?? "Africa/Nairobi",
       });
     }
@@ -70,15 +88,37 @@ export function SettingsView() {
         <Card className="p-6">
           <h3 className="mb-4 text-sm font-semibold text-white">Business Information</h3>
           <form onSubmit={form.handleSubmit((v) => saveBiz.mutate(v))} className="space-y-4">
-            <Field label="Business Name" error={form.formState.errors.businessName?.message}>
-              <Input {...form.register("businessName")} />
+            <Field label="Business Name" error={form.formState.errors.business_name?.message}>
+              <Input {...form.register("business_name")} />
+            </Field>
+            <Field label="Description" error={form.formState.errors.description?.message}>
+              <Textarea {...form.register("description")} placeholder="Brief description of your business" rows={3} />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Phone" error={form.formState.errors.phone?.message}><Input {...form.register("phone")} /></Field>
-              <Field label="WhatsApp"><Input {...form.register("whatsapp")} /></Field>
+              <Field label="WhatsApp"><Input {...form.register("whatsapp")} placeholder="Optional" /></Field>
             </div>
-            <Field label="Email" error={form.formState.errors.email?.message}><Input {...form.register("email")} /></Field>
+            <Field label="Email" error={form.formState.errors.email?.message}><Input {...form.register("email")} type="email" /></Field>
             <Field label="Address" error={form.formState.errors.address?.message}><Input {...form.register("address")} /></Field>
+
+            <p className="pt-2 text-xs font-semibold uppercase tracking-wider text-muted">Location &amp; Maps</p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="City"><Input {...form.register("city")} placeholder="Optional" /></Field>
+              <Field label="Country"><Input {...form.register("country")} placeholder="Optional" /></Field>
+            </div>
+            <Field label="Google Maps URL" error={form.formState.errors.google_maps_url?.message}>
+              <Input {...form.register("google_maps_url")} placeholder="https://maps.app.goo.gl/..." />
+            </Field>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Latitude" error={form.formState.errors.latitude?.message}>
+                <Input {...form.register("latitude")} type="number" step="any" placeholder="Optional (e.g. -1.2921)" />
+              </Field>
+              <Field label="Longitude" error={form.formState.errors.longitude?.message}>
+                <Input {...form.register("longitude")} type="number" step="any" placeholder="Optional (e.g. 36.8219)" />
+              </Field>
+            </div>
+
+            <p className="pt-2 text-xs font-semibold uppercase tracking-wider text-muted">System</p>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Currency">
                 <Select {...form.register("currency")}>
@@ -109,7 +149,7 @@ export function SettingsView() {
             <div className="space-y-4">
               {(system.data ?? []).map((s: any) => (
                 <div key={s.id} className="flex items-end gap-3">
-                  <Field label={s.key.replace(/_/g, " ")} className="flex-1">
+                  <Field label={(s.key || "").replace(/_/g, " ")} className="flex-1">
                     <Input
                       value={sysDraft[s.id] ?? s.value ?? ""}
                       onChange={(e) => setSysDraft({ ...sysDraft, [s.id]: e.target.value })}

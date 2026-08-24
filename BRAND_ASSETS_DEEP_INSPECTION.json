@@ -1,0 +1,67 @@
+{
+  "timestamp": "2026-08-21T11:05:55.211Z",
+  "phase": "PHASE 0 — DEEP READ-ONLY INSPECTION",
+  "publicWebsiteStructure": {
+    "mainPage": {
+      "exists": true,
+      "hasBusinessSettings": false,
+      "hasLogo": false,
+      "importsComponents": []
+    }
+  },
+  "publicWebsiteLogo": {
+    "componentSearched": [
+      "src/components/header.tsx",
+      "src/components/Header.tsx",
+      "src/components/navbar.tsx",
+      "src/components/Navbar.tsx",
+      "src/components/public/header.tsx",
+      "src/components/public/Header.tsx",
+      "src/features/public/header.tsx",
+      "src/app/(public)/layout.tsx"
+    ],
+    "found": []
+  },
+  "publicWebsiteFavicon": {
+    "layoutFile": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\layout.tsx",
+    "hasMetadata": true,
+    "hasGenerateMetadata": false,
+    "hasIcons": true,
+    "hasFaviconUrl": false,
+    "hasFaviconMediaId": false,
+    "usesBusinessSettings": false,
+    "staticFaviconReferences": [
+      "/favicon.ico"
+    ]
+  },
+  "adminBrandingUI": {
+    "file": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\features\\cms\\website-cms.tsx",
+    "hasLogoField": true,
+    "hasFaviconField": true,
+    "hasLogoMediaId": true,
+    "hasFaviconMediaId": true,
+    "usesMediaPicker": true,
+    "hasImageUpload": false
+  },
+  "businessSettingsAPI": {
+    "dedicatedEndpoint": false,
+    "usesGenericResource": true,
+    "path": "d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\src\\app\\api\\admin\\[resource]\\route.ts",
+    "handlesMediaResolution": false
+  },
+  "dataFlow": {},
+  "confirmedGaps": [
+    {
+      "area": "PUBLIC_FAVICON",
+      "issue": "Public website favicon not resolving from favicon_media_id",
+      "severity": "HIGH",
+      "fix": "Wire favicon_media_id resolution into layout.tsx metadata"
+    },
+    {
+      "area": "PUBLIC_LOGO",
+      "issue": "Cannot locate public website logo component",
+      "severity": "MEDIUM",
+      "fix": "Inspect page.tsx to determine logo rendering approach"
+    }
+  ]
+}

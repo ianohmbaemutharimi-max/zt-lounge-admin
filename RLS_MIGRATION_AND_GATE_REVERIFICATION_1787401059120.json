@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-08-22T12:17:36.921Z",
+  "migration_applied": true,
+  "gates": {
+    "gate1_security": {
+      "anonymous_select_bookings_blocked": false,
+      "anonymous_select_customers_blocked": false,
+      "anonymous_insert_blocked": true,
+      "anonymous_update_blocked": false,
+      "anonymous_rpc_allowed": false,
+      "rls_status": null,
+      "verdict": "FAIL"
+    },
+    "gate2_lifecycle": {
+      "verdict": "PASS",
+      "note": "Previously verified in initial gate verification"
+    },
+    "gate3_public_website": {
+      "verdict": "UNVERIFIED",
+      "reason": "Public website is separate deployment not in this repository"
+    }
+  }
+}

@@ -37,12 +37,11 @@ export function MediaPickerModal({
   const query = useQuery({
     queryKey: ["media-picker", search, offset],
     queryFn: async () => {
-      const response = await getSelectableMedia({
-        bucket: "media-content",
-        search: search || undefined,
-        limit,
-        offset,
-      });
+    const response = await getSelectableMedia({
+      search: search || undefined,
+      limit,
+      offset,
+    });
       return response;
     },
     enabled: open,

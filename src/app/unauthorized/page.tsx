@@ -1,16 +1,15 @@
 import Link from "next/link";
-import Image from "next/image";
 
 export default function UnauthorizedPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-ink px-4">
       <div className="w-full max-w-md text-center">
-        <Image
-          src="/images/logo/zt-lounge-logo.png"
+        <img
+          src="/images/logo/zt-lounge-logo.svg"
           alt="ZT Lounge"
-          width={64}
-          height={64}
-          className="mx-auto mb-4 rounded-full ring-2 ring-rose-500/40"
+          width={160}
+          height={40}
+          className="mx-auto mb-4 rounded ring-2 ring-rose-500/40"
         />
         <h1 className="text-3xl font-bold text-white">Access Denied</h1>
         <p className="mt-2 text-sm text-muted">

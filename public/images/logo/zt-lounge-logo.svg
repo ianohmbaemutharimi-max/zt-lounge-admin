@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="200" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="800" height="200" fill="#0A0A0A"/>
+  
+  <!-- Gold gradient definition -->
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#D4AF37;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#F5E6B3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D4AF37;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Main Text -->
+  <text x="400" y="110" 
+        font-family="'Arial Black', 'Arial Bold', Arial, sans-serif" 
+        font-size="90" 
+        font-weight="900" 
+        fill="url(#goldGradient)" 
+        text-anchor="middle"
+        filter="url(#glow)"
+        letter-spacing="8">ZT LOUNGE</text>
+  
+  <!-- Subtitle -->
+  <text x="400" y="155" 
+        font-family="Arial, sans-serif" 
+        font-size="20" 
+        fill="#D4AF37" 
+        text-anchor="middle"
+        letter-spacing="6"
+        opacity="0.9">LUXURY  •  STYLE  •  ELEGANCE</text>
+  
+  <!-- Decorative lines -->
+  <line x1="150" y1="170" x2="340" y2="170" stroke="#D4AF37" stroke-width="2" opacity="0.5"/>
+  <line x1="460" y1="170" x2="650" y2="170" stroke="#D4AF37" stroke-width="2" opacity="0.5"/>
+</svg>

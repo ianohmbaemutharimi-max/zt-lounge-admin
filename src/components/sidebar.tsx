@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { create } from "zustand";
 import { Menu, X, Bell, CircleUserRound } from "lucide-react";
@@ -21,12 +20,12 @@ export const useSidebar = create<{ open: boolean; toggle: () => void; close: () 
 function BrandMark() {
   return (
     <div className="flex items-center gap-3 px-5 py-5">
-      <Image
-        src="/images/logo/zt-lounge-logo.png"
+      <img
+        src="/images/logo/zt-lounge-logo.svg"
         alt="ZT Lounge"
         width={40}
-        height={40}
-        className="rounded-full ring-1 ring-gold/40"
+        height={10}
+        className="rounded ring-1 ring-gold/40"
       />
       <div>
         <p className="text-sm font-semibold tracking-wide text-white">ZT Lounge</p>

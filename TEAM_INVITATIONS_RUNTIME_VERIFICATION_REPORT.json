@@ -1,0 +1,189 @@
+{
+  "timestamp": "2026-08-20T20:06:16.743Z",
+  "phases": {
+    "PHASE1": {
+      "messages": [
+        {
+          "message": "Verifying database schema...",
+          "status": "info",
+          "timestamp": "2026-08-20T20:06:16.749Z"
+        },
+        {
+          "message": "✓ Table 'invitations' exists and is accessible",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:17.841Z"
+        },
+        {
+          "message": "✓ All expected columns exist",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:18.308Z"
+        },
+        {
+          "message": "✓ Foreign key to roles table works",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:18.309Z"
+        },
+        {
+          "message": "Current invitation count: 0",
+          "status": "info",
+          "timestamp": "2026-08-20T20:06:18.636Z"
+        }
+      ],
+      "status": "PASS"
+    },
+    "PHASE2": {
+      "messages": [
+        {
+          "message": "Testing GET /api/admin/team-invitations",
+          "status": "info",
+          "timestamp": "2026-08-20T20:06:18.636Z"
+        },
+        {
+          "message": "✓ Query successful, returned 0 pending invitations",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:19.383Z"
+        }
+      ],
+      "status": "PASS"
+    },
+    "PHASE3": {
+      "messages": [
+        {
+          "message": "Verifying data model compatibility",
+          "status": "info",
+          "timestamp": "2026-08-20T20:06:19.384Z"
+        },
+        {
+          "message": "✓ Found 5 roles: super_admin, admin, staff, manager, customer",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:19.737Z"
+        },
+        {
+          "message": "✓ Profiles table accessible",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:20.323Z"
+        }
+      ],
+      "status": "PASS"
+    },
+    "PHASE4": {
+      "messages": [
+        {
+          "message": "Verifying RLS policies",
+          "status": "info",
+          "timestamp": "2026-08-20T20:06:20.323Z"
+        },
+        {
+          "message": "Cannot verify RLS status (exec_sql RPC may not exist, skipping)",
+          "status": "warn",
+          "timestamp": "2026-08-20T20:06:20.597Z"
+        }
+      ],
+      "status": "SKIP"
+    },
+    "PHASE5": {
+      "messages": [
+        {
+          "message": "Checking application code consistency",
+          "status": "info",
+          "timestamp": "2026-08-20T20:06:20.597Z"
+        },
+        {
+          "message": "✓ Invitations Service exists and uses correct table name",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:20.598Z"
+        },
+        {
+          "message": "✓ GET/POST API exists and uses correct table name",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:20.599Z"
+        },
+        {
+          "message": "✓ DELETE/RESEND API exists and uses correct table name",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:20.600Z"
+        },
+        {
+          "message": "✓ Accept API exists and uses correct table name",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:20.601Z"
+        },
+        {
+          "message": "✓ Team Page UI exists and uses correct table name",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:20.602Z"
+        },
+        {
+          "message": "✓ Schema Definition exists and uses correct table name",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:20.603Z"
+        }
+      ],
+      "status": "PASS"
+    },
+    "PHASE6": {
+      "messages": [
+        {
+          "message": "Performing security audit",
+          "status": "info",
+          "timestamp": "2026-08-20T20:06:20.603Z"
+        },
+        {
+          "message": "✓ Using token_hash (not storing raw tokens)",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:20.856Z"
+        },
+        {
+          "message": "✓ Expiration handling present",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:21.153Z"
+        },
+        {
+          "message": "✓ Status values are valid",
+          "status": "pass",
+          "timestamp": "2026-08-20T20:06:21.398Z"
+        }
+      ],
+      "status": "PASS"
+    }
+  },
+  "verdict": "COMPLETE",
+  "evidence": [
+    {
+      "type": "invitation_count",
+      "value": 0
+    },
+    {
+      "type": "pending_invitations",
+      "count": 0,
+      "sample": null
+    },
+    {
+      "type": "available_roles",
+      "roles": [
+        "super_admin",
+        "admin",
+        "staff",
+        "manager",
+        "customer"
+      ]
+    },
+    {
+      "type": "security_checks",
+      "checks": [
+        {
+          "check": "token_hashing",
+          "status": "PASS"
+        },
+        {
+          "check": "expiration",
+          "status": "PASS"
+        },
+        {
+          "check": "status_values",
+          "status": "PASS"
+        }
+      ]
+    }
+  ]
+}

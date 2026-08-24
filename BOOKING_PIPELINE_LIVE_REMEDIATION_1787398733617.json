@@ -1,0 +1,93 @@
+{
+  "timestamp": "2026-08-22T11:38:42.469Z",
+  "project": "jczwilrysvnhcjzjztbi",
+  "phases": {
+    "phase0": {
+      "name": "Live Database Forensic Audit",
+      "findings": {
+        "tables": {
+          "bookings": {
+            "exists": true,
+            "count": 15,
+            "error": null
+          },
+          "customers": {
+            "exists": true,
+            "count": 14,
+            "error": null
+          },
+          "services": {
+            "exists": true,
+            "count": 6,
+            "error": null
+          },
+          "profiles": {
+            "exists": true,
+            "count": 8,
+            "error": null
+          },
+          "roles": {
+            "exists": true,
+            "count": 6,
+            "error": null
+          }
+        },
+        "functions": {
+          "create_booking": {
+            "exists": true,
+            "error": "Could not find the function public.create_booking without parameters in the schema cache"
+          },
+          "get_dashboard_stats": {
+            "exists": true,
+            "error": null
+          },
+          "is_admin_or_above": {
+            "exists": true,
+            "error": null
+          }
+        },
+        "services": {
+          "count": 0,
+          "services": [],
+          "error": "column services.active does not exist"
+        },
+        "migrations": {
+          "count": 0,
+          "versions": [],
+          "error": "Could not find the table 'public.schema_migrations' in the schema cache"
+        },
+        "localMigrations": {
+          "count": 11,
+          "files": [
+            "20260813_create_media_library_tables.sql",
+            "20260813_fix_media_library_grants.sql",
+            "20260816_booking_integrity_constraints.sql",
+            "20260817_add_media_id_to_cms_tables.sql",
+            "20260818_add_team_invitations.sql",
+            "20260818_create_admin_check_function.sql",
+            "20260818_create_promotions_table.sql",
+            "20260819_add_brand_assets_media_id.sql",
+            "20260819_fix_customer_metric.sql",
+            "20260819_remove_revenue_analytics.sql",
+            "add_notifications_updated_at.sql"
+          ]
+        },
+        "dataCounts": {
+          "bookings": 15,
+          "customers": 14
+        },
+        "frontend": {
+          "repositoryExists": true,
+          "hasCreateBookingRef": true,
+          "hasRpcCall": true
+        }
+      },
+      "summary": {
+        "tablesExist": true,
+        "functionsExist": true,
+        "hasData": true,
+        "frontendReady": true
+      }
+    }
+  }
+}

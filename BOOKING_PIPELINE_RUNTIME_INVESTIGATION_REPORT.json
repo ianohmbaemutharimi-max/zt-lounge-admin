@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-08-22T09:10:53.866Z",
+  "bookings": [
+    {
+      "service": "restaurant",
+      "url": "http://localhost:3000/booking/restaurant",
+      "phases": {
+        "pageLoad": null,
+        "formFound": null,
+        "submitEvent": null,
+        "formsJsExecution": null,
+        "repositoryCall": null,
+        "rpcRequest": null,
+        "rpcResponse": null,
+        "databaseInsertion": null,
+        "confirmationUI": null,
+        "whatsAppOpen": null
+      },
+      "errors": [
+        {
+          "type": "investigation-error",
+          "message": "page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/booking/restaurant\", waiting until \"networkidle\"\u001b[22m\n",
+          "stack": "page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/booking/restaurant\", waiting until \"networkidle\"\u001b[22m\n\n    at investigateBooking (d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\scripts\\booking-pipeline-runtime-investigation.mjs:162:16)\n    at async main (d:\\zt lounge\\zt-lounge-demo\\zt-lounge-admin\\scripts\\booking-pipeline-runtime-investigation.mjs:296:5)"
+        }
+      ],
+      "network": [],
+      "console": []
+    }
+  ]
+}
