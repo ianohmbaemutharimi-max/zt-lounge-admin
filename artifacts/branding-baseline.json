@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-09-02T09:30:37.806Z",
+  "business_settings": {
+    "id": 1,
+    "business_name": "ZT Lounge Meru",
+    "logo_media_id": "a5fb7148-8562-4d82-9fc1-d979fc19a323",
+    "favicon_media_id": "a5fb7148-8562-4d82-9fc1-d979fc19a323",
+    "logo_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/logos/logo.webp",
+    "favicon_url": "/favicon.ico"
+  },
+  "media_assets": [
+    {
+      "id": "a5fb7148-8562-4d82-9fc1-d979fc19a323",
+      "bucket": "logos",
+      "path": "logo.webp",
+      "public_url": "https://jczwilrysvnhcjzjztbi.supabase.co/storage/v1/object/public/logos/logo.webp",
+      "original_name": "business_settings",
+      "mime_type": "image/webp",
+      "file_size": null,
+      "width": 1920,
+      "height": 1080,
+      "alt_text": null,
+      "title": "ZT Lounge Logo",
+      "content_hash": null,
+      "uploaded_by": null,
+      "created_at": "2026-08-13T14:52:46.791065+00:00",
+      "updated_at": "2026-09-02T07:30:53.191178+00:00",
+      "description": null
+    }
+  ]
+}

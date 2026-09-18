@@ -5,10 +5,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Image as ImageIcon } from "lucide-react";
 import { api } from "@/lib/api";
 import { queryKeys } from "@/lib/query-keys";
 import { PageHeader, Card, Spinner, EmptyState, Button, Field, Input, Select, Textarea } from "@/components/ui";
+import { MediaPickerModal } from "@/features/media/media-picker-modal";
+import type { SelectableMediaAsset } from "@/types/media";
 
 const schema = z.object({
   business_name: z.string().min(2, "Business name is required"),
@@ -31,10 +33,17 @@ export function SettingsView() {
   const qc = useQueryClient();
   const [saved, setSaved] = useState(false);
   const [sysDraft, setSysDraft] = useState<Record<number, string>>({});
+  const [logoPickerOpen, setLogoPickerOpen] = useState(false);
+  const [faviconPickerOpen, setFaviconPickerOpen] = useState(false);
 
   const settings = useQuery({ queryKey: queryKeys["business-settings"].all(), queryFn: () => api.list("business-settings") });
   const system = useQuery({ queryKey: queryKeys["system-settings"].all(), queryFn: () => api.list("system-settings") });
+  const media = useQuery({ queryKey: queryKeys["media"].all(), queryFn: () => api.list("media") });
   const biz = settings.data?.[0];
+
+  // Resolve logo and favicon assets from media
+  const logoAsset = media.data?.find((m: any) => m.id === biz?.logo_media_id);
+  const faviconAsset = media.data?.find((m: any) => m.id === biz?.favicon_media_id);
 
   const form = useForm<FormValues>({ 
     resolver: zodResolver(schema) as any,
@@ -73,6 +82,36 @@ export function SettingsView() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: queryKeys["system-settings"].all() }); flash(); },
   });
 
+  const saveBranding = useMutation({
+    mutationFn: async (updates: { logo_media_id?: string | null; favicon_media_id?: string | null }) => {
+      const response = await fetch("/api/admin/business-settings/branding", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update branding");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys["business-settings"].all() });
+      qc.invalidateQueries({ queryKey: queryKeys["media"].all() });
+      flash();
+    },
+  });
+
+  const handleLogoSelect = (asset: SelectableMediaAsset) => {
+    saveBranding.mutate({ logo_media_id: asset.id });
+    setLogoPickerOpen(false);
+  };
+
+  const handleFaviconSelect = (asset: SelectableMediaAsset) => {
+    saveBranding.mutate({ favicon_media_id: asset.id });
+    setFaviconPickerOpen(false);
+  };
+
   if (settings.isLoading || system.isLoading) return <Spinner label="Loading settings…" />;
   if (!biz) return <EmptyState title="No business settings found" description="A business_settings row is required." />;
 
@@ -100,6 +139,84 @@ export function SettingsView() {
             </div>
             <Field label="Email" error={form.formState.errors.email?.message}><Input {...form.register("email")} type="email" /></Field>
             <Field label="Address" error={form.formState.errors.address?.message}><Input {...form.register("address")} /></Field>
+
+            <p className="pt-2 text-xs font-semibold uppercase tracking-wider text-muted">Branding</p>
+            
+            <div className="grid gap-4 sm:grid-cols-2">
+              {/* Logo */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Logo</label>
+                {logoAsset ? (
+                  <div className="group relative aspect-video overflow-hidden rounded-lg border border-stone-700">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={logoAsset.public_url}
+                      alt={logoAsset.title || "Logo"}
+                      className="h-full w-full object-contain bg-stone-900"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setLogoPickerOpen(true)}
+                      >
+                        Change Logo
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setLogoPickerOpen(true)}
+                    className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-stone-700 bg-stone-900/50 text-stone-500 transition-colors hover:border-stone-600 hover:text-stone-400"
+                  >
+                    <ImageIcon className="h-8 w-8" />
+                    <span className="text-sm">Select Logo</span>
+                  </button>
+                )}
+                {logoAsset && (
+                  <p className="text-xs text-muted">{logoAsset.title || "Untitled"}</p>
+                )}
+              </div>
+
+              {/* Favicon */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Favicon</label>
+                {faviconAsset ? (
+                  <div className="group relative aspect-video overflow-hidden rounded-lg border border-stone-700">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={faviconAsset.public_url}
+                      alt={faviconAsset.title || "Favicon"}
+                      className="h-full w-full object-contain bg-stone-900"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setFaviconPickerOpen(true)}
+                      >
+                        Change Favicon
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setFaviconPickerOpen(true)}
+                    className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-stone-700 bg-stone-900/50 text-stone-500 transition-colors hover:border-stone-600 hover:text-stone-400"
+                  >
+                    <ImageIcon className="h-8 w-8" />
+                    <span className="text-sm">Select Favicon</span>
+                  </button>
+                )}
+                {faviconAsset && (
+                  <p className="text-xs text-muted">{faviconAsset.title || "Untitled"}</p>
+                )}
+              </div>
+            </div>
 
             <p className="pt-2 text-xs font-semibold uppercase tracking-wider text-muted">Location &amp; Maps</p>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -169,6 +286,20 @@ export function SettingsView() {
           )}
         </Card>
       </div>
+
+      {/* Media Picker Modals */}
+      <MediaPickerModal
+        open={logoPickerOpen}
+        onClose={() => setLogoPickerOpen(false)}
+        selectedMediaId={biz?.logo_media_id}
+        onSelect={handleLogoSelect}
+      />
+      <MediaPickerModal
+        open={faviconPickerOpen}
+        onClose={() => setFaviconPickerOpen(false)}
+        selectedMediaId={biz?.favicon_media_id}
+        onSelect={handleFaviconSelect}
+      />
     </div>
   );
 }
