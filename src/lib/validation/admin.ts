@@ -31,13 +31,39 @@ export const ADMIN_RESOURCES = new Set([
   "business-closures",
   "profiles",
   "roles",
+  "service_charges",
+  "membership-plans",
+  "membership-plan-benefits",
+  "customer-memberships",
 ]);
+
+// ============================================================
+// DEDICATED-ROUTE-ONLY RESOURCES
+// ============================================================
+/**
+ * Resources whose admin API is served EXCLUSIVELY by a dedicated route that
+ * carries its own authorization gate (e.g. /api/admin/services/[slug]/charges
+ * resolves the service server-side and enforces page scope).
+ *
+ * The generic /api/admin/[resource] routes refuse them — fail closed — so a
+ * direct call can never bypass that gate. They intentionally REMAIN in
+ * ADMIN_RESOURCES above: the repository allowlist shared with the dedicated
+ * route (validateResource / WRITABLE_FIELDS) still needs them.
+ */
+export const DEDICATED_ROUTE_ONLY_RESOURCES = new Set(["service_charges"]);
+
+/** True when a generic admin route must refuse this resource (fail closed). */
+export function isDedicatedRouteOnlyResource(resource: string): boolean {
+  return DEDICATED_ROUTE_ONLY_RESOURCES.has(resource);
+}
+
 
 // ============================================================
 // ORDERABLE COLUMNS
 // ============================================================
 export const ORDERABLE_COLUMNS: Record<string, string[]> = {
   bookings: ["booking_date", "start_time", "end_time", "status", "created_at", "updated_at"],
+  service_charges: ["name", "price", "sort_order", "status", "created_at", "updated_at"],
   "booking-history": ["created_at"],
   "booking-notes": ["created_at"],
   customers: ["full_name", "email", "created_at", "updated_at"],
@@ -50,7 +76,7 @@ export const ORDERABLE_COLUMNS: Record<string, string[]> = {
   "staff-leave": ["start_date", "end_date", "created_at"],
   gallery: ["title", "category", "display_order", "created_at", "updated_at"],
   "file-uploads": ["bucket", "created_at"],
-  testimonials: ["customer_name", "rating", "display_order", "created_at", "updated_at"],
+  testimonials: ["display_order", "created_at", "updated_at"],
   "contact-messages": ["full_name", "status", "created_at"],
   faqs: ["question", "display_order", "created_at", "updated_at"],
   promotions: ["title", "start_date", "end_date", "created_at", "updated_at"],
@@ -63,6 +89,9 @@ export const ORDERABLE_COLUMNS: Record<string, string[]> = {
   "business-closures": ["closure_date", "created_at"],
   profiles: ["full_name", "created_at", "updated_at"],
   roles: ["name", "created_at"],
+  "membership-plans": ["name", "display_order", "annual_price", "created_at", "updated_at"],
+  "membership-plan-benefits": ["display_order", "created_at", "updated_at"],
+  "customer-memberships": ["registered_at", "expires_at", "member_number", "status", "created_at", "updated_at"],
 };
 
 // ============================================================
@@ -83,6 +112,9 @@ export const SEARCHABLE_FIELDS: Record<string, string[]> = {
   promotions: ["title", "description"],
   "website-pages": ["title", "page_key", "seo_title"],
   profiles: ["full_name", "email"],
+  "membership-plans": ["name", "slug", "description"],
+  "membership-plan-benefits": ["description"],
+  "customer-memberships": ["member_number", "customer_id"],
 };
 
 // ============================================================
@@ -91,7 +123,8 @@ export const SEARCHABLE_FIELDS: Record<string, string[]> = {
 export const FILTERABLE_FIELDS: Record<string, string[]> = {
   bookings: ["status", "booking_date", "customer_id", "service_id", "staff_id", "created_by"],
   customers: ["is_active", "gender"],
-  services: ["category_id", "is_active", "featured", "page_id"],
+    services: ["category_id", "is_active", "featured", "page_id", "card_type", "type"],
+  service_charges: ["service_id", "status"],
   "service-categories": ["is_active"],
   "menu-items": ["category_id", "is_active", "is_featured", "page_id"],
   "menu-categories": ["is_active"],
@@ -102,9 +135,12 @@ export const FILTERABLE_FIELDS: Record<string, string[]> = {
   faqs: ["is_active", "is_featured", "category", "page_id"],
   promotions: ["is_active"],
   "hero-slides": ["is_active", "page_id"],
-  "website-pages": ["is_published", "page_key"],
+  "website-pages": ["is_published", "page_key", "service_cards_enabled", "service_packages_enabled"],
   profiles: ["is_active", "role_id"],
   notifications: ["is_read", "type", "profile_id"],
+  "membership-plans": ["is_active"],
+  "membership-plan-benefits": ["plan_id", "is_active"],
+  "customer-memberships": ["customer_id", "plan_id", "status"],
 };
 
 // ============================================================
@@ -272,5 +308,100 @@ export function internalError(message: string = "Internal server error") {
       },
     },
     { status: 500 }
+  );
+}
+
+// ============================================================
+// RESULT-STYLE ERROR HELPERS (for handler ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ route communication)
+// ============================================================
+
+export interface ResultError {
+  readonly success: false;
+  readonly error: Readonly<{
+    code: string;
+    message: string;
+  }>;
+}
+
+export interface ResultSuccess<T = any> {
+  readonly success: true;
+  readonly data: T;
+}
+
+export type ActionResult<T = any> = ResultSuccess<T> | ResultError;
+
+/**
+ * Client-input validation failure raised by the repository/data layer.
+ * Distinct from generic runtime failures so route handlers can map it to
+ * HTTP 400 instead of 500, without exposing PostgreSQL internals.
+ */
+export class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+
+/** Known CHECK constraints → safe, user-facing messages (no DB internals). */
+const CONSTRAINT_MESSAGES: Record<string, string> = {
+  valid_email: "Please provide a valid email address",
+};
+
+/** Known UNIQUE constraints → safe, user-facing messages (no DB internals). */
+const UNIQUE_MESSAGES: Record<string, string> = {
+  uq_customers_email: "A customer with this email already exists",
+  customers_phone_normalized_unique: "A customer with this phone number already exists",
+};
+
+/** Translate a Postgres 23514 message into a safe client-facing message. */
+export function constraintValidationMessage(pgMessage: string): string {
+  const match = pgMessage.match(/check constraint "([^"]+)"/i);
+  if (match && CONSTRAINT_MESSAGES[match[1]]) {
+    return CONSTRAINT_MESSAGES[match[1]];
+  }
+  return "One or more fields failed validation. Please check your input.";
+}
+
+/** Translate a Postgres 23505 message into a safe client-facing message. */
+export function uniqueConstraintMessage(pgMessage: string): string {
+  const match = pgMessage.match(/unique constraint "([^"]+)"/i);
+  if (match && UNIQUE_MESSAGES[match[1]]) {
+    return UNIQUE_MESSAGES[match[1]];
+  }
+  return "This record already exists. Please use different details.";
+}
+
+
+export function validationErr(message: string): ResultError {
+  return { success: false, error: { code: "VALIDATION_ERROR", message } };
+}
+
+export function conflictErr(message: string): ResultError {
+  return { success: false, error: { code: "CONFLICT", message } };
+}
+
+export function internalErr(message: string): ResultError {
+  return { success: false, error: { code: "INTERNAL_ERROR", message } };
+}
+
+export function notFoundErr(message: string): ResultError {
+  return { success: false, error: { code: "NOT_FOUND", message } };
+}
+
+const ERROR_STATUS_CODES: Record<string, number> = {
+  VALIDATION_ERROR: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  CONFLICT: 409,
+  INTERNAL_ERROR: 500,
+};
+
+/** Convert a ResultError into an HTTP NextResponse (for route handlers). */
+export function errorResultToResponse(err: ResultError): NextResponse {
+  const status = ERROR_STATUS_CODES[err.error.code] ?? 400;
+  return NextResponse.json(
+    { success: false, error: err.error },
+    { status }
   );
 }
