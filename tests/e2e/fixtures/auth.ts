@@ -1,4 +1,4 @@
-/**
+﻿/**
  * E2E Authentication Fixtures
  * 
  * Provides real Supabase authentication for E2E tests.

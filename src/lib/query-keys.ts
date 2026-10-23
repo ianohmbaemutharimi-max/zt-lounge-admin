@@ -26,11 +26,13 @@ export const queryKeys = {
   promotions: {
     all: () => ["promotions"] as const,
   },
-  messages: {
+    messages: {
     all: () => ["contact-messages"] as const,
+    pending: () => ["contact-messages", "pending"] as const,
   },
   notifications: {
     all: () => ["notifications"] as const,
+    unread: () => ["notifications", "unread"] as const,
   },
   "booking-notes": {
     all: (bookingId?: string | number | null) => ["booking-notes", bookingId] as const,
@@ -40,6 +42,7 @@ export const queryKeys = {
   },
   "hero-slides": {
     all: () => ["hero-slides"] as const,
+    pageId: (pageId?: string | null) => ["hero-slides", pageId] as const,
   },
   "website-pages": {
     all: () => ["website-pages"] as const,
@@ -55,5 +58,18 @@ export const queryKeys = {
   },
   dashboard: {
     stats: () => ["dashboard", "stats"] as const,
+  },
+  media: {
+    all: () => ["media_assets"] as const,
+  },
+  "membership-plans": {
+    all: () => ["membership-plans"] as const,
+    detail: (id?: string | number | null) => ["membership-plans", id] as const,
+  },
+  "membership-plan-benefits": {
+    all: () => ["membership-plan-benefits"] as const,
+  },
+  "customer-memberships": {
+    all: () => ["customer-memberships"] as const,
   },
 } as const;

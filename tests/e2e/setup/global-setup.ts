@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Global Setup for E2E Tests
  * Runs once before all tests
  */

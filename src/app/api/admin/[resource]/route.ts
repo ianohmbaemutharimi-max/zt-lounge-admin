@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { withAdminAuth, withContentManagerAuth } from "@/lib/auth/server";
+import { withAdminAuth, withContentManagerAuth, withSuperAdminAuth } from "@/lib/auth/server";
+import { MembershipHandler, isMembershipResource } from "@/lib/membership-handler";
 import { Repository } from "@/lib/repository";
 import { BookingHandler, isBookingResource } from "@/lib/booking-handler";
 import { resolveImageUrls } from "@/lib/media/resolver";
@@ -13,15 +14,32 @@ import {
   validateFilterOperator,
   validationError,
   notFoundError,
+  errorResultToResponse,
+  isDedicatedRouteOnlyResource,
 } from "@/lib/validation/admin";
+import { PAGE_SCOPED_RESOURCES } from "@/lib/page-scope";
+import { logCrudOperation } from "@/lib/audit/logger";
+import { isPublicPageKey } from "@/lib/constants/public-pages";
+import { validateMediaCategoryForMutation } from "@/lib/media/category-mapping";
 
 export const dynamic = "force-dynamic";
 
 /** Content resources that managers can access */
 const CONTENT_RESOURCES = new Set(["gallery", "testimonials"]);
 
+/** Resources reserved for SUPER ADMIN — commerce/product definitions AND staff
+ *  role/profile administration. Role & profile writes must never be admin-writable
+ *  (business rule: only super_admin may change staff roles / manage staff members). */
+const SUPER_ADMIN_RESOURCES = new Set([
+  "membership-plans",
+  "membership-plan-benefits",
+  "roles",
+  "profiles",
+]);
+
 /** Determine which auth wrapper to use based on resource type */
 function getAuthWrapper(resource: string) {
+  if (SUPER_ADMIN_RESOURCES.has(resource)) return withSuperAdminAuth;
   return CONTENT_RESOURCES.has(resource) ? withContentManagerAuth : withAdminAuth;
 }
 
@@ -41,6 +59,10 @@ export const GET = async (req: NextRequest, context: { params: Promise<{ resourc
        const url = new URL(req.url);
 
        if (!validateResource(resource)) {
+         return notFoundError("Resource not found");
+       }
+
+       if (isDedicatedRouteOnlyResource(resource)) {
          return notFoundError("Resource not found");
        }
 
@@ -90,6 +112,16 @@ export const GET = async (req: NextRequest, context: { params: Promise<{ resourc
              filters[filterField] = { operator: "eq", value };
            }
          }
+
+        // Ownership boundary: notifications list is scoped to authenticated admin.
+        // The generic [resource] API must never return another admin's notification rows,
+        // so the list query is constrained to profile_id = auth.profile.id server-side.
+        // (There is no RLS policy on the notifications table, so this predicate is the
+        // authoritative read-scoping — no client-side filtering relies on it.)
+        if (resource === "notifications") {
+          filters["profile_id"] = auth.profile.id;
+        }
+
        }
 
 const result = await repo.findAll(resource, {
@@ -105,14 +137,19 @@ const result = await repo.findAll(resource, {
         // source is preserved from the database; do not recalculate origin based on current bookings
         let processedData = result.data ?? [];
         if (resource === "customers" && auth.supabase) {
+          // NOTE: the live column is bookings.customer_id (snake_case). Selecting
+          // the camelCase alias silently failed with a 400 and left every
+          // totalVisits at 0. Errors are now logged rather than discarded.
           const { data: allBookings, error } = await auth.supabase
             .from("bookings")
-            .select("customerId, status")
+            .select("customer_id, status")
             .in("status", ["confirmed", "completed"]);
           const countsMap: Record<string, number> = {};
-          if (!error && allBookings) {
+          if (error) {
+            console.error(`[${resource}] totalVisits enrichment error:`, error);
+          } else if (allBookings) {
             for (const b of allBookings) {
-              countsMap[b.customerId] = (countsMap[b.customerId] ?? 0) + 1;
+              countsMap[b.customer_id] = (countsMap[b.customer_id] ?? 0) + 1;
             }
           }
           processedData = result.data?.map((customer: any) => ({
@@ -123,10 +160,10 @@ const result = await repo.findAll(resource, {
           processedData = result.data ?? [];
         }
 
-         // Resolve media URLs for resources that support media_id
-         const MEDIA_RESOURCES = new Set(["menu-items", "services", "gallery", "hero-slides"]);
-         let data = processedData ?? [];
-         if (MEDIA_RESOURCES.has(resource) && data.length > 0) {
+        // Resolve media URLs for resources that support media_id
+        const MEDIA_RESOURCES = new Set(["menu-items", "services", "gallery", "hero-slides", "promotions", "membership-plans", "testimonials"]);
+        let data = processedData ?? [];
+        if (MEDIA_RESOURCES.has(resource) && data.length > 0) {
           try {
             data = await resolveImageUrls(auth.supabase as any, data);
           } catch (resolveError) {
@@ -171,18 +208,99 @@ export const POST = async (req: NextRequest, context: { params: Promise<{ resour
         return notFoundError("Resource not found");
       }
 
+      if (isDedicatedRouteOnlyResource(resource)) {
+        return notFoundError("Resource not found");
+      }
+
       // Special handling for bookings with validation and conflict detection
       if (isBookingResource(resource)) {
         const handler = new BookingHandler(repo);
         const result = await handler.create(body);
         
-        // If result is a NextResponse (error), return it directly
-        if (result instanceof NextResponse) {
-          return result;
+        // ActionResult discriminant is `success` (canonical validation/admin contract).
+        if (!result.success) {
+          return errorResultToResponse(result);
         }
-        
+
         // Otherwise return the created booking
+                return NextResponse.json(result.data, { status: 201 });
+      }
+      // Membership: customer-membership assignment is server-orchestrated
+      // (member_number via DB sequence; annual price snapshots). Must route
+      // through MembershipHandler — a generic repo.create() would strip the
+      // server-derived NOT NULL columns and the insert would fail. (See audit §10.)
+      if (isMembershipResource(resource)) {
+        const handler = new MembershipHandler(repo);
+        const result = await handler.create(body);
+        if (!result.success) {
+          return errorResultToResponse(result);
+        }
+        await logCrudOperation(
+          auth.supabase,
+          "customer_memberships",
+          "CREATE",
+          result.data?.id ? String(result.data.id) : null,
+          auth.profile.id,
+          req,
+          "CREATE membership: assigned via collection POST (annual period + price snapshots)"
+        );
         return NextResponse.json(result.data, { status: 201 });
+      }
+
+      // Page-first boundary (page-scoped content): a record is created inside a
+      // selected website page. The client states that page as ?page_id=; it must
+      // be present and must agree with the body's page_id, and the referenced
+      // page must actually exist. This removes two pre-existing holes: creating
+      // a record with page_id = NULL, and letting the body silently choose a
+      // different page than the one the operator is working in.
+      if (PAGE_SCOPED_RESOURCES.has(resource)) {
+        const scopePageId = req.nextUrl.searchParams.get("page_id");
+        if (!scopePageId) {
+          return validationError(`A website page must be selected to create a ${resource} record`);
+        }
+        if (body?.page_id !== scopePageId) {
+          return validationError(`${resource} page_id must match the selected website page`);
+        }
+        const page = await repo.findById("website-pages", scopePageId);
+        if (!page) {
+          return validationError("Selected website page does not exist");
+        }
+      }
+
+      // Promotions: page_id is optional, but when provided it must reference a
+      // published, public website page. Reject nonexistent / dead-key pages
+      // server-side (the admin UI restricts the selector to PUBLIC_PAGE_KEYS,
+      // but the API must not trust the client).
+      if (resource === "promotions" && body?.page_id) {
+        const page = await repo.findById("website-pages", String(body.page_id));
+        if (!page || !isPublicPageKey(page.page_key)) {
+          return validationError("Promotion page must reference a served public website page");
+        }
+      }
+
+      // Media category validation: ensure media_id references an asset with the
+      // correct category for this content table (e.g., hero_slides requires category=hero).
+      // Enforced at three layers: database triggers, API validation, and UI filtering.
+      if (body?.media_id) {
+        const categoryValidation = await validateMediaCategoryForMutation(
+          auth.supabase,
+          resource,
+          body.media_id
+        );
+        if (!categoryValidation.valid) {
+          return validationError(categoryValidation.error);
+        }
+      }
+
+      // Services: validate that category_id references an active category
+      if (resource === "services" && body?.category_id) {
+        const cat = await repo.findById("service-categories", body.category_id);
+        if (!cat) {
+          return validationError("Selected service category does not exist");
+        }
+        if (!cat.is_active) {
+          return validationError("Cannot assign service to an inactive category");
+        }
       }
 
       // Generic handling for other resources

@@ -10,7 +10,7 @@ export default function MenuPage() {
       itemResource="menu-items"
       categoryResource="menu-categories"
       itemLabel="Item"
-      activeField="isAvailable"
+      activeField="is_active"
       showFeatured
     />
   );

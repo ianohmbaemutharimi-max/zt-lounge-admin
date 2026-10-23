@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Global Teardown for E2E Tests
  * Runs once after all tests complete
  */

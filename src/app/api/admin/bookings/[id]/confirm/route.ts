@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { withContentManagerAuth } from "@/lib/auth/server";
 import { Repository } from "@/lib/repository";
 import { BookingHandler, isBookingResource } from "@/lib/booking-handler";
-import { validateResource, validationError, notFoundError } from "@/lib/validation/admin";
+import { validateResource, validationError, notFoundError, errorResultToResponse } from "@/lib/validation/admin";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -17,16 +17,19 @@ export const revalidate = 0;
  * A failed confirmation rolls the entire transaction back (no partial customer).
  */
 export const POST = withContentManagerAuth(
-  async (req, ctx, auth) => {
-    const id = (ctx.params as any)?.id as string;
+  async (req, _ctx, auth) => {
+    // Extract id from the URL path: /api/admin/bookings/<id>/confirm
+    const url = new URL(req.url);
+    const parts = url.pathname.split("/").filter(Boolean);
+    const id = parts[parts.length - 2];
     if (!id) return validationError("Booking ID is required");
 
     const repo = new Repository(auth.supabase as any);
     const handler = new BookingHandler(repo);
-    const result = await handler.confirm(id, auth?.user?.id ?? "system");
-
+        const result = await handler.confirm(id, auth?.user?.id ?? "system");
+    
     if (!result.success) {
-      return NextResponse.json({ error: (result as any).error ?? "Failed to confirm booking" }, { status: 400 });
+      return errorResultToResponse(result);
     }
     return NextResponse.json(result.data, { status: 200 });
   }

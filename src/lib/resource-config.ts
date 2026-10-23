@@ -123,6 +123,26 @@ export const RESOURCE_CONFIG: Record<string, {
     table: "roles",
     defaultSort: { column: "name", ascending: true },
   },
+  "membership-plans": {
+    table: "membership_plans",
+    searchFields: ["name", "slug", "description"],
+    defaultSort: { column: "display_order", ascending: true },
+  },
+  "membership-plan-benefits": {
+    table: "membership_plan_benefits",
+    searchFields: ["description"],
+    defaultSort: { column: "display_order", ascending: true },
+  },
+  "customer-memberships": {
+    table: "customer_memberships",
+    searchFields: ["member_number", "customer_id"],
+    defaultSort: { column: "registered_at", ascending: false },
+  },
+  "service-charges": {
+    table: "service_charges",
+    searchFields: ["name"],
+    defaultSort: { column: "sort_order", ascending: true },
+  },
 };
 
 export function getResourceConfig(resource: string) {

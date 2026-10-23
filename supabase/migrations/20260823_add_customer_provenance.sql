@@ -40,20 +40,16 @@ ALTER COLUMN customer_id DROP NOT NULL;
 -- A CHECK constraint ensures only valid values are accepted.
 -- The column is NOT NULL with a safe default handled in backfill.
 --
+-- RECONCILED (Loop 43) to the canonical live schema:
+--   customers.source is a PLAIN text column (NOT GENERATED STORED).
+--   The generated-expression design was abandoned: it is incompatible with
+--   explicit source writes (the Step 3 backfill UPDATE below), and later
+--   migrations (20260826_add_customer_source_column,
+--   20260828_promote_customer_source_on_confirmation) formalize explicit
+--   provenance control. The CHECK constraint is unchanged.
+--
 ALTER TABLE public.customers
 ADD COLUMN source text
-    GENERATED ALWAYS AS (
-        CASE
-            WHEN EXISTS (
-                SELECT 1 FROM public.bookings b
-                WHERE b.customer_id = customers.id
-                    AND b.status IN ('confirmed'::text, 'completed'::text)
-            ) THEN 'booking'
-            ELSE 'manual'
-        END
-    ) STORED,
--- Override the generated value for known manual customers
--- (backfill will set appropriate values; this default handles new rows)
 CONSTRAINT customers_source_check
 CHECK (source IN ('manual'::text, 'booking'::text));
 

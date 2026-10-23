@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAdminAuth } from "@/lib/auth/server";
+import { MEDIA_REFERENCE_TABLES, type MediaReferenceTable } from "@/lib/media/reference-tables";
 
 export const dynamic = "force-dynamic";
 
@@ -121,6 +122,10 @@ async function resolveUsageLabels(
           label = "Testimonials";
           break;
         }
+        case "membership_plans": {
+          label = "Memberships";
+          break;
+        }
         case "business_settings": {
           label = u.source_column === "favicon_media_id" ? "Branding → Favicon" : "Branding → Logo";
           break;
@@ -180,9 +185,12 @@ export const GET = withAdminAuth(async (req: NextRequest, _ctx, auth) => {
       });
     }
 
-    // Handle full list request
+        // Handle full list request
     const filter = url.searchParams.get("filter"); // "all", "used", "unused"
     const search = url.searchParams.get("search");
+    const bucketFilter = url.searchParams.get("bucket"); // specific bucket name
+    const categoryFilter = url.searchParams.get("category"); // category filter (hero, gallery, menu, etc.)
+    const altFilter = url.searchParams.get("alt"); // "missing" | "present"
     const limit = Math.min(Number(url.searchParams.get("limit")) || 50, 100);
     const offset = Number(url.searchParams.get("offset")) || 0;
 
@@ -198,6 +206,27 @@ export const GET = withAdminAuth(async (req: NextRequest, _ctx, auth) => {
       assetsQuery = assetsQuery.or(
         `title.ilike.%${search}%,alt_text.ilike.%${search}%,path.ilike.%${search}%`
       );
+    }
+
+    // Apply bucket filter (server-side, only buckets that actually exist)
+    if (bucketFilter) {
+      assetsQuery = assetsQuery.eq("bucket", bucketFilter);
+    }
+
+    // Apply category filter
+    if (categoryFilter) {
+      if (categoryFilter === "uncategorized") {
+        assetsQuery = assetsQuery.is("category", null);
+      } else {
+        assetsQuery = assetsQuery.eq("category", categoryFilter);
+      }
+    }
+
+    // Apply alt_text presence filter (uses existing alt_text column only)
+    if (altFilter === "missing") {
+      assetsQuery = assetsQuery.or("alt_text.is.null,alt_text.eq.");
+    } else if (altFilter === "present") {
+      assetsQuery = assetsQuery.not("alt_text", "is", null).not("alt_text", "eq", "");
     }
 
     const { data: assets, error: assetsError, count } = await assetsQuery;
@@ -223,14 +252,15 @@ export const GET = withAdminAuth(async (req: NextRequest, _ctx, auth) => {
 
     if (assetIds.length > 0) {
       const inIds = `(${assetIds.join(",")})`; // uuid literals are safe (server-generated)
-      const refSources: Array<{ table: string; column: string; select: string }> = [
-        { table: "menu_items", column: "media_id", select: "id, media_id" },
-        { table: "services", column: "media_id", select: "id, media_id" },
-        { table: "gallery", column: "media_id", select: "id, media_id" },
-        { table: "hero_slides", column: "media_id", select: "id, media_id" },
-        { table: "testimonials", column: "media_id", select: "id, media_id" },
-        { table: "promotions", column: "media_id", select: "id, media_id" },
-      ];
+
+      // Derive the batch of single-column FK scans from the canonical list.
+      // `business_settings` is excluded here because it carries TWO FK columns
+      // (logo_media_id, favicon_media_id) on one row; it's queried separately
+      // with a single `.or()` below so we don't fetch a customer's id twice.
+      const refSources: Array<{ table: string; column: string; select: string }> = MEDIA_REFERENCE_TABLES
+        .filter((r) => r.table !== "business_settings")
+        .map((r) => ({ table: r.table, column: r.column, select: `id, ${r.column}` }));
+
       const idOf = new Set(assetIds);
       await Promise.all([
         ...refSources.map(async ({ table, column, select }) => {

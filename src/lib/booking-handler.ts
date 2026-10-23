@@ -10,7 +10,8 @@
 
 import { Repository } from "./repository";
 import { validateBookingData, validateStatusUpdate, type BookingValidation } from "./booking-validation";
-import { conflictError, validationError, internalError } from "./validation/admin";
+import { conflictErr, validationErr, internalErr, type ActionResult, type ResultError } from "./validation/admin";
+import { mapFromPublicContract } from "./contract/mapping";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
@@ -24,11 +25,11 @@ export class BookingHandler {
    * Create a new booking with validation using the admin_booking RPC.
    * This ensures the same booking creation logic as public bookings.
    */
-  async create(data: unknown) {
+    async create(data: unknown): Promise<ActionResult<any>> {
     // Validate booking data
     const validation = validateBookingData(data);
     if (!validation.success) {
-      return validationError(validation.error);
+      return validationErr(validation.error);
     }
 
     try {
@@ -41,54 +42,47 @@ export class BookingHandler {
   }
 
   /**
-   * Create booking via admin_booking RPC
+   * Create booking via the live admin_booking(booking_data jsonb) RPC contract.
+   *
+   * The RPC reads exactly these jsonb keys:
+   *   customer_id, service_id, booking_date, start_time, end_time, guests,
+   *   special_requests, internal_notes, status (default 'confirmed'),
+   *   guest_name, guest_phone, guest_email
+   * It generates booking_number server-side and does NOT accept staff_id,
+   * created_by, or booking_number. When customer_id is provided AND status is
+   * 'confirmed' it creates a confirmed booking linked to that customer;
+   * otherwise it creates a pending booking with the guest contact snapshot
+   * (customer_id = NULL).
    */
   private async createBookingViaRPC(data: BookingValidation) {
     // Get the supabase client from the repository
     const supabase = (this.repo as any).supabase as SupabaseClient<any>;
-    
-    // Map validation data to RPC parameters
-    const { 
-      customerId, 
-      serviceId, 
-      staffId, 
-      bookingDate, 
-      startTime, 
-      endTime, 
-      guests, 
-      status, 
-      full_name, 
-      email, 
-      phone, 
-      specialRequests,
-      cancellationReason,
-      internalNotes
-    } = data;
 
-    // Call the admin_booking RPC
-    const { data: result, error } = await supabase.rpc('admin_booking', {
-      p_full_name: full_name || '',
-      p_phone: phone || '',
-      p_booking_date: bookingDate,
-      p_start_time: startTime,
-      p_end_time: endTime,
-      p_guests: guests,
-      p_email: email || null,
-      p_service_id: serviceId,
-      p_staff_id: staffId || null,
-      p_special_requests: specialRequests || null,
-      p_created_by: null, // Will be set by the API layer
-      p_customer_id: customerId || null
+    const binding_data = {
+      customer_id: data.customerId || null,
+      service_id: data.serviceId,
+      booking_date: data.bookingDate,
+      start_time: data.startTime,
+      end_time: data.endTime,
+      guests: data.guests,
+      // admin form provides a status; the RPC defaults to 'confirmed'
+      status: data.status,
+      special_requests: data.specialRequests || null,
+      internal_notes: data.internalNotes || null,
+      guest_name: data.guest_name || null,
+      guest_phone: data.guest_phone || null,
+      guest_email: data.guest_email || null,
+    };
+
+    const { data: result, error } = await supabase.rpc("admin_booking", {
+      booking_data: binding_data,
     });
 
     if (error) {
       throw error;
     }
 
-    // Map the RPC result to the expected booking object
-    // The RPC returns: booking_id, booking_number, customer_id, service_id, staff_id,
-    //                  booking_date, start_time, end_time, guests, status, special_requests,
-    //                  created_by, created_at, updated_at
+    // The RPC returns a jsonb object: booking_id, booking_number, status, ...
     return result;
   }
 
@@ -98,16 +92,16 @@ export class BookingHandler {
    * the customer (source='booking'), sets bookings.customer_id, and sets status
    * to 'confirmed'. Any failure rolls the whole transaction back.
    */
-  async confirm(id: string | number, changedBy?: string) {
+    async confirm(id: string | number, changedBy?: string): Promise<ActionResult<any>> {
     const supabase = (this.repo as any).supabase as SupabaseClient<any>;
 
     const { data, error } = await supabase.rpc("confirm_booking", {
       p_booking_id: String(id),
     });
 
-    if (error) {
+        if (error) {
       console.error("[confirm_booking] RPC error:", error);
-      return validationError(
+      return validationErr(
         error.message?.startsWith("Booking not found")
           ? "Booking not found or is not pending."
           : "Failed to confirm booking. Please try again."
@@ -136,9 +130,9 @@ export class BookingHandler {
    * Validates only the status transition — not the full booking object — so the
    * generic create/edit validator is never weakened.
    */
-  async updateStatus(id: string | number, status: string, changedBy?: string) {
+    async updateStatus(id: string | number, status: string, changedBy?: string): Promise<ActionResult<any>> {
     if (!status) {
-      return validationError("Status is required");
+      return validationErr("Status is required");
     }
 
     // ensure confirmation goes through confirm()
@@ -149,16 +143,16 @@ export class BookingHandler {
     let current: any;
     try {
       current = await this.repo.findById("bookings", String(id));
-    } catch {
-      return validationError("Could not load booking for transition validation");
+        } catch {
+      return validationErr("Could not load booking for transition validation");
     }
     if (!current) {
-      return validationError("Booking not found");
+      return validationErr("Booking not found");
     }
 
     const statusValidation = validateStatusUpdate(current.status, status);
     if (!statusValidation.valid) {
-      return validationError(statusValidation.error!);
+      return validationErr(statusValidation.error!);
     }
 
     try {
@@ -185,11 +179,11 @@ export class BookingHandler {
    * status actions must use confirm()/updateStatus() instead; do not send a
    * bare { status } payload here.
    */
-  async update(id: string | number, data: unknown) {
+    async update(id: string | number, data: unknown): Promise<ActionResult<any>> {
     // Validate booking data
     const validation = validateBookingData(data);
     if (!validation.success) {
-      return validationError(validation.error);
+      return validationErr(validation.error);
     }
 
     // If status is being changed, validate the transition
@@ -198,21 +192,29 @@ export class BookingHandler {
         // Fetch current booking to check current status
         const current = await this.repo.findById("bookings", String(id));
         if (!current) {
-          return validationError("Booking not found");
+          return validationErr("Booking not found");
         }
 
         // Validate status transition
         const statusValidation = validateStatusUpdate(current.status, validation.data.status);
         if (!statusValidation.valid) {
-          return validationError(statusValidation.error!);
+          return validationErr(statusValidation.error!);
         }
       } catch (error: any) {
-        return internalError("Failed to validate status transition");
+        return internalErr("Failed to validate status transition");
       }
     }
 
     try {
-      const updated = await this.repo.update("bookings", String(id), validation.data);
+      // CONTRACT BRIDGE: validation.data uses the public API camelCase contract
+      // (customerId, serviceId, staffId, bookingDate, startTime, endTime,
+      // specialRequests) but Repository.update -> sanitizePayload allowlists
+      // snake_case DB columns. Inverse-map via the canonical mapping layer so
+      // those edits persist instead of being silently dropped by the allowlist.
+      // Snake_case schema keys (guest_name/guest_phone/guest_email, guests,
+      // status) pass through the mapper unchanged.
+      const dbPayload = mapFromPublicContract("bookings", validation.data);
+      const updated = await this.repo.update("bookings", String(id), dbPayload);
       return { success: true, data: updated };
     } catch (error: any) {
       return this.handleDatabaseError(error, "update");
@@ -222,39 +224,53 @@ export class BookingHandler {
   /**
    * Handle database errors with special handling for booking conflicts.
    */
-  private handleDatabaseError(error: any, operation: "create" | "update") {
+    private handleDatabaseError(error: any, operation: "create" | "update"): ResultError {
     const errorMessage = error?.message?.toLowerCase() || "";
     const errorCode = error?.code || "";
 
-    // PostgreSQL exclusion constraint violation
-    if (errorCode === "23P01" || errorMessage.includes("bookings_no_overlap_per_staff")) {
-      return conflictError(
+        // PostgreSQL exclusion constraint violation (service/venue-level)
+    if (errorMessage.includes("bookings_no_overlap_per_service")) {
+      return conflictErr(
+        "Booking conflicts with an existing booking for this service at the same time. Please choose another time slot."
+      );
+    }
+
+    // PostgreSQL exclusion constraint violation (staff-level)
+    if (errorMessage.includes("bookings_no_overlap_per_staff")) {
+      return conflictErr(
         "Booking conflicts with an existing booking for this staff member at the same time."
+      );
+    }
+
+    // Any other exclusion-constraint violation (23P01) treated as a time conflict
+    if (errorCode === "23P01") {
+      return conflictErr(
+        "Booking conflicts with an existing booking at the same time. Please choose another time slot."
       );
     }
 
     // PostgreSQL check constraint violation (status)
     if (errorCode === "23514" || errorMessage.includes("bookings_status_check")) {
-      return validationError("Invalid booking status.");
+      return validationErr("Invalid booking status.");
     }
 
     // Foreign key violations
     if (errorCode === "23503" || errorMessage.includes("foreign key")) {
       if (errorMessage.includes("customer")) {
-        return validationError("Invalid customer ID.");
+        return validationErr("Invalid customer ID.");
       }
       if (errorMessage.includes("service")) {
-        return validationError("Invalid service ID.");
+        return validationErr("Invalid service ID.");
       }
       if (errorMessage.includes("staff")) {
-        return validationError("Invalid staff ID.");
+        return validationErr("Invalid staff ID.");
       }
-      return validationError("Invalid reference in booking data.");
+      return validationErr("Invalid reference in booking data.");
     }
 
     // Generic database errors
     console.error(`Booking ${operation} error:`, error);
-    return internalError(`Failed to ${operation} booking. Please try again.`);
+    return internalErr(`Failed to ${operation} booking. Please try again.`);
   }
 }
 

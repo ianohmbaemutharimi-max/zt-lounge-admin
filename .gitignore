@@ -6,9 +6,7 @@ build/
 coverage/
 .cache/
 
-.env
-.env.local
-.env.*.local
+.env*
 !.env.example
 
 test-results/
@@ -24,3 +22,29 @@ pnpm-debug.log*
 
 .DS_Store
 Thumbs.db
+
+# Cleanup artifacts (added by final cleanup 2026-08-29)
+*.mjs.archived
+*-verification.log
+*-audit.txt
+*-output.txt
+*-results.txt
+*-inventory.txt
+*.bundle
+
+# Diagnostic artifacts
+diag-*.png
+*.err
+*.pid
+
+# Test result directories
+test-results-*/
+*-test-results/
+
+# IDE state
+workspace/
+
+# Temporary files
+\$null
+d
+nul)

@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback, Suspense, useRef } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { getSupabaseBrowser } from "@/lib/supabase/client";
+import { postLoginPath } from "@/lib/auth/redirect";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { BrandLogo } from "@/components/BrandLogo";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -11,13 +14,19 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const supabaseRef = useRef(
-    createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
-  );
-  const supabase = supabaseRef.current;
+  // SSR-safe: use a ref so getSupabaseBrowser() is only called in the
+  // browser (when `window` exists). During SSR `supabaseRef.current` stays
+  // null and is never accessed by event handlers.
+  const supabaseRef = useRef<SupabaseClient | null>(null);
+  if (supabaseRef.current === null && typeof window !== "undefined") {
+    supabaseRef.current = getSupabaseBrowser();
+  }
+  const supabase = supabaseRef.current!;
+
+  // Loop 65: destination the user was trying to reach before being sent to
+  // /login (e.g. "/dashboard/bookings"). Validated as a safe internal
+  // dashboard path — never an open redirect — and falls back to /dashboard.
+  const redirectTo = postLoginPath(searchParams.get("redirect"));
 
   // Derive error from search params instead of setState in effect
   const initialError = searchParams.get("error") === "profile_not_found"
@@ -70,7 +79,7 @@ function LoginForm() {
           ? profile.roles[0]?.name
           : (profile as any)?.roles?.name;
 
-        if (!userRole || !["super_admin", "admin", "manager"].includes(userRole)) {
+        if (!userRole || !["super_admin", "admin"].includes(userRole)) {
           await supabase.auth.signOut();
           setError("Access denied. Admin privileges required.");
           await logLoginAttempt(false, "Access denied - insufficient role");
@@ -81,7 +90,9 @@ function LoginForm() {
 
       await logLoginAttempt(true);
       router.refresh();
-      router.push("/dashboard");
+      // Loop 65: navigate to the originally requested (validated) destination
+      // instead of always discarding it for /dashboard.
+      router.push(redirectTo);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Login failed";
       setError(msg);
@@ -95,13 +106,7 @@ function LoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-ink px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <img
-            src="/images/logo/zt-lounge-logo.svg"
-            alt="ZT Lounge"
-            width={160}
-            height={40}
-            className="mx-auto mb-4 rounded ring-2 ring-gold/40"
-          />
+          <BrandLogo imgClassName="mx-auto mb-4 h-16 w-16 rounded ring-2 ring-gold/40" />
           <h1 className="text-3xl font-bold text-white">Admin Login</h1>
           <p className="mt-2 text-sm text-muted">ZT Lounge Meru — Control Center</p>
         </div>
@@ -142,12 +147,21 @@ function LoginForm() {
               />
             </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full rounded-xl bg-gold py-2.5 font-semibold text-black hover:bg-gold/90 disabled:opacity-50"
-                aria-busy={loading}
+            <div className="text-right">
+              <Link
+                href="/auth/forgot-password"
+                className="text-sm text-gold hover:underline"
               >
+                Forgot password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-xl bg-gold py-2.5 font-semibold text-black hover:bg-gold/90 disabled:opacity-50"
+              aria-busy={loading}
+            >
                 {loading ? "Signing in…" : "Sign In"}
               </button>
           </div>

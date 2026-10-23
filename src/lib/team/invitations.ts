@@ -13,14 +13,35 @@ import { createHash, randomBytes } from "crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
-// RBAC hierarchy: who can invite whom
+// RBAC hierarchy: who can invite whom.
+//
+// D-2 (Phase 2 surgical closure): team invitation is a super_admin-only
+// operation. Previously `admin` could invite manager/staff/receptionist and
+// `manager` could invite staff/receptionist, which contradicted the intended
+// Phase 2 policy (only super_admin may invite team members).
+//
+// Final ZT Lounge staff model is exactly two roles. `super_admin` is the only
+// inviter and the only role it may create — so an admin can never mint a peer
+// super_admin, and no inviter can create a retired role.
+//
+// NOTE: this matrix is deliberately NOT the same concept as ADMIN_ROLES
+// (src/lib/auth/server.ts). ADMIN_ROLES answers "who may enter the Admin
+// application"; INVITE_PERMISSIONS answers "who may invite which role".
+// Both remain separate authorization models by design.
 const INVITE_PERMISSIONS: Record<string, string[]> = {
-  super_admin: ["super_admin", "admin", "manager", "staff", "receptionist"],
-  admin: ["manager", "staff", "receptionist"],
-  manager: ["staff", "receptionist"],
+  super_admin: ["admin"],
+  admin: [],
+  manager: [],
   staff: [],
   receptionist: [],
 };
+
+/**
+ * Roles an invitation may ever grant, in the final two-role staff model.
+ * Mirrors INVITE_PERMISSIONS.targets and is enforced again inside the
+ * accept_team_invitation RPC so the database refuses any other value.
+ */
+export const INVITABLE_STAFF_ROLES = ["admin"] as const;
 
 /**
  * Generate a cryptographically secure random token

@@ -50,17 +50,33 @@ export async function logAudit(
     const ipAddress = req?.headers.get("x-forwarded-for") || req?.headers.get("x-real-ip") || null;
     const userAgent = req?.headers.get("user-agent") || null;
 
-    await supabase.from("activity_logs").insert({
+    // NOTE: the live `activity_logs` table has NO `details` column (verified
+    // against canonical project jczwilrysvnhcjzjztbi 2026-10-06: id, profile_id,
+    // action, table_name, record_id, old_data, new_data, ip_address, user_agent,
+    // created_at). Including `details` here made PostgREST reject the insert
+    // ("column activity_logs.details does not exist") and the failure was
+    // swallowed — so NO app-side audit row ever landed (pre-existing defect
+    // surfaced while runtime-verifying F-1). `entry.details` remains part of
+    // the call-site contract for readability but is not persisted.
+    const { error } = await supabase.from("activity_logs").insert({
       profile_id: actorId ?? null,
       action: entry.action,
       table_name: entry.tableName,
       record_id: entry.recordId ?? null,
-      details: entry.details ?? null,
       ip_address: ipAddress,
       user_agent: userAgent,
       old_data: entry.oldData ?? null,
       new_data: entry.newData ?? null,
     });
+    if (error) {
+      // Audit logging must never break the main operation — but a dropped row
+      // must be visible in server logs instead of failing silently.
+      console.error("[audit] activity_logs insert failed:", error.message, {
+        action: entry.action,
+        table: entry.tableName,
+        record_id: entry.recordId ?? null,
+      });
+    }
   } catch {
     // Audit logging must never break the main operation
   }

@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Modal, Input, Field, Button } from "@/components/ui";
+import { Modal, Input, Field, Button, Select } from "@/components/ui";
 
 interface MediaAsset {
   id: string;
   alt_text: string | null;
   title: string | null;
   description: string | null;
+  category: string | null;
 }
 
 interface MediaEditModalProps {
@@ -17,13 +18,26 @@ interface MediaEditModalProps {
   usageLocations?: string[];
   open: boolean;
   onClose: () => void;
-  onSave: (assetId: string, data: { alt_text: string; title: string; description: string }) => Promise<void>;
+  onSave: (assetId: string, data: { alt_text: string; title: string; description: string; category: string | null }) => Promise<void>;
 }
+
+const MEDIA_CATEGORIES = [
+  { value: "", label: "Uncategorized" },
+  { value: "hero", label: "Hero" },
+  { value: "gallery", label: "Gallery" },
+  { value: "menu", label: "Menu" },
+  { value: "services", label: "Services" },
+  { value: "testimonials", label: "Testimonials" },
+  { value: "branding", label: "Branding" },
+  { value: "promotions", label: "Promotions" },
+  { value: "memberships", label: "Memberships" },
+] as const;
 
 export function MediaEditModal({ asset, usageLocations, open, onClose, onSave }: MediaEditModalProps) {
   const [altText, setAltText] = useState(asset?.alt_text || "");
   const [title, setTitle] = useState(asset?.title || "");
   const [description, setDescription] = useState(asset?.description || "");
+  const [category, setCategory] = useState(asset?.category || "");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,14 +45,17 @@ export function MediaEditModal({ asset, usageLocations, open, onClose, onSave }:
   // Previously state was only initialized on first mount (asset = null), so the
   // dialog always opened with empty fields — saving without retyping silently
   // wiped the asset's title/alt_text/description.
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional: sync form fields when the dialog opens with a new asset */
   useEffect(() => {
     if (open && asset) {
       setTitle(asset.title || "");
       setAltText(asset.alt_text || "");
       setDescription(asset.description || "");
+      setCategory(asset.category || "");
       setError(null);
     }
   }, [open, asset]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Reset form when modal opens/closes or asset changes
   const handleOpenChange = (newOpen: boolean) => {
@@ -46,6 +63,7 @@ export function MediaEditModal({ asset, usageLocations, open, onClose, onSave }:
       setAltText(asset?.alt_text || "");
       setTitle(asset?.title || "");
       setDescription(asset?.description || "");
+      setCategory(asset?.category || "");
       setError(null);
       onClose();
     }
@@ -59,7 +77,12 @@ export function MediaEditModal({ asset, usageLocations, open, onClose, onSave }:
     try {
       setError(null);
       setIsSaving(true);
-      await onSave(asset.id, { alt_text: altText, title, description });
+      await onSave(asset.id, { 
+        alt_text: altText, 
+        title, 
+        description,
+        category: category || null, // Empty string → null for DB
+      });
       handleOpenChange(false);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to save media";
@@ -94,6 +117,20 @@ export function MediaEditModal({ asset, usageLocations, open, onClose, onSave }:
             </p>
           )}
         </div>
+
+        <Field label="Category" error={undefined}>
+          <Select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            disabled={isSaving}
+          >
+            {MEDIA_CATEGORIES.map((cat) => (
+              <option key={cat.value} value={cat.value}>
+                {cat.label}
+              </option>
+            ))}
+          </Select>
+        </Field>
 
         <Field label="Title" error={undefined}>
           <Input

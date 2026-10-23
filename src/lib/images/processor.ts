@@ -1,11 +1,14 @@
 /**
  * Image processing utilities for Phase 3 - Secure Image Upload API
  * 
- * Uses Sharp for image validation, conversion to WebP, and category-specific resizing.
+  * Uses Sharp for image validation, conversion to WebP, and category-specific resizing.
+ * Genuine ICO files (e.g. favicons) bypass Sharp entirely and are preserved
+ * byte-for-byte as valid ICO containers (see the ICO short-circuit in processImage).
  * All processing maintains aspect ratios and never enlarges small images.
  */
 
 import sharp from "sharp";
+import { createHash } from "node:crypto";
 import type { ImageCategory } from "@/lib/storage/paths";
 
 /**
@@ -20,7 +23,40 @@ export const ACCEPTED_MIME_TYPES = [
   "image/jpeg",
   "image/png",
   "image/webp",
+  // Phase 6: genuine .ico favicon uploads are accepted and preserved
+  // byte-for-byte (see the ICO short-circuit in processImage below).
+  "image/x-icon",
 ] as const;
+
+/**
+ * Phase 6 — ICO format support.
+ * A genuine ICO begins with an ICONDIR (reserved 2 bytes = 0, type 2 bytes
+ * = 1 for ICO / 2 for cursor, count 2 bytes = N entries). We validate via
+ * magic bytes (NOT Sharp) so the original ICO bytes are preserved exactly —
+ * the stored file must remain valid ICO data (header 00 00 01 00), never a
+ * renamed PNG/Webp.
+ */
+function isIcoBuffer(buffer: Buffer): boolean {
+  if (buffer.length < 6) return false;
+  const reserved = buffer.readUInt16LE(0);
+  const type = buffer.readUInt16LE(2);
+  const count = buffer.readUInt16LE(4);
+  return reserved === 0 && (type === 1 || type === 2) && count >= 1;
+}
+/** Largest WxH declared across all ICONDIRENTRY records (0 byte => 256). */
+function icoDimensions(buffer: Buffer): { width: number; height: number } {
+  const count = Math.min(buffer.readUInt16LE(4), 255);
+  let width = 0, height = 0;
+  for (let i = 0; i < count; i++) {
+    const offset = 6 + i * 16; // each ICONDIRENTRY is 16 bytes
+    if (offset + 16 > buffer.length) break;
+    const w = buffer[offset] === 0 ? 256 : buffer[offset];
+    const h = buffer[offset + 1] === 0 ? 256 : buffer[offset + 1];
+    if (w > width) width = w;
+    if (h > height) height = h;
+  }
+  return { width, height };
+}
 
 /**
  * WebP quality setting (0-100).
@@ -39,6 +75,13 @@ export const CATEGORY_MAX_WIDTHS: Record<ImageCategory, number> = {
   services: 800,     // Service images
   testimonials: 400, // Customer photos
   branding: 800,     // Logos and brand assets
+  // Categories added when ImageCategory allowlist (paths.ts) was extended
+  // beyond the original six; these are the Phase 2 typecheck closure fix —
+  // Record<ImageCategory, number> requires an entry for every allowlisted
+  // category so a newly-allowed upload category can never fall through to a
+  // missing resize bound.
+  promotions: 1920,  // Promotion banners/posters (full-width like hero)
+  memberships: 800,  // Membership plan images (content width like services)
 };
 
 /**
@@ -85,7 +128,26 @@ export async function processImage(
   height: number;
   size: number;
   format: string;
+  /** SHA-256 hex digest of the final normalized WebP buffer (canonical dedup key). */
+  contentHash: string;
 }> {
+    // Phase 6 — ICO bypass: a genuine .ico (magic 00 00 01 00) is preserved
+  // byte-for-byte. Sharp cannot (and must not) re-encode ICO containers;
+  // the stored bytes must remain valid ICO data. Non-ICO formats flow into
+  // the regular Sharp→WebP pipeline below.
+  if (isIcoBuffer(fileBuffer)) {
+    const dims = icoDimensions(fileBuffer);
+    const contentHash = createHash("sha256").update(fileBuffer).digest("hex");
+    return {
+      buffer: fileBuffer, // untouched — genuine ICO bytes
+      width: dims.width,
+      height: dims.height,
+      size: fileBuffer.length,
+      format: "ico",
+      contentHash,
+    };
+  }
+
   // Validate declared MIME type
   if (!isAcceptedMimeType(declaredMimeType)) {
     throw new Error(
@@ -147,12 +209,19 @@ export async function processImage(
     // Get processed buffer and metadata
     const buffer = await processedImage.toBuffer({ resolveWithObject: true });
 
+    // SHA-256 content hash of the FINAL normalized WebP buffer.
+    // This is the deduplication key for the canonical media registry.
+    const contentHash = createHash("sha256")
+      .update(buffer.data)
+      .digest("hex");
+
     return {
       buffer: buffer.data,
       width: buffer.info.width,
       height: buffer.info.height,
       size: buffer.info.size,
       format: "webp",
+      contentHash,
     };
   } catch (error) {
     throw new Error(
@@ -174,7 +243,12 @@ export async function validateImage(
   fileBuffer: Buffer,
   declaredMimeType: string
 ): Promise<boolean> {
-  try {
+    try {
+    // ICO: genuine containers are validated via magic bytes only
+    // (Sharp will not re-encode them — see processImage).
+    if (declaredMimeType === "image/x-icon") {
+      return isIcoBuffer(fileBuffer);
+    }
     // Check MIME type
     if (!isAcceptedMimeType(declaredMimeType)) {
       return false;

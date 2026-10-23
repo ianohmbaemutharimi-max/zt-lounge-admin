@@ -1,3 +1,37 @@
+import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+/**
+ * Singleton browser Supabase client for the entire application.
+ * 
+ * This ensures only ONE GoTrueClient instance exists in the browser,
+ * avoiding the "Multiple GoTrueClient instances detected" warning.
+ * 
+ * All client components should import and use this client instead of
+ * creating their own instances.
+ * 
+ * NOTE: The reset-password page intentionally uses a separate client
+ * with persistSession:false to support Supabase's implicit recovery flow.
+ * That's the only exception to this singleton pattern.
+ */
+
+let browserClient: SupabaseClient | null = null;
+
+export function getSupabaseBrowser(): SupabaseClient {
+  if (typeof window === "undefined") {
+    throw new Error("getSupabaseBrowser can only be called in browser context");
+  }
+
+  if (!browserClient) {
+    browserClient = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+  }
+
+  return browserClient;
+}
+
 /**
  * Supabase-ready connection layer.
  *

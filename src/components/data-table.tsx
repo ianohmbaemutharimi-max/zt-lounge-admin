@@ -11,7 +11,7 @@ export type Column<T> = {
   className?: string;
 };
 
-export function DataTable<T extends { id: number }>({
+export function DataTable<T extends { id: string | number }>({
   data,
   columns,
   searchKeys,

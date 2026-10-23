@@ -1,52 +1,51 @@
 /**
- * Media URL Resolution Layer
+ * Media URL Resolution Layer — CANONICAL ONLY
  * 
- * Resolves image URLs from media_id to media_assets.public_url
- * with fallback to legacy image_url field.
+ * Resolves image URLs from media_id to media_assets.public_url.
  * 
- * This enables backward-compatible rendering where:
- * - If media_id exists and asset is found: use media_assets.public_url
- * - If media_id is NULL or asset not found: use image_url
- * - If both are missing: return null
+ * NO FALLBACK to legacy image_url fields.
+ * Returns null if media_id is missing or asset not found.
+ * 
+ * This enforces canonical media architecture:
+ * - media_id → media_assets → public_url
+ * - No silent fallback masks broken references
  */
 
 import { SupabaseClient } from "@supabase/supabase-js";
 
 export interface ResolvedImageData {
-  /** The resolved image URL (prioritized: media_assets.public_url > image_url) */
+  /** The resolved image URL from media_assets.public_url, or null if not found */
   resolvedUrl: string | null;
   /** Original media_id if provided */
   mediaId: string | null;
-  /** Original fallback image_url */
-  imageUrl: string | null;
-  /** Whether the URL came from media_assets (true) or legacy image_url (false) */
+  /** Whether the URL was successfully resolved from media_assets */
   fromMediaAsset: boolean;
+  /** Error message if resolution failed */
+  error?: string;
 }
 
 /**
- * Resolve a single image URL from media_id and fallback
+ * Resolve a single image URL from media_id (CANONICAL ONLY)
  * 
  * @param supabase Supabase client
  * @param mediaId UUID of media asset
- * @param fallbackUrl Legacy image_url
- * @returns Resolved image data with priority: media_asset > fallback
+ * @returns Resolved image data, or null if not found
  */
 export async function resolveImageUrl(
   supabase: SupabaseClient,
-  mediaId: string | null | undefined,
-  fallbackUrl: string | null | undefined
+  mediaId: string | null | undefined
 ): Promise<ResolvedImageData> {
-  // If no media_id, use fallback
+  // No media_id = no resolution
   if (!mediaId) {
     return {
-      resolvedUrl: fallbackUrl || null,
+      resolvedUrl: null,
       mediaId: null,
-      imageUrl: fallbackUrl || null,
       fromMediaAsset: false,
+      error: "No media_id provided",
     };
   }
 
-  // Try to fetch media asset
+  // Fetch media asset
   try {
     const { data, error } = await supabase
       .from("media_assets")
@@ -54,42 +53,53 @@ export async function resolveImageUrl(
       .eq("id", mediaId)
       .single();
 
-    if (!error && data?.public_url) {
+    if (error) {
       return {
-        resolvedUrl: data.public_url,
+        resolvedUrl: null,
         mediaId,
-        imageUrl: fallbackUrl || null,
-        fromMediaAsset: true,
+        fromMediaAsset: false,
+        error: `Media asset not found: ${error.message}`,
       };
     }
-  } catch (err) {
-    // Silently fall through to fallback
-  }
 
-  // Fallback to legacy image_url
-  return {
-    resolvedUrl: fallbackUrl || null,
-    mediaId,
-    imageUrl: fallbackUrl || null,
-    fromMediaAsset: false,
-  };
+    if (!data?.public_url) {
+      return {
+        resolvedUrl: null,
+        mediaId,
+        fromMediaAsset: false,
+        error: "Media asset exists but has no public_url",
+      };
+    }
+
+    return {
+      resolvedUrl: data.public_url,
+      mediaId,
+      fromMediaAsset: true,
+    };
+  } catch (err) {
+    return {
+      resolvedUrl: null,
+      mediaId,
+      fromMediaAsset: false,
+      error: `Unexpected error: ${err instanceof Error ? err.message : String(err)}`,
+    };
+  }
 }
 
 /**
- * Batch resolve multiple image URLs
+ * Batch resolve multiple image URLs (CANONICAL ONLY)
  * 
  * Fetches all referenced media assets in one query to avoid N+1.
+ * Items without media_id or with missing assets get null resolved_image_url.
  * 
  * @param supabase Supabase client
- * @param items Array of objects with mediaId and imageUrl properties
+ * @param items Array of objects with media_id or mediaId properties
  * @returns Original items enriched with resolved URLs
  */
 export async function resolveImageUrls<
   T extends {
     media_id?: string | null;
-    image_url?: string | null;
     mediaId?: string | null;
-    imageUrl?: string | null;
   }
 >(supabase: SupabaseClient, items: T[]): Promise<(T & { resolved_image_url: string | null })[]> {
   try {
@@ -110,25 +120,20 @@ export async function resolveImageUrls<
 
       if (error) {
         console.error("[resolveImageUrls] Media asset fetch error:", error);
-        // Silently fall through - use fallback URLs
+        // Continue with empty map - items will get null URLs
       } else if (data) {
         for (const asset of data) {
-          mediaMap.set(asset.id, asset.public_url);
+          if (asset.public_url) {
+            mediaMap.set(asset.id, asset.public_url);
+          }
         }
       }
     }
 
-    // Enrich items with resolved URLs
+    // Enrich items with resolved URLs (canonical only)
     return items.map((item) => {
       const mediaId = item.media_id || item.mediaId;
-      const imageUrl = item.image_url || item.imageUrl;
-
-      let resolvedUrl: string | null = null;
-      if (mediaId && mediaMap.has(mediaId)) {
-        resolvedUrl = mediaMap.get(mediaId) || null;
-      } else if (imageUrl) {
-        resolvedUrl = imageUrl;
-      }
+      const resolvedUrl = mediaId ? (mediaMap.get(mediaId) || null) : null;
 
       return {
         ...item,
@@ -137,13 +142,10 @@ export async function resolveImageUrls<
     });
   } catch (err) {
     console.error("[resolveImageUrls] Unexpected error:", err);
-    // Fallback: just add resolved_image_url based on existing fields
-    return items.map((item) => {
-      const imageUrl = item.image_url || item.imageUrl;
-      return {
-        ...item,
-        resolved_image_url: imageUrl || null,
-      };
-    });
+    // Return items with null URLs rather than failing
+    return items.map((item) => ({
+      ...item,
+      resolved_image_url: null,
+    }));
   }
 }

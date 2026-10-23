@@ -1,16 +1,11 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export default function UnauthorizedPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-ink px-4">
       <div className="w-full max-w-md text-center">
-        <img
-          src="/images/logo/zt-lounge-logo.svg"
-          alt="ZT Lounge"
-          width={160}
-          height={40}
-          className="mx-auto mb-4 rounded ring-2 ring-rose-500/40"
-        />
+        <BrandLogo imgClassName="mx-auto mb-4 h-16 w-16 rounded ring-2 ring-rose-500/40" />
         <h1 className="text-3xl font-bold text-white">Access Denied</h1>
         <p className="mt-2 text-sm text-muted">
           You do not have permission to access this area.

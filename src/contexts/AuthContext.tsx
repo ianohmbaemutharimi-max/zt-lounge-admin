@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
-import { createBrowserClient } from "@supabase/ssr";
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { getSupabaseBrowser } from "@/lib/supabase/client";
 
 type User = {
   id: string;
@@ -30,22 +31,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const supabase = useMemo(
-    () =>
-      createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      ),
-    []
-  );
+  // SSR-safe singleton: `useRef` is used instead of `useMemo` because React
+  // preserves the memoized value from SSR during hydration — if `useMemo`
+  // returned `null` on the server, it would stay `null` forever on the client.
+  //
+  // With a ref we mutate `.current` during the render body only when
+  // `window` exists (client), so the real singleton is created once and
+  // survives every re-render. The `onAuthStateChange` subscription in
+  // `useEffect` runs exclusively on the client where `supabase` is non-null.
+  const supabaseRef = useRef<SupabaseClient | null>(null);
+  if (supabaseRef.current === null && typeof window !== "undefined") {
+    supabaseRef.current = getSupabaseBrowser();
+  }
+  const supabase = supabaseRef.current;
 
   const signOut = useCallback(async () => {
+    if (!supabase) return;
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
   }, [supabase]);
 
   useEffect(() => {
+    if (!supabase) return;
     const init = async () => {
       setIsLoading(true);
       try {

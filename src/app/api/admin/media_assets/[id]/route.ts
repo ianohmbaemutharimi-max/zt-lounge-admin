@@ -1,195 +1,149 @@
 /**
- * Media Assets API - Update Endpoint
- * 
- * PATCH /api/admin/media_assets/[id]
- * 
- * Allows authenticated content managers to update media asset metadata.
- * Only title and alt_text are editable. File content and storage paths are immutable.
- * 
- * This endpoint follows the project's established conventions:
- * - Uses withContentManagerAuth for RBAC (manager, admin, super_admin)
- * - Validates UUID format
- * - Returns consistent JSON responses
- * - Proper error handling with appropriate status codes
+ * Media Assets Metadata API
+ *
+ * PATCH /api/admin/media_assets/[id]   - Update media metadata (super_admin only)
+ * DELETE /api/admin/media_assets/[id]  - Delete media asset (super_admin only)
+ *
+ * Protected operations for managing media asset metadata including:
+ * - title
+ * - alt_text
+ * - description
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { withContentManagerAuth } from "@/lib/auth/server";
-import { getSupabaseAdmin } from "@/lib/supabase/server";
+import { withSuperAdminAuth } from "@/lib/auth/server";
+import { Repository } from "@/lib/repository";
+import { validateRecordId, validationError, notFoundError } from "@/lib/validation/admin";
+import { MEDIA_REFERENCE_TABLES } from "@/lib/media/reference-tables";
 
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 /**
  * PATCH /api/admin/media_assets/[id]
- * 
- * Updates media asset metadata (title and alt_text only).
- * 
- * Required headers:
- * - Cookie: Supabase session
- * 
- * Request body (JSON):
- * {
- *   "title": string (optional),
- *   "alt_text": string (optional)
- * }
- * 
- * Response (200):
- * {
- *   "id": "uuid",
- *   "title": string,
- *   "alt_text": string,
- *   "updated_at": "timestamp",
- *   ... other media asset fields
- * }
- * 
- * Error responses:
- * - 400: Invalid ID format or invalid request body
- * - 401: Unauthenticated
- * - 403: Unauthorized role
- * - 404: Media asset not found
- * - 500: Server error
+ * Update media asset metadata (title, alt_text, description)
+ * Requires super_admin role
  */
-export const PATCH = async (
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) => {
-  return withContentManagerAuth(async (req, _ctx, auth) => {
+export const PATCH = withSuperAdminAuth(
+  async (req: NextRequest, ctx: { params: Promise<{ id: string }> }, auth) => {
     try {
-      // Extract and validate ID
-      const { id } = await params;
-      
-      // Validate UUID format
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(id)) {
-        return NextResponse.json(
-          { 
-            success: false,
-            error: { message: "Invalid media asset ID format" }
-          },
-          { status: 400 }
-        );
+      const { id } = await ctx.params;
+
+      if (!validateRecordId(id)) {
+        return validationError("Invalid media asset ID format");
       }
 
-      // Parse request body
-      let body: any;
-      try {
-        body = await req.json();
-      } catch (error) {
-        return NextResponse.json(
-          { 
-            success: false,
-            error: { message: "Invalid JSON in request body" }
-          },
-          { status: 400 }
-        );
+      const body = await req.json();
+      const repo = new Repository(auth.supabase as any);
+
+      // Verify media asset exists
+      const existing = await repo.findById("media_assets", id);
+      if (!existing) {
+        return notFoundError("Media asset not found");
       }
 
-      // Validate that only allowed fields are present
-      const allowedFields = ["title", "alt_text"];
-      const updateData: Record<string, any> = {};
+      // Update metadata using repository (enforces allowlist)
+      const updated = await repo.update("media_assets", id, body);
 
-      for (const key of Object.keys(body)) {
-        if (!allowedFields.includes(key)) {
-          return NextResponse.json(
-            { 
-              success: false,
-              error: { message: `Field '${key}' is not editable. Only title and alt_text can be updated.` }
-            },
-            { status: 400 }
-          );
-        }
-      }
-
-      // Build update object with only provided fields
-      if (body.title !== undefined) {
-        updateData.title = body.title;
-      }
-      if (body.alt_text !== undefined) {
-        updateData.alt_text = body.alt_text;
-      }
-
-      // Ensure at least one field is being updated
-      if (Object.keys(updateData).length === 0) {
-        return NextResponse.json(
-          { 
-            success: false,
-            error: { message: "No valid fields to update. Provide title or alt_text." }
-          },
-          { status: 400 }
-        );
-      }
-
-      // Add updated_at timestamp
-      updateData.updated_at = new Date().toISOString();
-
-      // Use service role client to bypass RLS for the update
-      // (Media Library RLS policies require admin role)
-      const supabaseAdmin = await getSupabaseAdmin();
-
-      // First verify the asset exists
-      const { data: existingAsset, error: fetchError } = await supabaseAdmin
-        .from("media_assets")
-        .select("id")
-        .eq("id", id)
-        .single();
-
-      if (fetchError || !existingAsset) {
-        return NextResponse.json(
-          { 
-            success: false,
-            error: { message: "Media asset not found" }
-          },
-          { status: 404 }
-        );
-      }
-
-      // Perform the update
-      const { data, error } = await supabaseAdmin
-        .from("media_assets")
-        .update(updateData)
-        .eq("id", id)
-        .select()
-        .single();
-
-      if (error) {
-        console.error("[media_assets] PATCH error:", {
-          id,
-          error: error.message,
-          code: error.code,
-        });
-
-        return NextResponse.json(
-          { 
-            success: false,
-            error: { message: "Failed to update media asset" }
-          },
-          { status: 500 }
-        );
-      }
-
-      // Return updated asset
-      return NextResponse.json(
-        {
-          success: true,
-          data,
-        },
-        { status: 200 }
-      );
-
+      return NextResponse.json(updated);
     } catch (error) {
-      console.error("[media_assets] PATCH unexpected error:", {
-        name: error instanceof Error ? error.name : "Unknown",
-        message: error instanceof Error ? error.message : String(error),
-      });
-
+      console.error("[media_assets] PATCH error:", error);
       return NextResponse.json(
-        { 
-          success: false,
-          error: { message: "Internal server error" }
-        },
+        { error: "Internal server error" },
         { status: 500 }
       );
     }
-  })(req, { params });
-};
+  }
+);
+
+/**
+ * DELETE /api/admin/media_assets/[id]
+ * Delete media asset and its storage file
+ * Requires super_admin role
+ * 
+ * SAFETY CONTRACT:
+ * - Checks all CMS references before deletion
+ * - Rejects deletion if asset is in use
+ * - Returns 409 Conflict with usage details if referenced
+ * - Only deletes database record (storage cleanup deferred)
+ */
+export const DELETE = withSuperAdminAuth(
+  async (req: NextRequest, ctx: { params: Promise<{ id: string }> }, auth) => {
+    try {
+      const { id } = await ctx.params;
+
+      if (!validateRecordId(id)) {
+        return validationError("Invalid media asset ID format");
+      }
+
+      const repo = new Repository(auth.supabase as any);
+
+      // Verify media asset exists and get storage path
+      const existing = await repo.findById("media_assets", id);
+      if (!existing) {
+        return notFoundError("Media asset not found");
+      }
+
+      // SAFETY CHECK: Detect all CMS references
+      const references = await checkMediaReferences(auth.supabase as any, id);
+      
+      if (references.total > 0) {
+        // Asset is in use - reject deletion
+        return NextResponse.json(
+          {
+            error: "Media asset is currently in use",
+            message: "Cannot delete media asset that is referenced by active content",
+            usage: references,
+            suggestion: "Remove all references before deleting this asset"
+          },
+          { status: 409 } // Conflict
+        );
+      }
+
+      // Safe to delete - no references found
+      // Delete database record (repository handles RLS)
+      await repo.delete("media_assets", id);
+
+      // Note: Storage file deletion should be handled by a database trigger
+      // or background job to avoid orphaning records if storage deletion fails
+
+      return new NextResponse(null, { status: 204 });
+    } catch (error) {
+      console.error("[media_assets] DELETE error:", error);
+      return NextResponse.json(
+        { error: "Internal server error" },
+        { status: 500 }
+      );
+    }
+  }
+);
+
+/**
+ * Check all CMS references to a media asset
+ * Returns detailed usage information for conflict responses
+ */
+async function checkMediaReferences(
+  supabase: any,
+  mediaId: string
+): Promise<{
+  total: number;
+  details: Array<{ table: string; count: number; column: string }>;
+}> {
+  const referenceTables = MEDIA_REFERENCE_TABLES;
+
+  const details: Array<{ table: string; count: number; column: string }> = [];
+  let total = 0;
+
+  for (const { table, column } of referenceTables) {
+    const { count, error } = await supabase
+      .from(table)
+      .select("*", { count: "exact", head: true })
+      .eq(column, mediaId);
+
+    if (!error && count !== null && count > 0) {
+      details.push({ table, column, count });
+      total += count;
+    }
+  }
+
+  return { total, details };
+}

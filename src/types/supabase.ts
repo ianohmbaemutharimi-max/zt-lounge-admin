@@ -105,6 +105,33 @@ export type Database = {
         }
         Relationships: []
       }
+      business_settings: {
+        Row: {
+          business_name: string | null
+          created_at: string
+          google_maps_reviews_url: string | null
+          google_reviews_api_key: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          business_name?: string | null
+          created_at?: string
+          google_maps_reviews_url?: string | null
+          google_reviews_api_key?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          business_name?: string | null
+          created_at?: string
+          google_maps_reviews_url?: string | null
+          google_reviews_api_key?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           booking_date: string
@@ -338,6 +365,57 @@ export type Database = {
           is_active?: boolean
           phone?: string | null
           role?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      testimonials: {
+        Row: {
+          approved: boolean
+          author_photo_url: string | null
+          comment: string
+          created_at: string
+          customer_name: string
+          external_id: string
+          external_url: string | null
+          id: string
+          is_featured: boolean
+          last_synced_at: string | null
+          rating: number
+          reviewed_at: string | null
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          approved?: boolean
+          author_photo_url?: string | null
+          comment: string
+          created_at?: string
+          customer_name: string
+          external_id: string
+          external_url?: string | null
+          id?: string
+          is_featured?: boolean
+          last_synced_at?: string | null
+          rating: number
+          reviewed_at?: string | null
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          approved?: boolean
+          author_photo_url?: string | null
+          comment?: string
+          created_at?: string
+          customer_name?: string
+          external_id?: string
+          external_url?: string | null
+          id?: string
+          is_featured?: boolean
+          last_synced_at?: string | null
+          rating?: number
+          reviewed_at?: string | null
+          source?: string
           updated_at?: string
         }
         Relationships: []

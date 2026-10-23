@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,44 +8,86 @@ import { z } from "zod";
 import { Plus, Trash2, Star, ArrowUp, ArrowDown, EyeOff, Eye, X, Pencil } from "lucide-react";
 import { api } from "@/lib/api";
 import { queryKeys } from "@/lib/query-keys";
-import { PageHeader, Button, Spinner, Modal, Field, Input, EmptyState, Card } from "@/components/ui";
+import { PageHeader, Button, Spinner, Modal, Field, Input, Select, EmptyState, Card } from "@/components/ui";
 import { cn } from "@/lib/utils";
-import { MediaPickerModal } from "@/features/media/media-picker-modal";
 import { ImageChangeDialog } from "@/features/media/image-change-dialog";
-import type { SelectableMediaAsset } from "@/types/media";
 
 const imageSchema = z.object({
   title: z.string().min(2, "Title is required"),
   category: z.string().min(2, "Category is required"),
-  media_id: z.string().uuid("Select an image from the Media Library").nullable().optional(),
+  // Canonical media reference ONLY
+  media_id: z.string().uuid("Choose an image").nullable().optional(),
+  // Page ownership lives on the CONTENT record (verified architecture).
+  // gallery.page_id is NOT NULL in the live DB, so every record needs one.
+  page_id: z.string().uuid("Select a page").min(1, "Select a page"),
 });
 type ImageForm = z.infer<typeof imageSchema>;
+
+/** Persisted page scope for Admin Gallery (mirrors the Services convention). */
+const PAGE_SCOPE_STORAGE_KEY = "zt-admin:gallery-page-scope";
 
 export function GalleryView() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [preview, setPreview] = useState<any | null>(null);
   const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
-  const [selectedMedia, setSelectedMedia] = useState<SelectableMediaAsset | null>(null);
   const [editingImage, setEditingImage] = useState<any | null>(null);
   const [imageChangeDialogOpen, setImageChangeDialogOpen] = useState(false);
 
-  const gallery = useQuery({ queryKey: queryKeys.gallery.all(), queryFn: () => api.list("gallery") });
+  // Admin Gallery is page-first: the operator selects a website page and the
+  // authoritative query ALWAYS carries gallery.page_id = selected_page_id.
+  // `null` means "no page chosen yet" and NO gallery request is issued — there
+  // is no code path that loads every gallery row and narrows it in React.
+  const [pageId, setPageId] = useState<string | null>(null);
+
+  const gallery = useQuery({
+    queryKey: [...queryKeys.gallery.all(), { page_id: pageId }],
+    queryFn: () => api.list("gallery", {
+      limit: 100,
+      "filter:page_id": `eq:${pageId}`,
+    }),
+    enabled: Boolean(pageId),
+  });
+  const pages = useQuery({ queryKey: queryKeys["website-pages"].all(), queryFn: () => api.list("website-pages") });
   const form = useForm<ImageForm>({ resolver: zodResolver(imageSchema) });
+
+  // Resolve the persisted scope once, then keep it valid if pages reload.
+  // A stored value that no longer matches a real page is discarded.
+  useEffect(() => {
+    if (pageId !== null || !pages.data) return;
+    const stored = window.localStorage.getItem(PAGE_SCOPE_STORAGE_KEY);
+    if (stored && pages.data.some((p: any) => p.id === stored)) {
+      setPageId(stored);
+      return;
+    }
+    setPageId((pages.data.find((p: any) => p.page_key === "gallery") ?? pages.data[0])?.id ?? null);
+  }, [pageId, pages.data]);
+
+  const changePageScope = (next: string) => {
+    // There is deliberately no "All pages" option: an empty scope is not a
+    // page, so it is normalised back to the previous valid selection.
+    if (!next) return;
+    setPageId(next);
+    window.localStorage.setItem(PAGE_SCOPE_STORAGE_KEY, next);
+  };
 
   const invalidate = () => qc.invalidateQueries({ queryKey: queryKeys.gallery.all() });
 
+  // Every mutation carries the selected page as query context so the server can
+  // prove ownership (page-first boundary in src/lib/page-scope.ts).
+  const scope = pageId ? { page_id: pageId } : undefined;
+
   const add = useMutation({
     mutationFn: (v: ImageForm) =>
-      api.create("gallery", { ...v, display_order: (gallery.data?.length ?? 0) + 1 }),
+      api.create("gallery", { ...v, display_order: (gallery.data?.length ?? 0) + 1 }, scope),
     onSuccess: () => { invalidate(); setOpen(false); form.reset(); },
   });
   const patch = useMutation({
-    mutationFn: ({ id, body }: { id: number; body: any }) => api.update("gallery", id, body),
+    mutationFn: ({ id, body }: { id: number; body: any }) => api.update("gallery", id, body, scope),
     onSuccess: invalidate,
   });
   const remove = useMutation({
-    mutationFn: (id: number) => api.remove("gallery", id),
+    mutationFn: (id: number) => api.remove("gallery", id, scope),
     onSuccess: invalidate,
   });
 
@@ -58,23 +100,61 @@ export function GalleryView() {
     patch.mutate({ id: swap.id, body: { display_order: row.display_order } });
   }
 
-  if (gallery.isLoading) return <Spinner label="Loading gallery…" />;
+  // Open the create form scoped to the SELECTED page. gallery.page_id is NOT
+  // NULL, and page ownership is the selected page — not an unrelated default.
+  function openAdd() {
+    form.reset({
+      title: "",
+      category: "",
+      media_id: null,
+      page_id: pageId ?? "",
+    });
+    setOpen(true);
+  }
+
+  if (gallery.isLoading || pages.isLoading) return <Spinner label="Loading gallery…" />;
 
   const images = [...(gallery.data ?? [])].sort((a: any, b: any) => a.display_order - b.display_order);
+
+  const selectedPage = (pages.data ?? []).find((p: any) => p.id === pageId);
+  const selectedPageLabel = selectedPage ? `/${selectedPage.page_key} — ${selectedPage.title}` : "No page selected";
 
   return (
     <div>
       <PageHeader
         title="Gallery"
         subtitle="Images shown on the public website gallery. Feature, reorder or hide them."
-        actions={<Button onClick={() => setOpen(true)}><Plus className="h-4 w-4" /> Add Image</Button>}
+        actions={
+          <>
+            <Select
+              aria-label="Website page"
+              value={pageId ?? ""}
+              onChange={(e) => changePageScope(e.target.value)}
+              className="max-w-xs"
+            >
+              {(pages.data ?? []).map((p: any) => (
+                <option key={p.id} value={p.id}>/{p.page_key} — {p.title}</option>
+              ))}
+            </Select>
+            <Button onClick={openAdd} disabled={!pageId} title={!pageId ? "Select a website page first" : undefined}>
+              <Plus className="h-4 w-4" /> Add Image
+            </Button>
+          </>
+        }
       />
 
-      {images.length === 0 ? (
+      {/* Page-first: until a page is chosen, no gallery collection is requested
+          and none is shown. This is not an "All pages" view. */}
+      {!pageId ? (
+        <EmptyState
+          title="Select a website page"
+          description="Gallery images are owned by a website page. Choose a page above to load its images."
+        />
+      ) : images.length === 0 ? (
         <EmptyState
           title="Gallery is empty"
           description="Add your first image to showcase the lounge on the website."
-          action={<Button onClick={() => setOpen(true)}><Plus className="h-4 w-4" /> Add Image</Button>}
+          action={<Button onClick={openAdd}><Plus className="h-4 w-4" /> Add Image</Button>}
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -82,7 +162,7 @@ export function GalleryView() {
             <Card key={g.id} className={cn("overflow-hidden", !g.is_active && "opacity-50")}>
               <button className="block w-full" onClick={() => setPreview(g)}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={g.resolved_image_url || g.image_url} alt={g.title ?? ""} className="h-48 w-full object-cover transition-transform hover:scale-105" />
+                <img src={g.resolved_image_url } alt={g.title ?? ""} className="h-48 w-full object-cover transition-transform hover:scale-105" />
               </button>
               <div className="flex items-center justify-between p-3">
                 <div className="min-w-0">
@@ -90,7 +170,7 @@ export function GalleryView() {
                   <p className="text-xs text-muted">{g.category} · #{g.display_order}</p>
                 </div>
                 <div className="flex shrink-0 gap-0.5">
-                  <button title="Edit image" onClick={() => { setEditingImage(g); setImageChangeDialogOpen(true); }} className="rounded-lg p-1.5 text-gold hover:bg-gold/10"><Pencil className="h-4 w-4" /></button>
+                  <button title="Choose image" onClick={() => { setEditingImage(g); setImageChangeDialogOpen(true); }} className="rounded-lg p-1.5 text-gold hover:bg-gold/10"><Pencil className="h-4 w-4" /></button>
                   <button title="Move up" disabled={i === 0} onClick={() => move(g, -1)} className="rounded-lg p-1.5 text-stone-400 hover:bg-panel-2 disabled:opacity-30"><ArrowUp className="h-4 w-4" /></button>
                   <button title="Move down" disabled={i === images.length - 1} onClick={() => move(g, 1)} className="rounded-lg p-1.5 text-stone-400 hover:bg-panel-2 disabled:opacity-30"><ArrowDown className="h-4 w-4" /></button>
                   <button title={g.is_featured ? "Unfeature" : "Feature"} onClick={() => patch.mutate({ id: g.id, body: { is_featured: !g.is_featured } })} className={cn("rounded-lg p-1.5 hover:bg-panel-2", g.is_featured ? "text-gold" : "text-stone-500")}>
@@ -111,7 +191,7 @@ export function GalleryView() {
       <Modal open={!!preview} onClose={() => setPreview(null)} title={preview?.title ?? "Preview"} wide>
         {preview && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview.resolved_image_url || preview.image_url} alt={preview.title ?? ""} className="w-full rounded-xl object-contain" />
+          <img src={preview.resolved_image_url } alt={preview.title ?? ""} className="w-full rounded-xl object-contain" />
         )}
       </Modal>
 
@@ -124,27 +204,35 @@ export function GalleryView() {
           <Field label="Category" error={form.formState.errors.category?.message}>
             <Input placeholder="Interior, Food, Drinks, Events…" {...form.register("category")} />
           </Field>
+          <Field label="Page" error={form.formState.errors.page_id?.message}>
+            {/* Page-first: the owning page is the SELECTED page, not a free
+                choice. Read-only so the create form cannot target another page;
+                the server independently rejects any mismatch with ?page_id=. */}
+            <Select {...form.register("page_id")} disabled>
+              <option value={pageId ?? ""}>{selectedPageLabel}</option>
+            </Select>
+          </Field>
           {/* Canonical media selection — new gallery images must reference media_id,
-              never a raw URL. */}
+              never a raw URL. media_id is the canonical reference. */}
           <div className="space-y-3 rounded-lg border border-edge bg-panel-2/50 p-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-stone-300">Media Library</span>
+              <span className="text-sm font-medium text-stone-300">Image</span>
               <Button
                 type="button"
                 onClick={() => setMediaPickerOpen(true)}
                 className="text-xs"
               >
-                {form.watch("media_id") ? "Change Image" : "Select from Library"}
+                Choose image
               </Button>
             </div>
             {form.watch("media_id") && (
               <div className="flex items-center justify-between rounded bg-panel p-2 text-sm text-stone-300">
-                <span>✓ Media linked</span>
+                <span>✓ Image selected</span>
                 <button
                   type="button"
-                  onClick={() => form.setValue("media_id", null)}
+                  onClick={() => { form.setValue("media_id", null); ; }}
                   className="text-rose-400 hover:text-rose-300"
-                  title="Remove media"
+                  title="Remove image"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -152,7 +240,7 @@ export function GalleryView() {
             )}
             {!form.watch("media_id") && (
               <p className="text-xs text-muted">
-                No image selected. Click "Select from Library" to choose from the Media Library.
+                No image selected. Click "Choose image" to select one.
               </p>
             )}
           </div>
@@ -165,15 +253,17 @@ export function GalleryView() {
         </form>
       </Modal>
 
-      {/* Media Picker Modal */}
-      <MediaPickerModal
+      {/* Unified Edit Image dialog — used by both Add Image and Change Image flows */}
+      <ImageChangeDialog
         open={mediaPickerOpen}
         onClose={() => setMediaPickerOpen(false)}
-        onSelect={(media) => {
-          form.setValue("media_id", media.id);
-          setSelectedMedia(media);
-          setMediaPickerOpen(false);
+        currentMediaId={form.watch("media_id") ?? null}
+        currentImageUrl={null}
+        onSave={async ({ media_id }) => {
+          form.setValue("media_id", media_id);
         }}
+        title="Choose image"
+        uploadCategory="gallery"
       />
 
       {/* Image Change Dialog */}
@@ -185,16 +275,15 @@ export function GalleryView() {
             setEditingImage(null);
           }}
           currentMediaId={editingImage.media_id}
-          currentImageUrl={editingImage.image_url}
-          onSave={async ({ media_id, image_url }) => {
+          currentImageUrl={editingImage.resolved_image_url}
+          onSave={async ({ media_id }) => {
             await patch.mutateAsync({
               id: editingImage.id,
-              body: { media_id, image_url },
+              body: { media_id },
             });
           }}
-          title="Change gallery image"
+          title="Choose image"
           uploadCategory="gallery"
-          canonicalOnly
         />
       )}
     </div>

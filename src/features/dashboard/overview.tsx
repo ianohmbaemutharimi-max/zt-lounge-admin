@@ -13,29 +13,10 @@ import {
   Image,
   ArrowRight,
 } from "lucide-react";
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-} from "recharts";
-import { api } from "@/lib/api";
-import { queryKeys } from "@/lib/query-keys";
 import { Card, PageHeader, Spinner, EmptyState, Badge, MetricCard } from "@/components/ui";
-import { formatKES, formatDate, formatTime, timeAgo } from "@/lib/utils";
-
-const tooltipStyle = {
-  backgroundColor: "#171717",
-  border: "1px solid #2a2a2a",
-  borderRadius: "12px",
-  color: "#f5f5f4",
-  fontSize: "12px",
-};
+import { useDashboardStats } from "@/lib/api";
+import { formatTime, formatDate, timeAgo } from "@/lib/utils";
+import { NAV_ENTRIES, type NavEntry } from "@/lib/constants/nav";
 
 interface RecentBooking {
   id: string;
@@ -132,11 +113,19 @@ function MediaLibraryCard() {
 }
 
 export function DashboardOverview() {
-  const { data, isLoading, isError } = useQuery({ queryKey: queryKeys.stats.all(), queryFn: () => api.stats() });
+  const { data: rawData, isLoading, isError, refetch } = useDashboardStats();
+const data = (rawData ?? {}) as any;
 
   if (isLoading) return <Spinner label="Loading today's overview…" />;
-  if (isError || !data)
-    return <EmptyState title="Could not load dashboard" description="Please refresh the page to try again." />;
+  if (isError || !rawData)
+    return (
+      <div className="flex flex-col items-center gap-2 px-4 py-10 text-center text-sm text-muted">
+        <p>Couldn&apos;t load dashboard.</p>
+        <button type="button" onClick={() => refetch()} className="text-gold hover:underline">
+          Retry
+        </button>
+      </div>
+    );
 
   const c = data.cards ?? {};
 
@@ -157,20 +146,7 @@ export function DashboardOverview() {
 
       <MediaLibraryCard />
 
-      <Card className="p-5">
-          <h3 className="mb-4 text-sm font-semibold text-white">Booking Trends <span className="ml-1 text-xs font-normal text-muted">last 14 days</span></h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.trends ?? []}>
-                <CartesianGrid stroke="#242424" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="day" stroke="#6b6b6b" fontSize={10} tickLine={false} axisLine={false} interval={2} />
-                <YAxis stroke="#6b6b6b" fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(212,175,55,0.06)" }} />
-                <Bar dataKey="bookings" fill="#D4AF37" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-      </Card>
+
 
       <Card className="overflow-hidden">
         <div className="border-b border-edge px-5 py-4">
@@ -227,7 +203,7 @@ export function DashboardOverview() {
                     <p className="text-sm text-stone-200">
                       <span className="font-medium text-white">{a.actor}</span> {a.action}
                     </p>
-                    {a.details && <p className="truncate text-xs text-muted">{a.details}</p>}
+                    {a.details && <p className="wrap-anywhere text-xs text-muted">{a.details}</p>}
                   </div>
                   <span className="ml-auto shrink-0 text-xs text-muted">{timeAgo(a.createdAt)}</span>
                 </li>
@@ -249,7 +225,7 @@ export function DashboardOverview() {
                   <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${n.isRead ? "bg-edge" : "bg-gold"}`} />
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-stone-200">{n.title}</p>
-                    {n.body && <p className="truncate text-xs text-muted">{n.body}</p>}
+                    {n.body && <p className="wrap-anywhere text-xs text-muted">{n.body}</p>}
                   </div>
                   <span className="ml-auto shrink-0 text-xs text-muted">{timeAgo(n.createdAt)}</span>
                 </li>
@@ -258,6 +234,26 @@ export function DashboardOverview() {
           )}
         </Card>
       </div>
+      <Card className="p-5">
+        <h3 className="mb-4 flex items-center gap-2 text-sm font-semibold text-white">
+          <ArrowRight className="h-4 w-4 text-gold" /> Quick Access
+        </h3>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+          {NAV_ENTRIES.flatMap((e: NavEntry) => ("children" in e ? e.children : [e])).map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex items-center gap-2 rounded-xl border border-edge/60 bg-panel-2/40 px-3 py-2.5 text-sm text-stone-200 transition hover:border-gold/60 hover:text-gold"
+              >
+                <Icon className="h-4 w-4 shrink-0 text-gold" />
+                <span className="truncate">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </Card>
     </div>
   );
 }

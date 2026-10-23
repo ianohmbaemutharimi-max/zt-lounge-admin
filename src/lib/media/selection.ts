@@ -34,6 +34,10 @@ export async function getSelectableMedia(
     searchParams.set("bucket", options.bucket);
   }
 
+  if (options?.category) {
+    searchParams.set("category", options.category);
+  }
+
   if (options?.search) {
     searchParams.set("search", options.search);
   }

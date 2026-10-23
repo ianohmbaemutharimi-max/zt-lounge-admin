@@ -11,7 +11,7 @@ interface RoleGuardProps {
 
 export function RoleGuard({
   children,
-  allowedRoles = ["admin", "super_admin", "manager"],
+  allowedRoles = ["admin", "super_admin"],
   fallback = null,
 }: RoleGuardProps) {
   const { user, isLoading } = useAuth();

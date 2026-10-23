@@ -29,12 +29,23 @@ import {
   Input,
   Select,
   EmptyState,
+  Toaster,
 } from "@/components/ui";
 import { DataTable, type Column } from "@/components/data-table";
 import { cn, formatDate, formatKES, formatTime, timeAgo } from "@/lib/utils";
 import { queryKeys } from "@/lib/query-keys";
 
 type BookingForm = BookingValidation;
+
+/** Render a booking's resolved phone (customer OR guest snapshot) safely.
+ *  Server enrichment falls back to an em-dash when neither exists; treat any
+ *  phone-less/digit-free sentinel (em-dash, mojibake variant, undefined,
+ *  null, N/A) as "no phone" so the UI never shows garbage. */
+function safePhone(value: string | null | undefined): string {
+  const v = (value ?? "").trim();
+  if (!v || !/[0-9+]/.test(v)) return "—";
+  return v;
+}
 
 export function BookingsView() {
   const qc = useQueryClient();
@@ -46,8 +57,22 @@ export function BookingsView() {
   const [editing, setEditing] = useState<any | null>(null);
   const [viewing, setViewing] = useState<any | null>(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [toasts, setToasts] = useState<Array<{ id: number; title: string; description?: string; status?: "success" | "error" }>>([]);
 
-  const bookings = useQuery({ queryKey: queryKeys.bookings.all(), queryFn: () => api.list("bookings") });
+  const addToast = (toast: Omit<typeof toasts[number], "id">) => {
+    const id = Date.now() + Math.random(); // eslint-disable-line react-hooks/purity
+    setToasts((prev) => [...prev, { id, ...toast }]);
+    setTimeout(() => dismissToast(id), 5000);
+  };
+
+  const dismissToast = (id: number) =>
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+
+  const bookings = useQuery({ 
+    queryKey: queryKeys.bookings.all(), 
+    queryFn: () => api.list("bookings", { orderBy: "created_at", ascending: "false" }),
+    refetchOnWindowFocus: "always", // Override global default to ensure real-time updates
+  });
   const customers = useQuery({ queryKey: queryKeys.customers.all(), queryFn: () => api.list("customers") });
   const services = useQuery({ queryKey: queryKeys.services.all(), queryFn: () => api.list("services") });
   const staff = useQuery({ queryKey: queryKeys.staff.all(), queryFn: () => api.list("staff") });
@@ -62,13 +87,42 @@ export function BookingsView() {
     enabled: !!viewing,
   });
 
-  const byId = (list: any[] | undefined, id: number | null) =>
-    (list ?? []).find((x) => x.id === id);
+  const byId = (list: any[] | undefined, id: string | null) =>
+    (list ?? []).find((x) => String(x.id) === String(id));
 
   const setStatus = useMutation({
     mutationFn: ({ id, status }: { id: number; status: string }) =>
-      api.update("bookings", id, { status }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: queryKeys.bookings.all() }),
+      api.setBookingStatus(id, status),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.bookings.all() });
+      qc.invalidateQueries({ queryKey: queryKeys.customers.all() });
+      qc.invalidateQueries({ queryKey: queryKeys.dashboard.stats() });
+      addToast({ title: "Booking updated", status: "success" });
+    },
+    onError: (err: any) => {
+      addToast({
+        title: "Action failed",
+        description: err?.message || "Could not update booking status.",
+        status: "error",
+      });
+    },
+  });
+
+  const setConfirm = useMutation({
+    mutationFn: ({ id }: { id: number }) => api.confirmBooking(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.bookings.all() });
+      qc.invalidateQueries({ queryKey: queryKeys.customers.all() });
+      qc.invalidateQueries({ queryKey: queryKeys.dashboard.stats() });
+      addToast({ title: "Booking confirmed", status: "success" });
+    },
+    onError: (err: any) => {
+      addToast({
+        title: "Action failed",
+        description: err?.message || "Could not confirm booking.",
+        status: "error",
+      });
+    },
   });
 
   const save = useMutation({
@@ -78,17 +132,25 @@ export function BookingsView() {
         return value;
       };
 
+      // Provide sensible defaults for optional fields that the DB requires
+      const today = new Date().toISOString().split("T")[0];
+
       const payload: any = {
         booking_number: `ZT-${1000 + Date.now() % 100000}`,
-        status: "pending",
-        customer_id: normalizeOptionalUuid(values.customerId ?? editing?.customer_id),
-        service_id: values.serviceId,
+        status: values.status || "pending",
+        customer_id: normalizeOptionalUuid(values.customerId ?? editing?.customerId),
+        service_id: normalizeOptionalUuid(values.serviceId),
         staff_id: normalizeOptionalUuid(values.staffId),
+        booking_date: values.bookingDate || today,
+        start_time: values.startTime || "09:00",
+        end_time: values.endTime || "10:00",
+        guests: values.guests || 1,
       };
 
-      if (values.full_name && values.full_name.trim()) payload.full_name = values.full_name.trim();
-      if (values.email && values.email.trim()) payload.email = values.email.trim();
-      if (values.phone && values.phone.trim()) payload.phone = values.phone.trim();
+      // Required guest contact fields
+      if (values.guest_name && values.guest_name.trim()) payload.guest_name = values.guest_name.trim();
+      if (values.guest_phone && values.guest_phone.trim()) payload.guest_phone = values.guest_phone.trim();
+      if (values.guest_email && values.guest_email.trim()) payload.guest_email = values.guest_email.trim();
 
       return editing
         ? api.update("bookings", editing.id, { ...values, ...payload })
@@ -96,13 +158,14 @@ export function BookingsView() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.bookings.all() });
+      qc.invalidateQueries({ queryKey: queryKeys.dashboard.stats() });
       closeForm();
     },
   });
 
   const form = useForm<BookingForm>({
     resolver: zodResolver(bookingValidationSchema) as any,
-    defaultValues: { status: "pending", guests: 2, customerId: "", serviceId: "", staffId: "", bookingDate: "", startTime: "", endTime: "", full_name: "", email: "", phone: "" } as any,
+    defaultValues: { status: "pending", guests: 2, customerId: "", serviceId: "", staffId: "", bookingDate: "", startTime: "", endTime: "", guest_name: "", guest_email: "", guest_phone: "" } as any,
   });
 
   function openForm(booking?: any) {
@@ -110,7 +173,7 @@ export function BookingsView() {
     form.reset(
       booking
         ? {
-            customerId: booking.customer_id,
+            customerId: booking.customerId ?? "",
             serviceId: booking.serviceId,
             staffId: booking.staffId,
             bookingDate: booking.bookingDate,
@@ -118,9 +181,9 @@ export function BookingsView() {
             endTime: booking.endTime?.slice(0, 5) || "",
             guests: booking.guests,
             status: booking.status,
-            full_name: booking.full_name || "",
-            email: booking.email || "",
-            phone: booking.phone || "",
+            guest_name: booking.guestName || "",
+            guest_email: booking.guestEmail || "",
+            guest_phone: booking.guestPhone || "",
           }
         : { 
             customerId: "", 
@@ -131,9 +194,9 @@ export function BookingsView() {
             endTime: "", 
             guests: 2, 
             status: "pending",
-            full_name: "",
-            email: "",
-            phone: ""
+            guest_name: "",
+            guest_email: "",
+            guest_phone: ""
           }
     );
     setFormOpen(true);
@@ -147,21 +210,37 @@ export function BookingsView() {
     () =>
       (bookings.data ?? []).map((b: any) => ({
         ...b,
-        customerName: byId(customers.data, b.customerId)?.fullName ?? "—",
+        // Customer identity comes from server (enriched with COALESCE logic)
+        // customerName, customerPhone, customerEmail are already populated
         serviceName: byId(services.data, b.serviceId)?.name ?? "—",
         staffName: byId(staff.data, b.staffId)?.fullName ?? "—",
       })),
-    [bookings.data, customers.data, services.data, staff.data]
+    [bookings.data, services.data, staff.data]
   );
 
   const columns: Column<any>[] = [
     { header: "Booking #", cell: (b) => <span className="font-medium text-gold">{b.bookingNumber}</span> },
-    { header: "Customer", cell: (b) => b.customerName },
+    { header: "Customer", cell: (b) => (
+      <div className="flex flex-col">
+        <span className="font-medium">{b.customerName}</span>
+        <span className="text-xs text-stone-400">{b.customerEmail || "—"}</span>
+      </div>
+    )},
+    { header: "Phone", cell: (b) => <span className="text-stone-300">{safePhone(b.customerPhone)}</span> },
     { header: "Service", cell: (b) => <span className="text-stone-300">{b.serviceName}</span> },
     { header: "Staff", cell: (b) => <span className="text-stone-300">{b.staffName}</span> },
     { header: "Date", cell: (b) => formatDate(b.bookingDate) },
     { header: "Time", cell: (b) => `${formatTime(b.startTime)} - ${formatTime(b.endTime)}` },
     { header: "Status", cell: (b) => <Badge status={b.status}>{b.status}</Badge> },
+    {
+      header: "Submitted",
+      cell: (b) => (
+        <div className="flex flex-col" title="Submission timestamp (created_at)">
+          <span className="text-stone-300">{b.createdAt ? formatDate(b.createdAt) : "—"}</span>
+          <span className="text-xs text-stone-500">{b.createdAt ? timeAgo(b.createdAt) : ""}</span>
+        </div>
+      ),
+    },
     {
       header: "Actions",
       cell: (b) => (
@@ -169,13 +248,13 @@ export function BookingsView() {
           <button title="View" aria-label={`View booking ${b.bookingNumber}`} onClick={() => setViewing(b)} className="rounded-lg p-1.5 text-stone-400 hover:bg-panel-2 hover:text-white"><Eye className="h-4 w-4" /></button>
           <button title="Edit" aria-label={`Edit booking ${b.bookingNumber}`} onClick={() => openForm(b)} className="rounded-lg p-1.5 text-stone-400 hover:bg-panel-2 hover:text-white"><Pencil className="h-4 w-4" /></button>
           {b.status === "pending" && (
-            <button title="Confirm" aria-label={`Confirm booking ${b.bookingNumber}`} onClick={() => setStatus.mutate({ id: b.id, status: "confirmed" })} className="rounded-lg p-1.5 text-sky-400 hover:bg-sky-500/10"><Check className="h-4 w-4" /></button>
+            <button title="Confirm" aria-label={`Confirm booking ${b.bookingNumber}`} disabled={setConfirm.isPending} onClick={() => setConfirm.mutate({ id: b.id })} className="rounded-lg p-1.5 text-sky-400 hover:bg-sky-500/10 disabled:opacity-50"><Check className="h-4 w-4" /></button>
           )}
           {b.status === "confirmed" && (
-            <button title="Complete" aria-label={`Mark booking ${b.bookingNumber} as completed`} onClick={() => setStatus.mutate({ id: b.id, status: "completed" })} className="rounded-lg p-1.5 text-emerald-400 hover:bg-emerald-500/10"><CheckCheck className="h-4 w-4" /></button>
+            <button title="Complete" aria-label={`Mark booking ${b.bookingNumber} as completed`} disabled={setStatus.isPending} onClick={() => setStatus.mutate({ id: b.id, status: "completed" })} className="rounded-lg p-1.5 text-emerald-400 hover:bg-emerald-500/10 disabled:opacity-50"><CheckCheck className="h-4 w-4" /></button>
           )}
           {(b.status === "pending" || b.status === "confirmed") && (
-            <button title="Cancel" aria-label={`Cancel booking ${b.bookingNumber}`} onClick={() => setStatus.mutate({ id: b.id, status: "cancelled" })} className="rounded-lg p-1.5 text-rose-400 hover:bg-rose-500/10"><X className="h-4 w-4" /></button>
+            <button title="Cancel" aria-label={`Cancel booking ${b.bookingNumber}`} disabled={setStatus.isPending} onClick={() => setStatus.mutate({ id: b.id, status: "cancelled" })} className="rounded-lg p-1.5 text-rose-400 hover:bg-rose-500/10 disabled:opacity-50"><X className="h-4 w-4" /></button>
           )}
         </div>
       ),
@@ -280,9 +359,19 @@ export function BookingsView() {
               <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Staff</p><p className="mt-1 font-medium">{viewing.staffName}</p></div>
               <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Date & Time</p><p className="mt-1 font-medium">{formatDate(viewing.bookingDate)}</p><p className="mt-1 text-sm text-muted">{formatTime(viewing.startTime)} - {formatTime(viewing.endTime)}</p></div>
               <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Guests</p><p className="mt-1 font-medium">{viewing.guests} {viewing.guests === 1 ? 'guest' : 'guests'}</p></div>
+              <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Phone</p><p className="mt-1 font-medium">{safePhone(viewing.customerPhone)}</p></div>
+              <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Email</p><p className="mt-1 font-medium">{viewing.customerEmail || "—"}</p></div>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-muted">Status:</span> <Badge status={viewing.status}>{viewing.status}</Badge>
+            </div>
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Visitor Message</p>
+              {viewing.specialRequests ? (
+                <p className="whitespace-pre-wrap break-words rounded-lg border border-gold/30 bg-panel-2 px-3 py-2 text-stone-100">{viewing.specialRequests}</p>
+              ) : (
+                <p className="text-xs text-muted">No message provided by the visitor.</p>
+              )}
             </div>
             <div>
               <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Notes</p>
@@ -317,14 +406,23 @@ export function BookingsView() {
           <EmptyState title="No customers available" description="Add a customer first from the Customers page." />
         ) : (
           <form onSubmit={form.handleSubmit((v) => save.mutate(v))} className="space-y-4">
-            <Field label="Customer" error={form.formState.errors.customerId?.message}>
+            {/* Required fields - shown first to communicate priority */}
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Field label="Customer Name *" error={form.formState.errors.guest_name?.message}>
+                <Input {...form.register("guest_name")} placeholder="e.g. Alice Nkatha" />
+              </Field>
+              <Field label="Customer Phone *" error={form.formState.errors.guest_phone?.message}>
+                <Input {...form.register("guest_phone")} placeholder="+254 7XX XXX XXX" />
+              </Field>
+            </div>
+            {/* Optional additional booking information */}
+            <Field label="Existing Customer" error={form.formState.errors.customerId?.message}>
               <Select {...form.register("customerId")}>
                 <option value={0}>Select customer…</option>
                 {(customers.data ?? []).map((c: any) => <option key={c.id} value={c.id}>{c.fullName}</option>)}
               </Select>
               <p className="text-xs text-muted mt-1">
-                New bookings start as pending with no customer linkage.
-                Select an existing customer or leave blank.
+                Optionally link to an existing customer. Name and phone above are required either way.
               </p>
             </Field>
             <Field label="Service" error={form.formState.errors.serviceId?.message}>
@@ -354,14 +452,8 @@ export function BookingsView() {
               <Field label="Guests" error={form.formState.errors.guests?.message}>
                 <Input type="number" min={1} max={50} {...form.register("guests")} />
               </Field>
-              <Field label="Full Name" error={form.formState.errors.full_name?.message}>
-                <Input {...form.register("full_name")} placeholder="e.g. Alice Nkatha" />
-              </Field>
-              <Field label="Email" error={form.formState.errors.email?.message}>
-                <Input type="email" {...form.register("email")} placeholder="customer@email.com" />
-              </Field>
-              <Field label="Phone" error={form.formState.errors.phone?.message}>
-                <Input {...form.register("phone")} placeholder="+254 7XX XXX XXX" />
+              <Field label="Guest Email" error={form.formState.errors.guest_email?.message}>
+                <Input type="email" {...form.register("guest_email")} placeholder="customer@email.com" />
               </Field>
               <Field label="Status">
                 <Select {...form.register("status")}>
@@ -377,6 +469,7 @@ export function BookingsView() {
           </form>
         )}
       </Modal>
+      <Toaster toasts={toasts} />
     </div>
   );
 }

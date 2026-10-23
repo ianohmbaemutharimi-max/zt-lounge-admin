@@ -4,9 +4,9 @@
  * POST /api/admin/upload
  * 
  * Handles authenticated image uploads with:
- * - RBAC (manager, admin, super_admin only)
- * - File validation (JPEG, PNG, WebP; max 10MB)
- * - Sharp-based format verification
+  * - RBAC (super_admin, admin only — Phase 2 reconciled; manager is obsolete)
+ * - File validation (JPEG, PNG, WebP, ICO; max 10MB)
+ * - Sharp-based format verification (genuine ICO bypasses Sharp; preserved byte-by-byte)
  * - WebP conversion with category-specific resizing
  * - UUID-based storage paths (no client control)
  * - Supabase Storage upload to public-assets bucket
@@ -20,6 +20,7 @@ import { CONTENT_MANAGER_ROLES } from "@/lib/auth/server";
 import { 
   sanitizeCategory,
   generateStoragePath,
+  FAVICONS_BUCKET,
   PUBLIC_ASSETS_BUCKET,
   type ImageCategory
 } from "@/lib/storage/paths";
@@ -40,8 +41,8 @@ export const runtime = 'nodejs';
  * - Cookie: Supabase session
  * 
  * Request body (multipart/form-data):
- * - file: Image file (JPEG, PNG, or WebP; max 10MB)
- * - category: Image category (hero, gallery, menu, services, testimonials, branding)
+ * - file: Image file (JPEG, PNG, WebP, or ICO; max 10MB)
+ * - category: Image category (hero, gallery, menu, services, testimonials, branding, promotions, memberships)
  * 
  * Response (201):
  * {
@@ -137,12 +138,13 @@ export async function POST(request: NextRequest) {
     const roleName = role.name;
     console.log("[UPLOAD] Checking RBAC, role:", roleName);
     
-    if (!CONTENT_MANAGER_ROLES.includes(roleName)) {
-      console.log("[UPLOAD] RBAC failed, role not in:", CONTENT_MANAGER_ROLES);
+    // PHASE 1: Only super_admin can upload media
+    if (roleName !== "super_admin") {
+      console.log("[UPLOAD] RBAC failed, role not super_admin:", roleName);
       return NextResponse.json(
         { 
           success: false, 
-          error: "Insufficient permissions. Content manager role required." 
+          error: "Only the Super Admin can upload media" 
         },
         { status: 403 }
       );
@@ -226,19 +228,55 @@ export async function POST(request: NextRequest) {
 
     console.log("[UPLOAD] Generating storage path");
     
-    // 8. Generate storage path (UUID-based, no client control)
-    const storagePath = generateStoragePath(category);
+    // 8. Content hash (SHA-256 of final normalized WebP buffer)
+    // Duplicate detection is handled in APPLICATION code:
+    // the live database has NO uniqueness constraint on
+    // media_assets.content_hash, and per the architecture we must NOT
+    // introduce one. We detect an identical normalized upload here and
+    // return a 409 so administrators can reuse the existing media asset
+    // from the Media Library instead of creating a duplicate storage object.
+    const contentHash = processed.contentHash;
+
+    // Generate storage path (UUID-based, no client control)
+    // Phase 6: a genuine .ico keeps its real .ico extension and
+    // image/x-icon mime downstream; all other formats stay .webp.
+    const isFaviconIco = processed.format === "ico";
+    const storagePath = generateStoragePath(category, isFaviconIco ? "ico" : "webp");
+    const uploadBucket = isFaviconIco ? FAVICONS_BUCKET : PUBLIC_ASSETS_BUCKET;
     console.log("[UPLOAD] Storage path:", storagePath);
 
     console.log("[UPLOAD] Creating admin client");
     
-    // 9. Upload to Supabase Storage using service role for reliable upload
     const supabaseAdmin = await getSupabaseAdmin();
-    console.log("[UPLOAD] Admin client created, starting storage upload");
+    console.log("[UPLOAD] Admin client created, checking for duplicate content hash");
+    
+    // Application-level duplicate detection (no DB constraint created).
+    const { data: dupes, error: dupesError } = await supabaseAdmin
+      .from("media_assets")
+      .select("id, title, original_name")
+      .eq("content_hash", contentHash)
+      .limit(1);
+
+    if (!dupesError && dupes && dupes.length > 0) {
+      const existing = dupes[0];
+      console.log("[UPLOAD] Duplicate content hash detected:", existing.id);
+      return NextResponse.json(
+        {
+          success: false,
+          error: "An identical image already exists in the Media Library. " +
+            "Select it from the library (or remove the existing asset) instead of uploading a duplicate.",
+          existingMediaId: existing.id,
+          code: "DUPLICATE_MEDIA",
+        },
+        { status: 409 }
+      );
+    }
+
+    console.log("[UPLOAD] No duplicate detected, starting storage upload");
     const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
-      .from(PUBLIC_ASSETS_BUCKET)
+      .from(uploadBucket)
       .upload(storagePath, processed.buffer, {
-        contentType: "image/webp",
+        contentType: isFaviconIco ? "image/x-icon" : "image/webp",
         cacheControl: "3600",
         upsert: false, // Never overwrite existing files
       });
@@ -262,7 +300,7 @@ export async function POST(request: NextRequest) {
 
     // 10. Get public URL
     const { data: { publicUrl } } = supabaseAdmin.storage
-      .from(PUBLIC_ASSETS_BUCKET)
+      .from(uploadBucket)
       .getPublicUrl(storagePath);
 
        // 11. Create media_assets record using service role client to bypass RLS
@@ -270,15 +308,16 @@ export async function POST(request: NextRequest) {
     const { data: fileUploadRecord, error: dbError } = await supabaseAdmin
       .from("media_assets")
       .insert({
-        bucket: PUBLIC_ASSETS_BUCKET,
+        bucket: uploadBucket,
         path: storagePath,
         public_url: publicUrl,
         original_name: originalName,
-        mime_type: declaredMimeType,
+        mime_type: isFaviconIco ? "image/x-icon" : declaredMimeType,
         file_size: processed.size,
         width: processed.width,
         height: processed.height,
         uploaded_by: profile.id,
+        content_hash: contentHash,
       })
       .select()
       .single();
@@ -293,7 +332,7 @@ export async function POST(request: NextRequest) {
 
       // Delete the uploaded storage object using admin client
       const { error: deleteError } = await supabaseAdmin.storage
-        .from(PUBLIC_ASSETS_BUCKET)
+        .from(uploadBucket)
         .remove([storagePath]);
 
       if (deleteError) {
@@ -318,15 +357,16 @@ export async function POST(request: NextRequest) {
         success: true,
         data: {
           id: fileUploadRecord.id,
-          bucket: PUBLIC_ASSETS_BUCKET,
+          bucket: uploadBucket,
           path: storagePath,
           relativePath: storagePath, // For AssetUrl compatibility
           publicUrl,
           originalName,
-          mimeType: declaredMimeType,
+          mimeType: isFaviconIco ? "image/x-icon" : declaredMimeType,
           fileSize: processed.size,
           width: processed.width,
           height: processed.height,
+          contentHash,
         },
       },
       { status: 201 }
@@ -361,4 +401,5 @@ export async function OPTIONS() {
     },
   });
 }
+
 

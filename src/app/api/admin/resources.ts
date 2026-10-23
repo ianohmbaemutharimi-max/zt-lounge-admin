@@ -25,6 +25,7 @@ export const RESOURCE_MAP: Record<string, PgTable> = {
   notifications: schema.notifications,
   "activity-logs": schema.activityLogs,
   "business-closures": schema.businessClosures,
+  "service-charges": schema.serviceCharges,
 };
 
 /** Fields that should never be set directly from a request body. */

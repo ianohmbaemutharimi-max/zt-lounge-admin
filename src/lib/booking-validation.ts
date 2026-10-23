@@ -62,7 +62,12 @@ export const bookingValidationSchema = z
       .nullable()
       .optional()
       .or(z.literal("")),
-    serviceId: z.string().uuid("Service ID must be a valid UUID"),
+    serviceId: z
+      .string()
+      .uuid("Service ID must be a valid UUID")
+      .nullable()
+      .optional()
+      .or(z.literal("")),
     staffId: z
       .string()
       .uuid("Staff ID must be a valid UUID")
@@ -71,33 +76,44 @@ export const bookingValidationSchema = z
       .or(z.literal("")),
     bookingDate: z
       .string()
-      .min(1, "Booking date is required")
-      .regex(DATE_FORMAT, "Booking date must be in YYYY-MM-DD format"),
+      .regex(DATE_FORMAT, "Booking date must be in YYYY-MM-DD format")
+      .optional()
+      .or(z.literal("")),
     startTime: z
       .string()
-      .min(1, "Start time is required")
-      .regex(TIME_FORMAT, "Start time must be in HH:mm or HH:mm:ss format"),
+      .regex(TIME_FORMAT, "Start time must be in HH:mm or HH:mm:ss format")
+      .optional()
+      .or(z.literal("")),
     endTime: z
       .string()
-      .min(1, "End time is required")
-      .regex(TIME_FORMAT, "End time must be in HH:mm or HH:mm:ss format"),
-    guests: z.coerce
-      .number()
-      .int("Guests must be a whole number")
-      .min(1, "At least 1 guest is required")
-      .max(50, "Maximum 50 guests allowed"),
+      .regex(TIME_FORMAT, "End time must be in HH:mm or HH:mm:ss format")
+      .optional()
+      .or(z.literal("")),
+    guests: z.preprocess(
+      (val) => (val === "" || val === undefined || val === null ? undefined : val),
+      z.coerce
+        .number()
+        .int("Guests must be a whole number")
+        .min(1, "At least 1 guest is required")
+        .max(50, "Maximum 50 guests allowed")
+        .optional()
+    ),
     status: z.enum(["pending", "confirmed", "completed", "cancelled", "no_show"], {
       message: "Invalid booking status",
-    }),
-    full_name: z.string().min(2, "Full name is required").optional().or(z.literal("")),
-    email: z.string().email("Invalid email").or(z.literal("")),
-    phone: z.string().min(7, "Phone is required").optional().or(z.literal("")),
+    }).optional(),
+    guest_name: z.string().min(1, "Customer name is required"),
+    guest_email: z.string().email("Invalid email").optional().or(z.literal("")),
+    guest_phone: z.string().min(1, "Customer phone number is required"),
     specialRequests: z.string().optional(),
     cancellationReason: z.string().optional(),
     internalNotes: z.string().optional(),
   })
   .refine(
-    (data) => isEndTimeAfterStart(data.startTime, data.endTime),
+    (data) => {
+      // Only validate time order if both times are provided
+      if (!data.startTime || !data.endTime) return true;
+      return isEndTimeAfterStart(data.startTime, data.endTime);
+    },
     {
       message: "End time must be after start time",
       path: ["endTime"],

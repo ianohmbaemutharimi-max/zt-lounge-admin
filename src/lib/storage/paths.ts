@@ -18,6 +18,8 @@ export const VALID_CATEGORIES = [
   "services",
   "testimonials",
   "branding",
+  "promotions",
+  "memberships",
 ] as const;
 
 export type ImageCategory = (typeof VALID_CATEGORIES)[number];
@@ -27,6 +29,7 @@ export type ImageCategory = (typeof VALID_CATEGORIES)[number];
  * This bucket must exist in Supabase Storage with public access enabled.
  */
 export const PUBLIC_ASSETS_BUCKET = "public-assets";
+export const FAVICONS_BUCKET = "favicons";
 
 /**
  * Validates if a string is a valid category.
@@ -58,23 +61,27 @@ export function validateCategory(category: unknown): asserts category is ImageCa
 /**
  * Generates a safe storage path for an uploaded image.
  * 
- * Format: assets/images/{category}/{uuid}.webp
+  * Format: assets/images/{category}/{uuid}.{extension}
  * 
  * Security:
  * - Uses UUID to prevent filename-based attacks
  * - No client-controlled paths
  * - No path traversal possible
- * - Always uses .webp extension (processed format)
+  * - Defaults to .webp extension (processed format); .ico for genuine ICO uploads
  * 
- * @param category - Valid image category
+  * @param category - Valid image category
+ * @param extension - File extension (defaults to "webp"). Pass "ico" for genuine ICO favicons.
  * @returns Safe storage path with UUID filename
  * @throws Error if category is invalid
  */
-export function generateStoragePath(category: ImageCategory): string {
+export function generateStoragePath(
+  category: ImageCategory,
+  extension: string = "webp"
+): string {
   validateCategory(category);
   
   const uuid = randomUUID();
-  return `assets/images/${category}/${uuid}.webp`;
+  return `assets/images/${category}/${uuid}.${extension}`;
 }
 
 /**
@@ -162,3 +169,4 @@ export function sanitizeCategory(category: unknown): ImageCategory {
   
   return category;
 }
+

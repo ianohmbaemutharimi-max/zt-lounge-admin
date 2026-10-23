@@ -24,8 +24,10 @@ ALTER TABLE hero_slides ADD COLUMN media_id uuid;
 
 -- ============================================================================
 -- PHASE 2: Create foreign key constraints
--- Use ON DELETE RESTRICT to prevent media deletion while referenced
--- A referenced media asset must not silently disappear from its consumer
+-- RECONCILED (Loop 43) to the canonical live schema: ON DELETE SET NULL.
+-- Rationale: the media system uses graceful delete semantics (media_usage -> CASCADE,
+-- media_assets.uploaded_by -> SET NULL) and the application falls back to the legacy
+-- image_url when media_id becomes NULL. RESTRICT was never the live behavior.
 -- ============================================================================
 
 -- menu_items.media_id -> media_assets.id
@@ -34,7 +36,7 @@ DROP CONSTRAINT IF EXISTS fk_menu_items_media_id;
 
 ALTER TABLE menu_items
 ADD CONSTRAINT fk_menu_items_media_id
-FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE RESTRICT;
+FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE SET NULL;
 
 -- services.media_id -> media_assets.id
 ALTER TABLE services
@@ -42,7 +44,7 @@ DROP CONSTRAINT IF EXISTS fk_services_media_id;
 
 ALTER TABLE services
 ADD CONSTRAINT fk_services_media_id
-FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE RESTRICT;
+FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE SET NULL;
 
 -- gallery.media_id -> media_assets.id
 ALTER TABLE gallery
@@ -50,7 +52,7 @@ DROP CONSTRAINT IF EXISTS fk_gallery_media_id;
 
 ALTER TABLE gallery
 ADD CONSTRAINT fk_gallery_media_id
-FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE RESTRICT;
+FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE SET NULL;
 
 -- hero_slides.media_id -> media_assets.id
 ALTER TABLE hero_slides
@@ -58,7 +60,7 @@ DROP CONSTRAINT IF EXISTS fk_hero_slides_media_id;
 
 ALTER TABLE hero_slides
 ADD CONSTRAINT fk_hero_slides_media_id
-FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE RESTRICT;
+FOREIGN KEY (media_id) REFERENCES media_assets(id) ON DELETE SET NULL;
 
 -- ============================================================================
 -- PHASE 3: Create indexes on media_id columns for query performance

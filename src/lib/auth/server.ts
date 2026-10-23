@@ -17,16 +17,16 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getSupabaseServer } from "@/lib/supabase/server";
+import { getSupabaseServerReadOnly } from "@/lib/supabase/server";
 
 /** Admin role names that are allowed to access the dashboard. */
 export const ADMIN_ROLES = ["super_admin", "admin"] as const;
 
 /** Content manager roles that can manage gallery, testimonials, and uploads. */
-export const CONTENT_MANAGER_ROLES = ["super_admin", "admin", "manager"] as const;
+export const CONTENT_MANAGER_ROLES = ["super_admin", "admin"] as const;
 
 /** All role names that grant employee-level access. */
-export const EMPLOYEE_ROLES = ["super_admin", "admin", "staff"] as const;
+export const EMPLOYEE_ROLES = ["super_admin", "admin"] as const;
 
 /**
  * Shape of the authenticated session context returned by getServerSession.
@@ -60,8 +60,11 @@ export type AuthResult =
  * 1. Middleware (req provided): reads cookies from the request only. Cookie
  *    writes/refreshes are handled by the middleware's own createMiddlewareClient
  *    which owns the response. This path is used for role-checking only.
- * 2. Server components / route handlers (req omitted): uses next/headers cookies().
- *    setAll errors from Server Component contexts are suppressed safely.
+ * 2. Server components / route handlers (req omitted): uses next/headers
+ *    cookies() via getSupabaseServerReadOnly(), which never attempts a cookie
+ *    write. Server Components have a read-only cookie store, so writing would
+ *    throw "Cookies can only be modified in a Server Action or Route Handler".
+ *    Refreshed sessions are persisted by the proxy middleware (src/proxy.ts).
  */
 async function getSupabase(req?: NextRequest) {
   if (req) {
@@ -86,7 +89,7 @@ async function getSupabase(req?: NextRequest) {
     );
   }
 
-  return getSupabaseServer();
+  return getSupabaseServerReadOnly();
 }
 
   // Request-level cache for auth results (in-memory, short-lived)
@@ -110,46 +113,16 @@ async function getSupabase(req?: NextRequest) {
 
     const supabase = await getSupabase(req);
 
-    // OPTIMIZATION: Try to get cached profile/role from request headers
-    // (set by middleware to avoid duplicate queries)
-    if (req) {
-      const cachedProfileId = req.headers.get("x-auth-profile-id");
-      const cachedRole = req.headers.get("x-auth-role");
-      const cachedFullName = req.headers.get("x-auth-full-name");
-      
-      if (cachedProfileId && cachedRole) {
-        // We still need to verify the user exists and get email
-        const {
-          data: { user },
-          error: userError,
-        } = await supabase.auth.getUser();
-
-        if (userError || !user) {
-          return { ok: false, error: "Unauthorized", status: 401 };
-        }
-
-        const result: AuthResult = {
-          ok: true,
-          session: {
-            supabase,
-            user: {
-              id: user.id,
-              email: user.email ?? null,
-              role: cachedRole,
-            },
-            profile: {
-              id: cachedProfileId,
-              full_name: cachedFullName || "",
-              role_id: null,
-              role_name: cachedRole,
-            },
-          },
-        };
-        
-        if (req) sessionCache.set(req, result);
-        return result;
-      }
-    }
+    // SECURITY (Loop 59): Authorization identity is ALWAYS derived from the
+    // authenticated Supabase user (supabase.auth.getUser()) plus the
+    // database-backed profile/role resolved below. The previous
+    // "optimization" trusted client-supplied x-auth-role /
+    // x-auth-profile-id / x-auth-full-name REQUEST headers, which allowed any
+    // authenticated user to escalate privileges by spoofing x-auth-role
+    // (e.g. "admin"). Those request headers are NEVER consulted for
+    // authorization. The shortcut was removed; middleware only ever set them
+    // as *response* headers, so the request-side path was reachable solely by
+    // a malicious client.
 
     // Get user first
     const {
@@ -165,12 +138,18 @@ async function getSupabase(req?: NextRequest) {
     // This reduces auth overhead from ~3 DB round trips to 1
     const { data: profileWithRole, error: profileError } = await supabase
       .from("profiles")
-      .select("id, full_name, role_id, roles:role_id(name)")
+      .select("id, full_name, role_id, is_active, roles:role_id(name)")
       .eq("user_id", user.id)
       .single();
 
     if (profileError || !profileWithRole) {
       return { ok: false, error: "Profile not found", status: 403 };
+    }
+
+    // Inactive/removed members must not regain dashboard/API access even if
+    // their auth session is still valid (e.g. after a password reset).
+    if (profileWithRole.is_active === false) {
+      return { ok: false, error: "Forbidden", status: 403 };
     }
 
     // Extract role name from joined data
@@ -234,6 +213,19 @@ export async function requireAdmin(
   }
 
   return result;
+}
+
+/**
+ * Require an authenticated SUPER ADMIN (system owner).
+ *
+ * Per the ZT two-role business model, CMS management surfaces (membership
+ * plans/benefits editor, etc.) are super_admin-only. Plain `admin` accounts
+ * are operational-only and are redirected away. This is the page-level
+ * counterpart of withSuperAdminAuth (API layer) — both must be enforced;
+ * hiding nav items alone is NOT sufficient.
+ */
+export async function requireSuperAdmin(req?: NextRequest): Promise<AuthResult> {
+  return requireAdmin(req, ["super_admin"]);
 }
 
 /**
@@ -336,4 +328,54 @@ export async function hasAnyRole(req: NextRequest, roles: readonly string[]): Pr
   const result = await getServerSession(req);
   if (!result.ok) return false;
   return roles.includes(result.session.user.role);
+}
+
+/**
+ * Higher-order function that wraps an API route handler with super admin auth.
+ * Only allows super_admin role to access protected CMS/media mutations.
+ *
+ * @example
+ * export const POST = withSuperAdminAuth(async (req, { params }, auth) => {
+ *   const data = await auth.session.supabase.from("gallery").insert(body);
+ *   return NextResponse.json(data);
+ * });
+ */
+export function withSuperAdminAuth<T extends Record<string, any>>(
+  handler: (
+    req: NextRequest,
+    context: T,
+    auth: SessionContext
+  ) => Promise<NextResponse> | NextResponse
+) {
+  return async (req: NextRequest, context: T): Promise<NextResponse> => {
+    const result = await getServerSession(req);
+
+    if (!result.ok) {
+      return NextResponse.json(
+        { error: (result as { ok: false; error: string; status: 401 | 403 }).error },
+        { status: (result as { ok: false; error: string; status: 401 | 403 }).status }
+      );
+    }
+
+    // Only super_admin can perform protected mutations
+    if (result.session.user.role !== "super_admin") {
+      return NextResponse.json(
+        { error: "Only the Super Admin can make this change" },
+        { status: 403 }
+      );
+    }
+
+    try {
+      return await handler(req, context, result.session);
+    } catch (e) {
+      // Log full error server-side for diagnostics; return sanitized message to client
+      if (e instanceof Error) {
+        console.error("[super-admin-handler] Handler error:", e.message);
+      }
+      return NextResponse.json(
+        { error: "Internal server error" },
+        { status: 500 }
+      );
+    }
+  };
 }

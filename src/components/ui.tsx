@@ -47,7 +47,7 @@ export function Button({
     ghost: "text-stone-300 hover:bg-panel-2 hover:text-white",
     outline: "border border-edge text-stone-200 hover:border-gold/60 hover:text-gold",
     danger: "bg-rose-600/15 text-rose-400 border border-rose-600/30 hover:bg-rose-600/25",
-  };
+    };
   return (
     <button
       className={cn(
@@ -56,7 +56,9 @@ export function Button({
         className
       )}
       {...props}
-    />
+    >
+      {props.children}
+    </button>
   );
 }
 
@@ -108,11 +110,18 @@ export function Toggle({
   onChange,
   label,
   id,
+  disabled,
+  hideLabel,
 }: {
   checked: boolean;
   onChange: (v: boolean) => void;
   label?: string;
   id?: string;
+  disabled?: boolean;
+  // When true the label is used only as the accessible name (aria-label);
+  // nothing is rendered visually. For dense table rows that need a compact
+  // switch. Existing form usages leave this off and keep their visible label.
+  hideLabel?: boolean;
 }) {
   return (
     <button
@@ -120,15 +129,18 @@ export function Toggle({
       role="switch"
       aria-checked={checked}
       aria-label={label}
-      aria-labelledby={label && id ? id : undefined}
-      tabIndex={0}
-      onClick={() => onChange(!checked)}
+      aria-labelledby={label && id && !hideLabel ? id : undefined}
+      tabIndex={disabled ? -1 : 0}
+      onClick={() => !disabled && onChange(!checked)}
       onKeyDown={(e: ReactKeyboardEvent<HTMLButtonElement>) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          onChange(!checked);
+          if (!disabled) {
+            onChange(!checked);
+          }
         }
       }}
+      disabled={disabled}
       className="flex items-center gap-2 text-sm text-stone-300"
     >
       <span
@@ -144,7 +156,7 @@ export function Toggle({
           )}
         />
       </span>
-      {label && <span id={id}>{label}</span>}
+      {label && !hideLabel && <span id={id}>{label}</span>}
     </button>
   );
 }
@@ -266,11 +278,12 @@ export function ActionMenu({
 
 /* ── Toast / Toaster ──────────────────────────────────────────── */
 
-type Toast = { id: number; title: string; description?: string; status?: "success" | "error" };
+type Toast = { id: number; title: string; description?: string; status?: "success" | "error" | "info" };
 
 const toastColors: Record<string, string> = {
   success: "border-emerald-500/40 text-emerald-300",
   error: "border-rose-500/40 text-rose-300",
+  info: "border-blue-500/40 text-blue-300",
 };
 
 export function Toaster({ toasts }: { toasts: Toast[] }) {

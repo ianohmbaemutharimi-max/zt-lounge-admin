@@ -41,7 +41,6 @@ export async function GET(req: NextRequest) {
     const { data: profiles, error: profilesError } = await session.supabase
       .from("profiles")
       .select("id, user_id, full_name, role_id, role_name: roles(name), is_active, created_at")
-      .neq("id", session.profile.id)
       .order("full_name");
 
     if (profilesError) {
@@ -73,6 +72,14 @@ export async function GET(req: NextRequest) {
 
     // Transform team data to match TeamMember interface
     // Match auth.users by user_id (profiles.user_id → auth.users.id)
+    // PostgREST returns role_name as { name: "admin" } object from the roles join;
+    // normalize to a plain string so the UI can render it directly.
+    const roleNameString = (raw: any): string => {
+      if (raw == null) return "";
+      if (typeof raw === "string") return raw;
+      if (typeof raw === "object" && raw.name) return raw.name;
+      return String(raw);
+    };
     const team = (profiles || []).map((member: any) => {
       const authData = authUserMap[member.user_id];
       return {
@@ -80,7 +87,7 @@ export async function GET(req: NextRequest) {
         auth_user_id: member.user_id,
         email: authData?.email || "",
         full_name: member.full_name,
-        role_name: member.role_name as "super_admin" | "admin",
+        role_name: roleNameString(member.role_name) as "super_admin" | "admin",
         is_active: member.is_active,
         last_sign_in_at: authData?.last_sign_in_at || null,
         joined_at: member.created_at,

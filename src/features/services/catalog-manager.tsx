@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Star, Power, X, ChevronDown, Info, Sparkles, DollarSign, ArrowRight } from "lucide-react";
 import { api } from "@/lib/api";
 import { PageHeader, Button, Badge, Spinner, Modal, Field, Input, Select, Textarea, Card, EmptyState, Toggle } from "@/components/ui";
@@ -26,14 +27,12 @@ const RESOURCE_UPLOAD_CATEGORY: Record<string, ImageCategory> = {
 const itemSchema = z.object({
   name: z.string().min(2, "Name is required"),
   description: z.string().optional(),
-  price: z.coerce.number().min(0, "Price must be 0 or more").optional(),
   // Display order within the page/category. Written to DB column `display_order`
   // (services is not in FIELD_MAPS, so snake_case passes straight through).
   display_order: z.coerce.number().min(0, "Display order must be 0 or more").default(0),
   category_id: z.string().min(1, "Select a category"),
   image_url: z.string().url("Must be a valid URL").or(z.literal("")),
   media_id: z.string().uuid().nullable().optional(),
-  duration_minutes: z.coerce.number().optional(),
   href: z.string().url("Must be a valid URL").or(z.literal("")).nullable().optional(),
   page_id: z.string().uuid().optional(),
   is_active: z.boolean().optional(),
@@ -56,6 +55,13 @@ const categorySchema = z.object({
   name: z.string().min(2, "Name is required"),
   description: z.string().optional(),
   sort_order: z.coerce.number().default(0),
+  type: z.enum(["service", "membership", "package"]).optional(),
+});
+
+const infoCardSchema = z.object({
+  name: z.string().min(2, "Name is required"),
+  description: z.string().optional(),
+  price: z.coerce.number().min(0, "Price must be 0 or more").optional(),
 });
 type CategoryForm = z.infer<typeof categorySchema>;
 
@@ -109,6 +115,7 @@ const SURFACE_ADD_LABEL: Record<ServiceSurface, string> = {
 
 export function CatalogManager(cfg: CatalogConfig) {
   const qc = useQueryClient();
+  const { toast } = useToast();
   const [tab, setTab] = useState<"items" | "categories">("items");
   const [serviceSurface, setServiceSurface] = useState<ServiceSurface>("all");
   const [editing, setEditing] = useState<any | null>(null);
@@ -126,12 +133,35 @@ export function CatalogManager(cfg: CatalogConfig) {
   
   // Page scope
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
+
   const [pageOpen, setPageOpen] = useState(false);
   
   // Destination editing
   const [destOpen, setDestOpen] = useState<any | null>(null);
   const [destEditing, setDestEditing] = useState<any | null>(null);
   
+
+  // Information Card editor state
+  const [infoCardOpen, setInfoCardOpen] = useState(false);
+  const [infoCardEditing, setInfoCardEditing] = useState<any | null>(null);
+  const infoCardForm = useForm<z.infer<typeof infoCardSchema>>({
+    resolver: zodResolver(infoCardSchema),
+    defaultValues: { name: "", description: "", price: undefined },
+  });
+  const infoCardSave = useMutation({
+    mutationFn: (v: { id: string; name: string; description: string; price: number | undefined }) =>
+      api.update(cfg.itemResource, v.id, {
+        name: v.name,
+        description: v.description,
+        ...(v.price !== undefined ? { price: String(v.price) } : {}),
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [cfg.itemResource] });
+      toast.success("Information card updated");
+      setInfoCardOpen(false);
+      setInfoCardEditing(null);
+    },
+  });
   // Package management
   const [packagesModalOpen, setPackagesModalOpen] = useState(false);
   const [packagesModalService, setPackagesModalService] = useState<any | null>(null);
@@ -151,6 +181,23 @@ export function CatalogManager(cfg: CatalogConfig) {
     queryKey: ["website-pages"],
     queryFn: () => api.list("website-pages"),
   });
+
+  // DEFAULT PAGE SCOPE: automatically select the homepage the first time the
+  // website-pages list resolves and nothing is selected yet, so the admin
+  // lands on a real page instead of the "Select page…" prompt.
+  //
+  // This effect MUST stay declared AFTER `pageScopeQuery` (see the temporal
+  // dead zone): referencing a `const` before its initialisation throws
+  // "Cannot access 'pageScopeQuery' before initialization".
+  useEffect(() => {
+    if (selectedPageId) return;
+    const pages = pageScopeQuery.data ?? [];
+    if (pages.length === 0) return;
+    const homePage = pages.find((p: any) => p.page_key === "home");
+    // Fall back to the first available page only when no "home" row exists
+    // (e.g. a database that has not published the homepage yet).
+    setSelectedPageId((homePage ?? pages[0]).id);
+  }, [selectedPageId, pageScopeQuery.data]);
 
   // DISCOVERY PAGES (Home + Contact): the public site renders the GLOBAL
   // nav-card set on these pages - every ACTIVE service with a destination
@@ -372,8 +419,8 @@ export function CatalogManager(cfg: CatalogConfig) {
     // existing service preserves its stored card_type (never retagged).
     const surfaceCardType = isServices ? SURFACE_DEFAULT_CARD_TYPE[serviceSurface] : undefined;
     itemForm.reset(row
-            ? { name: row.name, description: row.description ?? "", price: Number(row.price), category_id: String(row.category_id ?? ""), image_url: row.image_url ?? "", media_id: row.media_id ?? null, duration_minutes: row.duration_minutes ?? 60, display_order: row.display_order ?? 0, ...(isServices ? { card_type: row.card_type ?? undefined, type: row.type ?? "service" } : {}) }
-      : { name: "", description: "", price: 0, category_id: "", image_url: "", media_id: null, duration_minutes: 60, display_order: 0, ...(isServices ? { card_type: surfaceCardType, type: "service" } : {}) });
+            ? { name: row.name, description: row.description ?? "", category_id: String(row.category_id ?? ""), image_url: row.image_url ?? "", media_id: row.media_id ?? null, display_order: row.display_order ?? 0, ...(isServices ? { card_type: row.card_type ?? undefined, type: row.type ?? "service" } : {}) }
+      : { name: "", description: "", category_id: "", image_url: "", media_id: null, display_order: 0, ...(isServices ? { card_type: surfaceCardType, type: "service" } : {}) });
     setSelectedMedia(null);
     setItemOpen(true);
   }
@@ -381,6 +428,20 @@ export function CatalogManager(cfg: CatalogConfig) {
     setCatEditing(row ?? null);
     catForm.reset(row ? { name: row.name, description: row.description ?? "", sort_order: row.sort_order } : { name: "", description: "", sort_order: 0 });
     setCatOpen(true);
+  }
+
+  function openInfoCard(row?: any) {
+    setInfoCardEditing(row ?? null);
+    setInfoCardOpen(true);
+    if (row) {
+      infoCardForm.reset({
+        name: row.name,
+        description: row.description ?? "",
+        price: row.price,
+      });
+    } else {
+      infoCardForm.reset({ name: "", description: "", price: undefined });
+    }
   }
 
   const catName = (id: string) => (cats.data ?? []).find((c: any) => c.id === id)?.name ?? "—";
@@ -401,8 +462,6 @@ export function CatalogManager(cfg: CatalogConfig) {
       </div>
     )},
     { header: "Category", cell: (r) => <span className="text-stone-300">{catName(r.category_id)}</span> },
-    { header: "Price", cell: (r) => <span className="text-gold">{formatKES(r.price)}</span> },
-    ...(cfg.showDuration ? [{ header: "Duration", cell: (r: any) => <span className="text-stone-400">{r.duration_minutes} min</span> }] : []),
     { header: "Status", cell: (r) => <Badge status={r[cfg.activeField] ? "active" : "inactive"}>{r[cfg.activeField] ? (cfg.activeField === "isAvailable" ? "available" : "active") : (cfg.activeField === "isAvailable" ? "unavailable" : "inactive")}</Badge> },
     { header: "Actions", cell: (r) => (
       <div className="flex gap-1">
@@ -633,7 +692,7 @@ export function CatalogManager(cfg: CatalogConfig) {
                   {infoScopedItems.map((s: any) => {
                     const serviceCharges = (packages.data ?? []).filter((c: any) => c.service_id === s.id);
                     return (
-                      <Card key={s.id} className="p-4">
+                      <Card key={s.id} className="p-4" data-testid="info-card">
                         <div className="flex items-start gap-3">
                           {s.image_url ? (
                             <img src={s.resolved_image_url || s.image_url} alt={s.name} className="h-16 w-16 rounded-lg object-cover" />
@@ -655,7 +714,7 @@ export function CatalogManager(cfg: CatalogConfig) {
                           </div>
                         </div>
                         <div className="mt-3 flex gap-2">
-                          <Button variant="outline" className="flex-1" onClick={() => openItem(s)}>
+                          <Button variant="outline" className="flex-1" onClick={() => openInfoCard(s)}>
                             <Pencil className="h-3 w-3" /> Edit
                           </Button>
                           <Button 
@@ -770,7 +829,11 @@ export function CatalogManager(cfg: CatalogConfig) {
               // does not pass href, so Repository.update (present-keys-only)
               // preserves the existing destination untouched.
               ...(cfg.itemResource === "services"
-                ? { href: composeHref(navDest.pageKey, navDest.fragment, navDest.customHref) }
+                // Normalize path separators: convert backslashes to forward slashes
+                // so that composeHref can match the pageKey against PUBLIC_PAGE_ROUTES.
+                // Without this, if the database stores Windows-style paths (e.g. pages\\experiences\\restaurant.html),
+                // the route lookup fails and the destination is cleared.
+                ? { href: composeHref(navDest.pageKey, navDest.fragment, navDest.customHref?.replace(/\\/g, "/") || undefined) }
                 : {}),
             })
           )}
@@ -856,17 +919,14 @@ export function CatalogManager(cfg: CatalogConfig) {
           <Field label="Description">
             <Textarea {...itemForm.register("description")} />
           </Field>
-                              {showPrice && (
-            <Field label="Price (KES)" error={itemForm.formState.errors.price?.message}>
-              <Input type="number" min={0} step="50" {...itemForm.register("price")} />
+          {showPrice && (
+            <Field label="Category" error={itemForm.formState.errors.category_id?.message}>
+              <Select {...itemForm.register("category_id")}>
+                <option value="">Select…</option>
+                {(cats.data ?? []).map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </Select>
             </Field>
           )}
-          <Field label="Category" error={itemForm.formState.errors.category_id?.message}>
-            <Select {...itemForm.register("category_id")}>
-              <option value="">Select…</option>
-              {(cats.data ?? []).map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </Select>
-          </Field>
           {/* Services only: the public website maps services by `type`
               (service / experience / feature / packages — getPackages filters
               the plural 'packages'; 'informational' is legacy, kept selectable
@@ -890,13 +950,6 @@ export function CatalogManager(cfg: CatalogConfig) {
               <Input type="number" min={0} {...itemForm.register("display_order")} />
             </Field>
           )}
-          {cfg.showDuration && isPackageCard && (
-            <Field label="Duration (minutes)">
-              <Input type="number" min={15} step={15} {...itemForm.register("duration_minutes")} />
-            </Field>
-          )}
-          {/* Canonical media is selected via the Media Library picker below.
-              Legacy image_url is display-only migration compatibility. */}
           {itemForm.watch("image_url") && (
             <p className="truncate text-xs text-stone-500">
               Legacy image URL (migration compat): {itemForm.watch("image_url")}
@@ -935,6 +988,47 @@ export function CatalogManager(cfg: CatalogConfig) {
             <Button type="submit" disabled={saveItem.isPending}>{saveItem.isPending ? "Saving…" : "Save"}</Button>
           </div>
         </form>
+
+      {/* Information Card editor dialog */}
+      {serviceSurface === "information" && infoCardOpen && infoCardEditing && (
+        <Modal
+          open={infoCardOpen}
+          onClose={() => {
+            setInfoCardOpen(false);
+            setInfoCardEditing(null);
+          }}
+          title="Information Card"
+        >
+          <form
+            onSubmit={infoCardSave.mutateAsync({
+              id: infoCardEditing.id,
+              name: infoCardForm.watch("name"),
+              description: infoCardForm.watch("description"),
+              price: infoCardForm.watch("price"),
+            })}
+            className="space-y-4"
+          >
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4 text-purple-400" />
+              <span data-testid="info-type" className="text-sm font-medium text-purple-400">Information Card</span>
+            </div>
+            <Field label="Name" error={infoCardForm.formState.errors.name?.message}>
+              <Input name="name" {...infoCardForm.register("name")} />
+            </Field>
+            <Field label="Description">
+              <Textarea name="description" {...infoCardForm.register("description")} />
+            </Field>
+            <Field label="Price (KES)">
+              <Input name="price" type="number" min={0} step="50" {...infoCardForm.register("price")} />
+            </Field>
+            {infoCardSave.isError && <p className="text-sm text-rose-400">{(infoCardSave.error as Error).message}</p>}
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => { setInfoCardOpen(false); setInfoCardEditing(null); }}>Cancel</Button>
+              <Button type="submit" disabled={infoCardSave.isPending}>{infoCardSave.isPending ? "Saving…" : "Save"}</Button>
+            </div>
+          </form>
+        </Modal>
+      )}
       </Modal>
 
       {/* Category form */}
@@ -982,12 +1076,11 @@ export function CatalogManager(cfg: CatalogConfig) {
             await saveItem.mutateAsync({
               name: imageEditingItem.name,
               description: imageEditingItem.description,
-              price: Number(imageEditingItem.price),
               category_id: String(imageEditingItem.category_id),
               image_url: image_url || "",
               media_id: media_id,
               display_order: imageEditingItem.display_order ?? 0,
-              ...(cfg.showDuration && { duration_minutes: imageEditingItem.duration_minutes }),
+              
             });
           }}
           title="Edit image"

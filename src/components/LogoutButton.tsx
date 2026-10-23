@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Modal, Button } from "@/components/ui";
 
 export function LogoutButton() {
   const { signOut, user, isLoading } = useAuth();
+  const router = useRouter();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
 
@@ -13,6 +15,9 @@ export function LogoutButton() {
     setIsSigningOut(true);
     try {
       await signOut();
+      // Return to the login page once the session is fully cleared
+      router.push("/login");
+      router.refresh();
     } finally {
       setIsSigningOut(false);
       setConfirmOpen(false);

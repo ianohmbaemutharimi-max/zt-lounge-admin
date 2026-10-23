@@ -58,4 +58,6 @@ export const STATUS_STYLES: Record<string, string> = {
   rejected: "bg-rose-500/10 text-rose-400 border-rose-500/30",
   active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
   inactive: "bg-zinc-500/10 text-zinc-400 border-zinc-500/30",
+  expired: "bg-rose-500/10 text-rose-400 border-rose-500/30",
+  scheduled: "bg-amber-500/10 text-amber-400 border-amber-500/30",
 };

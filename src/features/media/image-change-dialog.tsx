@@ -2,9 +2,9 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { X, AlertCircle, Image as ImageIcon, Loader } from "lucide-react";
+import { X, AlertCircle, Image as ImageIcon, Loader, ArrowLeft, Info } from "lucide-react";
 import { Modal, Button, Input, Field, Spinner } from "@/components/ui";
-import { MediaPickerModal } from "./media-picker-modal";
+import { ImageBrowser } from "./image-browser";
 import type { SelectableMediaAsset } from "@/types/media";
 import type { ImageCategory } from "@/lib/storage/paths";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,10 @@ export interface ImageChangeDialogProps {
   allowRemove?: boolean;
   /** When true, hides the URL paste option (canonical mode) */
   canonicalOnly?: boolean;
+  /** Whether the media picker browser is actively enabled (controls query fetch) */
+  enabled?: boolean;
+  /** Optional bucket filter passed to the media picker */
+  bucket?: string;
 }
 
 type EditMode = "browse" | "upload" | "link";
@@ -31,22 +35,26 @@ export function ImageChangeDialog({
   currentMediaId,
   currentImageUrl,
   onSave,
-  title = "Change image",
+  title = "Choose image",
   uploadCategory,
   allowRemove = true,
   canonicalOnly = false,
+  enabled,
+  bucket,
 }: ImageChangeDialogProps) {
   const qc = useQueryClient();
   const [selectedImage, setSelectedImage] = useState<SelectableMediaAsset | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null);
   const [linkUrl, setLinkUrl] = useState("");
   const [linkError, setLinkError] = useState("");
-  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  type View = "choose" | "browse";
+  const [view, setView] = useState<View>("choose");
   const [mode, setMode] = useState<EditMode>("browse");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
   // Reset state when modal opens/closes
+  /* eslint-disable react-hooks/set-state-in-effect -- intentional: reset transient form state on modal close */
   useEffect(() => {
     if (!open) {
       setSelectedImage(null);
@@ -56,10 +64,12 @@ export function ImageChangeDialog({
       setMode("browse");
       setUploadedFile(null);
       setUploadProgress(0);
+      setView("choose");
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, [open, currentImageUrl]);
 
-    // Save mutation
+  // Save mutation
   const saveMutation = useMutation({
     mutationFn: async ({ media_id, image_url }: { media_id: string | null; image_url: string | null }) => {
       await onSave({ media_id, image_url });
@@ -123,7 +133,7 @@ export function ImageChangeDialog({
   const handleMediaSelect = useCallback((asset: SelectableMediaAsset) => {
     setSelectedImage(asset);
     setPreviewUrl(asset.public_url);
-    setMediaPickerOpen(false);
+    setView("choose");
   }, []);
 
   // Handle legacy URL fallback for backwards compatibility
@@ -142,7 +152,7 @@ export function ImageChangeDialog({
       setPreviewUrl(linkUrl);
       setLinkUrl("");
       setSelectedImage(null);
-      setMediaPickerOpen(false);
+      setView("choose");
       setMode("browse");
     } catch {
       setLinkError("Please enter a valid image link (must start with http:// or https://)");
@@ -186,8 +196,32 @@ export function ImageChangeDialog({
   const isLoading = saveMutation.isPending || uploadMutation.isPending;
 
   return (
-    <>
-      <Modal open={open} onClose={onClose} title={title}>
+    <Modal open={open} onClose={onClose} title={title} wide={view === "browse"}>
+      {view === "browse" ? (
+        <div className="flex flex-col gap-4 max-w-4xl">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setView("choose")}
+              aria-label="Back to image options"
+              className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm text-stone-400 transition-colors hover:bg-panel-2 hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </button>
+            <h3 className="text-sm font-medium text-stone-300">
+              Your images
+            </h3>
+          </div>
+          <ImageBrowser
+            selectedMediaId={selectedImage?.id}
+            onSelect={handleMediaSelect}
+            enabled={enabled}
+            bucket={bucket}
+            category={uploadCategory}
+          />
+        </div>
+      ) : (
         <div className="flex flex-col gap-6 min-h-[400px] max-w-lg">
           {/* Current/Preview Image */}
           {previewUrl ? (
@@ -258,11 +292,11 @@ export function ImageChangeDialog({
           {mode === "browse" && (
             <div className="flex flex-col gap-3">
               <Button
-                onClick={() => setMediaPickerOpen(true)}
+                onClick={() => setView("browse")}
                 variant="outline"
                 className="w-full"
               >
-                Browse media library
+                Your images
               </Button>
               <p className="text-xs text-stone-500 text-center">
                 Or switch tabs to upload a new image or paste a link
@@ -273,6 +307,26 @@ export function ImageChangeDialog({
           {/* Upload mode */}
           {mode === "upload" && (
             <div className="flex flex-col gap-3">
+
+                            {selectedImage && (
+                              <span
+                                className={cn(
+                                  "mt-1.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-medium",
+                                  (selectedImage.usageCount ?? 0) > 0
+                                    ? "bg-amber-500/10 text-amber-400"
+                                    : "bg-stone-800/60 text-stone-500",
+                                )}
+                                title={selectedImage.usageLocations?.join(", ") || undefined}
+                              >
+                                {(selectedImage.usageCount ?? 0) === 0 ? (
+                                  "Unused"
+                                ) : selectedImage.usageCount === 1 ? (
+                                  <>Used by: {selectedImage.usageLocations?.[0]}</>
+                                ) : (
+                                  <>Used in {selectedImage.usageCount} places</>
+                                )}
+                              </span>
+                            )}
               {uploadMutation.isPending ? (
                 <div className="flex flex-col items-center gap-3 py-6">
                   <Loader className="h-6 w-6 animate-spin text-gold" />
@@ -372,15 +426,7 @@ export function ImageChangeDialog({
             </Button>
           </div>
         </div>
-      </Modal>
-
-      {/* Media Picker Modal */}
-      <MediaPickerModal
-        open={mediaPickerOpen}
-        onClose={() => setMediaPickerOpen(false)}
-        selectedMediaId={selectedImage?.id}
-        onSelect={handleMediaSelect}
-      />
-    </>
+      )}
+    </Modal>
   );
 }

@@ -9,8 +9,8 @@ import { CheckCircle2, Image as ImageIcon } from "lucide-react";
 import { api } from "@/lib/api";
 import { queryKeys } from "@/lib/query-keys";
 import { PageHeader, Card, Spinner, EmptyState, Button, Field, Input, Select, Textarea } from "@/components/ui";
-import { MediaPickerModal } from "@/features/media/media-picker-modal";
-import type { SelectableMediaAsset } from "@/types/media";
+import { ImageChangeDialog } from "@/features/media/image-change-dialog";
+import { getSelectableMedia } from "@/lib/media/selection";
 
 const schema = z.object({
   business_name: z.string().min(2, "Business name is required"),
@@ -22,6 +22,8 @@ const schema = z.object({
   city: z.string().optional(),
   country: z.string().optional(),
   google_maps_url: z.union([z.string().url("Invalid URL"), z.literal("")]).optional(),
+  google_maps_reviews_url: z.union([z.string().url("Invalid URL"), z.literal("")]).optional(),
+  google_reviews_api_key: z.string().optional(),
   latitude: z.union([z.coerce.number().min(-90, "Latitude must be between -90 and 90").max(90, "Latitude must be between -90 and 90"), z.literal("")]).optional(),
   longitude: z.union([z.coerce.number().min(-180, "Longitude must be between -180 and 180").max(180, "Longitude must be between -180 and 180"), z.literal("")]).optional(),
   currency: z.string().min(2),
@@ -33,16 +35,18 @@ export function SettingsView() {
   const qc = useQueryClient();
   const [saved, setSaved] = useState(false);
   const [sysDraft, setSysDraft] = useState<Record<number, string>>({});
-  const [logoPickerOpen, setLogoPickerOpen] = useState(false);
+    const [logoPickerOpen, setLogoPickerOpen] = useState(false);
+  const [logoLightPickerOpen, setLogoLightPickerOpen] = useState(false);
   const [faviconPickerOpen, setFaviconPickerOpen] = useState(false);
 
   const settings = useQuery({ queryKey: queryKeys["business-settings"].all(), queryFn: () => api.list("business-settings") });
   const system = useQuery({ queryKey: queryKeys["system-settings"].all(), queryFn: () => api.list("system-settings") });
-  const media = useQuery({ queryKey: queryKeys["media"].all(), queryFn: () => api.list("media") });
+  const media = useQuery({ queryKey: queryKeys["media"].all(), queryFn: async () => (await getSelectableMedia({ limit: 999 })).data });
   const biz = settings.data?.[0];
 
   // Resolve logo and favicon assets from media
-  const logoAsset = media.data?.find((m: any) => m.id === biz?.logo_media_id);
+    const logoAsset = media.data?.find((m: any) => m.id === biz?.logo_media_id);
+  const logoLightAsset = media.data?.find((m: any) => m.id === biz?.logo_light_media_id);
   const faviconAsset = media.data?.find((m: any) => m.id === biz?.favicon_media_id);
 
   const form = useForm<FormValues>({ 
@@ -61,6 +65,8 @@ export function SettingsView() {
         city: biz.city ?? "",
         country: biz.country ?? "",
         google_maps_url: biz.google_maps_url ?? "",
+        google_maps_reviews_url: biz.google_maps_reviews_url ?? "",
+        google_reviews_api_key: biz.google_reviews_api_key ?? "",
         latitude: biz.latitude ?? "",
         longitude: biz.longitude ?? "",
         currency: biz.currency ?? "KES",
@@ -83,7 +89,7 @@ export function SettingsView() {
   });
 
   const saveBranding = useMutation({
-    mutationFn: async (updates: { logo_media_id?: string | null; favicon_media_id?: string | null }) => {
+        mutationFn: async (updates: { logo_media_id?: string | null; logo_light_media_id?: string | null; favicon_media_id?: string | null }) => {
       const response = await fetch("/api/admin/business-settings/branding", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -102,14 +108,18 @@ export function SettingsView() {
     },
   });
 
-  const handleLogoSelect = (asset: SelectableMediaAsset) => {
-    saveBranding.mutate({ logo_media_id: asset.id });
-    setLogoPickerOpen(false);
+  // Canonical handlers for the unified Edit Image workflow: onSave only
+  // receives media_id (never a raw URL) and persists it to business_settings.
+    const handleLogoMediaSave = async ({ media_id }: { media_id: string | null }) => {
+    await saveBranding.mutateAsync({ logo_media_id: media_id });
   };
 
-  const handleFaviconSelect = (asset: SelectableMediaAsset) => {
-    saveBranding.mutate({ favicon_media_id: asset.id });
-    setFaviconPickerOpen(false);
+  const handleLogoLightMediaSave = async ({ media_id }: { media_id: string | null }) => {
+    await saveBranding.mutateAsync({ logo_light_media_id: media_id });
+  };
+
+  const handleFaviconMediaSave = async ({ media_id }: { media_id: string | null }) => {
+    await saveBranding.mutateAsync({ favicon_media_id: media_id });
   };
 
   if (settings.isLoading || system.isLoading) return <Spinner label="Loading settings…" />;
@@ -158,7 +168,6 @@ export function SettingsView() {
                       <Button
                         type="button"
                         variant="outline"
-                        size="sm"
                         onClick={() => setLogoPickerOpen(true)}
                       >
                         Change Logo
@@ -175,8 +184,44 @@ export function SettingsView() {
                     <span className="text-sm">Select Logo</span>
                   </button>
                 )}
-                {logoAsset && (
+                                {logoAsset && (
                   <p className="text-xs text-muted">{logoAsset.title || "Untitled"}</p>
+                )}
+              </div>
+
+              {/* Light Logo (logo-white.webp renders on light/white header via .logo-light slot) */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-white">Light Logo</label>
+                {logoLightAsset ? (
+                  <div className="group relative aspect-video overflow-hidden rounded-lg border border-stone-700">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={logoLightAsset.public_url}
+                      alt={logoLightAsset.title || "Light Logo"}
+                      className="h-full w-full object-contain bg-stone-900"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setLogoLightPickerOpen(true)}
+                      >
+                        Change Light Logo
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setLogoLightPickerOpen(true)}
+                    className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-stone-700 bg-stone-900/50 text-stone-500 transition-colors hover:border-stone-600 hover:text-stone-400"
+                  >
+                    <ImageIcon className="h-8 h-8" />
+                    <span className="text-sm">Select Light Logo</span>
+                  </button>
+                )}
+                {logoLightAsset && (
+                  <p className="text-xs text-muted">{logoLightAsset.title || "Untitled"}</p>
                 )}
               </div>
 
@@ -195,7 +240,6 @@ export function SettingsView() {
                       <Button
                         type="button"
                         variant="outline"
-                        size="sm"
                         onClick={() => setFaviconPickerOpen(true)}
                       >
                         Change Favicon
@@ -225,6 +269,12 @@ export function SettingsView() {
             </div>
             <Field label="Google Maps URL" error={form.formState.errors.google_maps_url?.message}>
               <Input {...form.register("google_maps_url")} placeholder="https://maps.app.goo.gl/..." />
+            </Field>
+            <Field label="Google Reviews URL" error={form.formState.errors.google_maps_reviews_url?.message}>
+              <Input {...form.register("google_maps_reviews_url")} placeholder="https://maps.app.goo.gl/..." />
+            </Field>
+            <Field label="Google Reviews API Key" error={form.formState.errors.google_reviews_api_key?.message}>
+              <Input {...form.register("google_reviews_api_key")} placeholder="Leave blank to clear" />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Latitude" error={form.formState.errors.latitude?.message}>
@@ -287,18 +337,37 @@ export function SettingsView() {
         </Card>
       </div>
 
-      {/* Media Picker Modals */}
-      <MediaPickerModal
+      {/* Unified Edit Image dialogs — logo and favicon share the SAME
+          workflow (upload / browse / paste link) converging on media_id → media_assets. */}
+      <ImageChangeDialog
         open={logoPickerOpen}
         onClose={() => setLogoPickerOpen(false)}
-        selectedMediaId={biz?.logo_media_id}
-        onSelect={handleLogoSelect}
+        currentMediaId={biz?.logo_media_id}
+        currentImageUrl={logoAsset?.public_url ?? null}
+                onSave={handleLogoMediaSave}
+        title="Edit Logo"
+        uploadCategory="branding"
+        allowRemove={false}
       />
-      <MediaPickerModal
+      <ImageChangeDialog
+        open={logoLightPickerOpen}
+        onClose={() => setLogoLightPickerOpen(false)}
+        currentMediaId={biz?.logo_light_media_id}
+        currentImageUrl={logoLightAsset?.public_url ?? null}
+        onSave={handleLogoLightMediaSave}
+        title="Edit Light Logo"
+        uploadCategory="branding"
+        allowRemove={false}
+      />
+      <ImageChangeDialog
         open={faviconPickerOpen}
         onClose={() => setFaviconPickerOpen(false)}
-        selectedMediaId={biz?.favicon_media_id}
-        onSelect={handleFaviconSelect}
+        currentMediaId={biz?.favicon_media_id}
+        currentImageUrl={faviconAsset?.public_url ?? null}
+        onSave={handleFaviconMediaSave}
+        title="Edit Favicon"
+        uploadCategory="branding"
+        allowRemove={false}
       />
     </div>
   );

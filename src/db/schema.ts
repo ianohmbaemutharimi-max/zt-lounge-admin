@@ -48,7 +48,9 @@ export const mediaAssets = pgTable("media_assets", {
   height: integer("height"),
   altText: text("alt_text"),
   title: text("title"),
+  description: text("description"),
   contentHash: text("content_hash"),
+  category: text("category"), // First-class category field (nullable for legacy assets)
   uploadedBy: uuid("uploaded_by").references(() => profiles.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
@@ -77,8 +79,14 @@ export const businessSettings = pgTable("business_settings", {
   timezone: text("timezone").default("Africa/Nairobi").notNull(),
   logoUrl: text("logo_url"),
   faviconUrl: text("favicon_url"),
-  logoMediaId: uuid("logo_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
+    logoMediaId: uuid("logo_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
+  // Light colorway logo (logos/logo-white.webp) -> rendered on .logo-dark (dark header).
+  // The existing dark logo_media_id above renders on .logo-light (white header).
+  // Option B — see migration 20261003101000_add_logo_light_media_id.sql.
+  logoLightMediaId: uuid("logo_light_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
   faviconMediaId: uuid("favicon_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
+  // Canonical Google Review CTA configuration (global, not page-specific).
+  googleReviewUrl: text("google_review_url"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
@@ -107,6 +115,10 @@ export const websitePages = pgTable("website_pages", {
   metaDescription: text("meta_description"),
   content: jsonb("content"),
   isPublished: boolean("is_published").default(true).notNull(),
+  // Phase 2C: independent page-level section visibility (defaults preserve
+  // the pre-Phase-2C behavior where both sections were always rendered).
+  serviceCardsEnabled: boolean("service_cards_enabled").default(true).notNull(),
+  servicePackagesEnabled: boolean("service_packages_enabled").default(true).notNull(),
   updatedBy: text("updated_by"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
@@ -140,6 +152,8 @@ export const serviceCategories = pgTable("service_categories", {
   icon: text("icon"),
   displayOrder: integer("display_order").default(0).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
+  // Page scope: when set, the category is only visible within that page
+  pageId: uuid("page_id").references(() => websitePages.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
@@ -152,20 +166,50 @@ export const services = pgTable("services", {
   description: text("description"),
   durationMinutes: integer("duration_minutes").default(60),
   price: numeric("price").default("0").notNull(),
-  imageUrl: text("image_url"),
-  mediaId: uuid("media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
+    imageUrl: text("image_url"),
+  // Canonical media reference: services.media_id → media_assets.id
+  // Database constraint (fk_services_media_id) is ON DELETE RESTRICT.
+  mediaId: uuid("media_id").references(() => mediaAssets.id, { onDelete: "restrict" }),
   altText: text("alt_text").default(""),
   tag: text("tag").default(""),
   href: text("href").default(""),
-  type: text("type").default("service"),
+  // Service kind: the category/nature of the service offering
+  // Values: 'service' | 'experience' | 'informational'
+  serviceKind: text("service_kind").default("service"),
+  // Card presentation type: how the service appears in the UI
+  // Values: 'navigation' (global discovery) | 'information' (page-scoped) | 'package' (pricing display)
+  cardType: text("card_type").default("information").notNull(),
+  // Display type: what the public website shows (service / experience / feature)
+  // Values: 'service' | 'experience' | 'feature'
+  // Mirrors public website contract: ServicesRepository maps services by type.
+  type: text("type").default("service").notNull(),
   displayOrder: integer("display_order").default(0),
   pageId: uuid("page_id"),
   icon: text("icon").default(""),
   featured: boolean("featured").default(false),
   isActive: boolean("is_active").default(true).notNull(),
+  // Soft-delete: when set, the service is excluded from public discovery
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+export const serviceCharges = pgTable("service_charges", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  serviceId: uuid("service_id").references(() => services.id, { onDelete: "cascade" }).notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  price: numeric("price").notNull(),
+  unit: text("unit"),
+  status: text("status").default("active").notNull(),
+  // Unified active flag aligned with services.is_active (boolean)
+  isActive: boolean("is_active").default(true).notNull(),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  updatedBy: uuid("updated_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 
 // ─── Menu ────────────────────────────────────────────────────────────
 export const menuCategories = pgTable("menu_categories", {
@@ -300,12 +344,22 @@ export const bookingNotes = pgTable("booking_notes", {
 });
 
 // ─── Notifications & Activity ────────────────────────────────────────
-// NOTE: Remote database does not have updated_at column for notifications table.
-// Repository layer (src/lib/repository.ts) correctly omits this column from queries.
+// NOTE: The remote notifications table DOES have an updated_at column, added by
+// migration 20260916_add_notifications_updated_at.sql (DEFAULT now(); no trigger
+// refreshes it on row update). It is DATABASE-MANAGED and intentionally omitted
+// from the application contract: there is no schema field, no FIELD_MAPS entry
+// (src/lib/contract/mapping.ts) and no response allowlist entry
+// (src/lib/repository.ts) for it, because no application/UI code consumes it —
+// notifications are mutated only via is_read / read_at (see 20260915). The prior
+// "DB lacks updated_at" note was stale. No contract change required.
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
   profileId: uuid("profile_id"),
   bookingId: uuid("booking_id"),
+  // Generic canonical reference to the originating entity. For contact-message
+  // notifications: entity_type = 'contact_message', entity_id = contact_messages.id.
+  entityType: text("entity_type"),
+  entityId: uuid("entity_id"),
   title: text("title").notNull(),
   message: text("message"),
   type: text("type").default("info").notNull(),
@@ -365,16 +419,68 @@ export const fileUploads = pgTable("file_uploads", {
 export const testimonials = pgTable("testimonials", {
   id: uuid("id").primaryKey().defaultRandom(),
   customerName: text("customer_name").notNull(),
+  // DEPRECATED legacy field — kept for backward compatibility only.
+  // New records must use media_id; image_url is never the source of truth.
   imageUrl: text("image_url"),
+  // Canonical media reference: testimonials.media_id → media_assets.id
+  mediaId: uuid("media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
   occupation: text("occupation"),
   rating: integer("rating").default(5).notNull(),
   comment: text("comment").notNull(),
   isFeatured: boolean("is_featured").default(false).notNull(),
   approved: boolean("approved").default(false).notNull(),
   displayOrder: integer("display_order").default(0),
-  pageId: uuid("page_id"),
+  // Canonical Business Section ownership: testimonials.page_id → website_pages.id
+  pageId: uuid("page_id").references(() => websitePages.id, { onDelete: "set null" }),
+  // ── Google Business Profile integration (migration 038) ──────────────
+  // Google-owned for source='google' rows (sync-managed, never client-writable):
+  source: text("source").default("manual"), // 'manual' | 'google'
+  externalId: text("external_id"), // Google reviewId (idempotent sync identity)
+  externalUrl: text("external_url"), // Google review resource URL
+  authorPhotoUrl: text("author_photo_url"), // Google reviewer profilePhotoUrl (remote)
+  reviewedAt: timestamp("reviewed_at", { withTimezone: true }), // Google createTime
+  lastSyncedAt: timestamp("last_synced_at", { withTimezone: true }), // ZT sync bookkeeping
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ─── Google Business Profile integration (migration 038) ────────────
+// SERVER-ONLY data. Tokens in googleConnections are never returned
+// through admin API responses (routes project token-free columns).
+// Distinct from Supabase Auth Google login.
+export const googleConnections = pgTable("google_connections", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  refreshToken: text("refresh_token").notNull(), // server-only, never client-readable
+  accessToken: text("access_token"),
+  tokenExpiresAt: timestamp("token_expires_at", { withTimezone: true }),
+  // GBP identifiers — nullable until the location-confirmation step
+  googleAccountId: text("google_account_id"),
+  googleLocationId: text("google_location_id"),
+  googleLocationName: text("google_location_name"),
+  connectedAt: timestamp("connected_at", { withTimezone: true }).defaultNow(),
+  connectedBy: uuid("connected_by"),
+  lastSyncAt: timestamp("last_sync_at", { withTimezone: true }),
+  syncEnabled: boolean("sync_enabled").default(true),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const googleReviewSyncRuns = pgTable("google_review_sync_runs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  connectionId: uuid("connection_id")
+    .references(() => googleConnections.id, { onDelete: "cascade" })
+    .notNull(),
+  startedAt: timestamp("started_at", { withTimezone: true }).defaultNow(),
+  completedAt: timestamp("completed_at", { withTimezone: true }),
+  status: text("status").default("running").notNull(), // running | completed | failed
+  reviewsSeen: integer("reviews_seen").default(0),
+  reviewsCreated: integer("reviews_created").default(0), // always approved=false
+  reviewsUpdated: integer("reviews_updated").default(0),
+  reviewsFailed: integer("reviews_failed").default(0),
+  errorMessage: text("error_message"),
+  errorDetails: jsonb("error_details"),
+  triggeredBy: uuid("triggered_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
 export const contactMessages = pgTable("contact_messages", {
@@ -409,13 +515,23 @@ export const faqs = pgTable("faqs", {
 
 export const promotions = pgTable("promotions", {
   id: uuid("id").primaryKey().defaultRandom(),
+  // Canonical Business Section ownership: promotions.page_id → website_pages.id
+  pageId: uuid("page_id").references(() => websitePages.id, { onDelete: "set null" }),
+  // Canonical media reference: promotions.media_id → media_assets.id
+  mediaId: uuid("media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
   title: text("title").notNull(),
   description: text("description"),
+  // DEPRECATED legacy field — kept for backward compatibility only.
+  // New records must use media_id; banner_image is never the source of truth.
   bannerImage: text("banner_image"),
   discountPercent: numeric("discount_percent").default("0"),
-  startDate: date("start_date").notNull(),
-  endDate: date("end_date").notNull(),
+  startDate: date("start_date"),
+  endDate: date("end_date"),
   isActive: boolean("is_active").default(true).notNull(),
+  // Homepage aggregation: only promotions with show_on_homepage=true appear
+  // on the homepage, regardless of originating Business Section.
+  showOnHomepage: boolean("show_on_homepage").default(false).notNull(),
+  displayOrder: integer("display_order").default(0).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
@@ -460,6 +576,62 @@ export const invitations = pgTable("invitations", {
   status: text("status").default("pending").notNull(),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   acceptedAt: timestamp("accepted_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+// ─── Membership ──────────────────────────────────────────────────────
+// Canonical membership domain (migration 038 baseline; 039/041 headline
+// refinements unapplied — see MEMBERSHIP_REMAINING_ISSUES.md R-10).
+// Exactly one membership architecture: plans → benefits → customer memberships.
+// Members ride canonical customers; media rides canonical media_assets.
+export const membershipPlans = pgTable("membership_plans", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  annualPrice: numeric("annual_price").notNull(),
+  registrationFee: numeric("registration_fee").default("0").notNull(),
+  // Canonical media reference: membership_plans.media_id → media_assets.id.
+  // No image_url column in the membership domain.
+  mediaId: uuid("media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
+  displayOrder: integer("display_order").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  ctaText: text("cta_text"),
+  ctaLink: text("cta_link"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedBy: uuid("updated_by").references(() => profiles.id, { onDelete: "set null" }),
+});
+
+export const membershipPlanBenefits = pgTable("membership_plan_benefits", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  // Benefits are content of the plan — they die with it (DB: ON DELETE CASCADE).
+  planId: uuid("plan_id").references(() => membershipPlans.id, { onDelete: "cascade" }).notNull(),
+  // Freeform CMS text — deliberately NOT tied to services.
+  description: text("description").notNull(),
+  displayOrder: integer("display_order").default(0).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const customerMemberships = pgTable("customer_memberships", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  // RESTRICT both sides (mirrors bookings → customers) so membership history
+  // can never be silently destroyed by deleting a customer or plan.
+  customerId: uuid("customer_id").references(() => customers.id, { onDelete: "restrict" }).notNull(),
+  planId: uuid("plan_id").references(() => membershipPlans.id, { onDelete: "restrict" }).notNull(),
+  // Server-generated via membership_member_number_seq (ZT-M-00001). UNIQUE at DB.
+  memberNumber: text("member_number").notNull().unique(),
+  status: text("status").default("active").notNull(),
+  registeredAt: timestamp("registered_at", { withTimezone: true }).defaultNow().notNull(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  // Server-side snapshots from the plan (booking price-snapshot principle).
+  annualPriceSnapshot: numeric("annual_price_snapshot").notNull(),
+  registrationFeeSnapshot: numeric("registration_fee_snapshot").notNull(),
+  notes: text("notes"),
+  createdBy: uuid("created_by").references(() => profiles.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });

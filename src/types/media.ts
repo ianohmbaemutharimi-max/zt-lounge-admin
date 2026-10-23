@@ -39,9 +39,16 @@ export interface SelectableMediaAsset {
   bucket: string;
   path: string;
   file_size: number | null;
+  
+  // Category — first-class filterable field (nullable for legacy assets)
+  category: string | null;
 
-  // Timestamps
+     // Timestamps
   created_at: string;
+
+  // Usage tracking (populated by /api/media, informational only)
+  usageCount?: number;
+  usageLocations?: string[];
 }
 
 /**
@@ -50,6 +57,7 @@ export interface SelectableMediaAsset {
  */
 export interface MediaQueryOptions {
   bucket?: string;
+  category?: string;
   search?: string;
   limit?: number;
   offset?: number;

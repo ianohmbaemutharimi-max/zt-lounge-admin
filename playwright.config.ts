@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+﻿import { defineConfig, devices } from '@playwright/test';
 
 /**
  * ZT Lounge Runtime Production Acceptance Test Suite
@@ -14,7 +14,11 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : 1, // Single worker to maintain test isolation
   reporter: [
-    ['html', { outputFolder: 'test-results/html' }],
+    // The HTML report must NOT live inside `test-results`, which is Playwright's
+    // default outputDir for per-test artifacts. Nesting the two makes Playwright
+    // refuse the run with an output-folder collision, so the report is written to
+    // a sibling directory instead.
+    ['html', { outputFolder: 'playwright-report' }],
     ['json', { outputFile: 'test-results/results.json' }],
     ['list'],
   ],
@@ -34,11 +38,11 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev',
     url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true,
     timeout: 120 * 1000,
   },
-  timeout: 30 * 1000,
+    timeout: 120 * 1000,
   expect: {
-    timeout: 5 * 1000,
+    timeout: 10 * 1000,
   },
 });

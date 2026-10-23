@@ -6,11 +6,17 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify:booking-contract": "node scripts/verify-booking-update-contract.mjs",
+    "audit:phase1": "node scripts/phase1-verification-baseline.mjs",
+    "audit:phase1.1": "node scripts/phase1-1-migration-rls-reconciliation.mjs",
+    "audit:phase1.2": "node scripts/phase1-2-rls-remediation.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.120.0",
     "@hookform/resolvers": "^5.4.0",
+    "@supabase/auth-helpers-nextjs": "^0.14.0",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.2",
     "@tanstack/react-query": "^5.101.4",
@@ -19,6 +25,8 @@
     "lucide-react": "^1.26.0",
     "next": "^16.2.6",
     "pg": "8.20.0",
+    "qrcode": "^1.5.4",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.82.0",
@@ -40,6 +48,7 @@
     "eslint-config-next": "16.2.6",
     "form-data": "^4.0.6",
     "postcss": "8.5.8",
+    "supabase": "^2.117.0",
     "tailwindcss": "^4.1.17",
     "typescript": "^5.9.3"
   },

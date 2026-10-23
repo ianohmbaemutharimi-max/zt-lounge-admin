@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Image as ImageIcon, AlertCircle, Pencil, Plus, X, Loader, RefreshCw } from "lucide-react";
-import { PageHeader, Spinner, EmptyState, Card, Input, Button, Modal, Field } from "@/components/ui";
+import { Search, Image as ImageIcon, AlertCircle, Pencil, Plus, X, Loader, RefreshCw, Trash2, Info } from "lucide-react";
+import { PageHeader, Spinner, EmptyState, Card, Input, Button, Modal, Field, Badge } from "@/components/ui";
 import { cn } from "@/lib/utils";
 import { MediaEditModal } from "./media-edit-modal";
+import { MediaDeleteModal } from "./media-delete-modal";
+import { MediaUsageModal } from "./media-usage-modal";
 
 interface MediaAsset {
   id: string;
@@ -20,6 +22,7 @@ interface MediaAsset {
   alt_text: string | null;
   title: string | null;
   description: string | null;
+  category: string | null;
   created_at: string;
   usageCount: number;
   usageLocations?: string[];
@@ -38,12 +41,14 @@ interface MediaResponse {
 async function fetchMedia(params: {
   filter?: string;
   search?: string;
+  category?: string;
   limit?: number;
   offset?: number;
 }): Promise<MediaResponse> {
   const searchParams = new URLSearchParams();
   if (params.filter) searchParams.set("filter", params.filter);
   if (params.search) searchParams.set("search", params.search);
+  if (params.category) searchParams.set("category", params.category);
   if (params.limit) searchParams.set("limit", String(params.limit));
   if (params.offset) searchParams.set("offset", String(params.offset));
 
@@ -73,11 +78,14 @@ function formatDate(dateString: string): string {
 
 export function MediaLibraryView() {
   const [filter, setFilter] = useState<string>("all"); // "all", "used", "unused"
+  const [categoryFilter, setCategoryFilter] = useState<string>(""); // "", "hero", "gallery", etc.
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [selectedAsset, setSelectedAsset] = useState<MediaAsset | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [replaceModalOpen, setReplaceModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [usageModalOpen, setUsageModalOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -95,10 +103,11 @@ export function MediaLibraryView() {
   };
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["media", { filter, search: debouncedSearch }],
+    queryKey: ["media", { filter, category: categoryFilter, search: debouncedSearch }],
     queryFn: () =>
       fetchMedia({
         filter: filter || undefined,
+        category: categoryFilter || undefined,
         search: debouncedSearch || undefined,
         limit: 50,
       }),
@@ -109,7 +118,7 @@ export function MediaLibraryView() {
     setEditModalOpen(true);
   };
 
-  const handleSaveMedia = async (assetId: string, data: { alt_text: string; title: string; description: string }) => {
+  const handleSaveMedia = async (assetId: string, data: { alt_text: string; title: string; description: string; category: string | null }) => {
     const response = await fetch(`/api/admin/media_assets/${assetId}`, {
       method: "PATCH",
       headers: {
@@ -234,18 +243,24 @@ export function MediaLibraryView() {
     },
   });
 
+  // UI-02 fix: selecting a file no longer fires the request immediately — the
+  // admin must press "Confirm Replace". (Previously the upload started on the
+  // file-input change with no confirmation step.)
   const handleReplaceFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setReplaceFile(file);
       setReplaceError(null);
-      if (selectedAsset) {
-        replaceMutation.mutate({
-          assetId: selectedAsset.id,
-          file,
-          category: "branding", // Default category for media library
-        });
-      }
+    }
+  };
+
+  const handleReplaceConfirm = () => {
+    if (selectedAsset && replaceFile) {
+      replaceMutation.mutate({
+        assetId: selectedAsset.id,
+        file: replaceFile,
+        category: "branding", // Default category for media library
+      });
     }
   };
 
@@ -254,6 +269,54 @@ export function MediaLibraryView() {
     setReplaceFile(null);
     setReplaceError(null);
     setReplaceProgress(0);
+  };
+
+  // Delete mutation with safety check
+  const deleteMutation = useMutation({
+    mutationFn: async (assetId: string) => {
+      const response = await fetch(`/api/admin/media_assets/${assetId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        if (response.status === 409) {
+          // Asset is in use - backend returned usage details
+          throw new Error(
+            error.message || 
+            "This image is currently being used and cannot be deleted. Please remove it from all locations first."
+          );
+        }
+        throw new Error(error.error || "Failed to delete media asset");
+      }
+
+      return { success: true };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["media"] });
+      setDeleteModalOpen(false);
+      setSelectedAsset(null);
+    },
+    onError: (error: any) => {
+      // Keep modal open to show error
+      console.error("Delete error:", error);
+    },
+  });
+
+  const handleDeleteClick = (asset: MediaAsset) => {
+    setSelectedAsset(asset);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (selectedAsset) {
+      deleteMutation.mutate(selectedAsset.id);
+    }
+  };
+
+  const handleUsageClick = (asset: MediaAsset) => {
+    setSelectedAsset(asset);
+    setUsageModalOpen(true);
   };
 
   if (isLoading) {
@@ -304,7 +367,7 @@ export function MediaLibraryView() {
 
       {/* Filters */}
       <Card className="mb-6 p-4">
-        <div className="flex flex-col gap-4 sm:flex-row">
+        <div className="flex flex-col gap-4">
           {/* Search */}
           <div className="flex-1">
             <div className="relative">
@@ -319,44 +382,68 @@ export function MediaLibraryView() {
             </div>
           </div>
 
-          {/* Filter buttons */}
-          <div className="flex gap-2">
-            <Button
-              variant={filter === "all" ? "gold" : "ghost"}
-              onClick={() => setFilter("all")}
-              className="text-sm"
-            >
-              All Images
-            </Button>
-            <Button
-              variant={filter === "used" ? "gold" : "ghost"}
-              onClick={() => setFilter("used")}
-              className="text-sm"
-            >
-              Used
-            </Button>
-            <Button
-              variant={filter === "unused" ? "gold" : "ghost"}
-              onClick={() => setFilter("unused")}
-              className="text-sm"
-            >
-              Unused
-            </Button>
-          </div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            {/* Usage Filter buttons */}
+            <div className="flex gap-2">
+              <Button
+                variant={filter === "all" ? "gold" : "ghost"}
+                onClick={() => setFilter("all")}
+                className="text-sm"
+              >
+                All Images
+              </Button>
+              <Button
+                variant={filter === "used" ? "gold" : "ghost"}
+                onClick={() => setFilter("used")}
+                className="text-sm"
+              >
+                Used
+              </Button>
+              <Button
+                variant={filter === "unused" ? "gold" : "ghost"}
+                onClick={() => setFilter("unused")}
+                className="text-sm"
+              >
+                Unused
+              </Button>
+            </div>
 
-          {/* Clear filters */}
-          {(filter !== "all" || search) && (
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setFilter("all");
-                setSearch("");
-                setDebouncedSearch("");
-              }}
-            >
-              Clear
-            </Button>
-          )}
+            {/* Category Filter */}
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant={categoryFilter === "" ? "gold" : "ghost"}
+                onClick={() => setCategoryFilter("")}
+                className="text-sm"
+              >
+                All Categories
+              </Button>
+              {["hero", "gallery", "menu", "services", "testimonials", "branding", "promotions", "memberships", "uncategorized"].map((cat) => (
+                <Button
+                  key={cat}
+                  variant={categoryFilter === cat ? "gold" : "ghost"}
+                  onClick={() => setCategoryFilter(cat)}
+                  className="text-sm capitalize"
+                >
+                  {cat === "uncategorized" ? "Uncategorized" : cat}
+                </Button>
+              ))}
+            </div>
+
+            {/* Clear filters */}
+            {(filter !== "all" || categoryFilter !== "" || search) && (
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setFilter("all");
+                  setCategoryFilter("");
+                  setSearch("");
+                  setDebouncedSearch("");
+                }}
+              >
+                Clear
+              </Button>
+            )}
+          </div>
         </div>
       </Card>
 
@@ -377,7 +464,14 @@ export function MediaLibraryView() {
         /* Media grid */
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {assets.map((asset) => (
-            <MediaAssetCard key={asset.id} asset={asset} onEdit={handleEditClick} onReplace={(asset) => { setSelectedAsset(asset); setReplaceModalOpen(true); }} />
+            <MediaAssetCard 
+              key={asset.id} 
+              asset={asset} 
+              onEdit={handleEditClick} 
+              onReplace={(asset) => { setSelectedAsset(asset); setReplaceModalOpen(true); }}
+              onDelete={handleDeleteClick}
+              onViewUsage={handleUsageClick}
+            />
           ))}
         </div>
       )}
@@ -478,12 +572,31 @@ export function MediaLibraryView() {
             </div>
           )}
 
+          {/* Explanation of Replace behavior */}
+          <div className="rounded-lg border border-blue-500/30 bg-blue-500/10 p-3">
+            <div className="flex gap-2">
+              <Info className="h-5 w-5 flex-shrink-0 text-blue-400 mt-0.5" />
+              <div className="text-sm text-blue-300">
+                <p className="font-medium">Replace the image file while keeping all existing uses connected.</p>
+                {selectedAsset && selectedAsset.usageCount > 0 && (
+                  <p className="mt-1">
+                    All {selectedAsset.usageCount} existing use{selectedAsset.usageCount !== 1 ? 's' : ''} will display the new image after replacement.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
             <p className="text-sm text-gray-400">Replacing image:</p>
-            <p className="mt-1 font-medium text-white">{selectedAsset?.title || "Untitled"}</p>
-            <p className="mt-1 text-xs text-gray-500">
-              ID: {selectedAsset?.id || "—"} (will be preserved)
-            </p>
+            <p className="mt-1 font-medium text-white">{selectedAsset?.title || selectedAsset?.original_name || "Untitled"}</p>
+            {selectedAsset && selectedAsset.usageCount > 0 && (
+              <div className="mt-2">
+                <Badge status="active">
+                  Used in {selectedAsset.usageCount} place{selectedAsset.usageCount !== 1 ? 's' : ''}
+                </Badge>
+              </div>
+            )}
           </div>
 
           <Field label="New Image File">
@@ -550,14 +663,51 @@ export function MediaLibraryView() {
             >
               Cancel
             </Button>
+            <Button
+              variant="gold"
+              onClick={handleReplaceConfirm}
+              disabled={!replaceFile || replaceMutation.isPending}
+            >
+              {replaceMutation.isPending ? "Replacing…" : "Confirm Replace"}
+            </Button>
           </div>
         </div>
       </Modal>
+
+      {/* Delete Confirmation Dialog */}
+      <MediaDeleteModal
+        open={deleteModalOpen}
+        onClose={() => {
+          setDeleteModalOpen(false);
+          setSelectedAsset(null);
+        }}
+        asset={selectedAsset}
+        onConfirm={handleDeleteConfirm}
+        isDeleting={deleteMutation.isPending}
+        error={deleteMutation.error}
+        onErrorReset={() => deleteMutation.reset()}
+      />
+
+      {/* Usage Locations Modal */}
+      <MediaUsageModal
+        open={usageModalOpen}
+        onClose={() => {
+          setUsageModalOpen(false);
+          setSelectedAsset(null);
+        }}
+        asset={selectedAsset}
+      />
     </div>
   );
 }
 
-function MediaAssetCard({ asset, onEdit, onReplace }: { asset: MediaAsset; onEdit: (asset: MediaAsset) => void; onReplace: (asset: MediaAsset) => void }) {
+function MediaAssetCard({ asset, onEdit, onReplace, onDelete, onViewUsage }: { 
+  asset: MediaAsset; 
+  onEdit: (asset: MediaAsset) => void; 
+  onReplace: (asset: MediaAsset) => void;
+  onDelete: (asset: MediaAsset) => void;
+  onViewUsage: (asset: MediaAsset) => void;
+}) {
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -579,15 +729,19 @@ function MediaAssetCard({ asset, onEdit, onReplace }: { asset: MediaAsset; onEdi
           />
         )}
 
-        {/* Usage badge */}
+        {/* Usage badge - improved visibility */}
         <div className="absolute right-2 top-2">
           {asset.usageCount > 0 ? (
-            <span className="inline-flex items-center rounded-full bg-green-900/50 px-2 py-1 text-xs font-medium text-green-300">
-              {asset.usageCount}
-            </span>
+            <button
+              onClick={() => onViewUsage(asset)}
+              className="inline-flex items-center rounded-full bg-green-900/80 backdrop-blur-sm px-2.5 py-1 text-xs font-medium text-green-300 cursor-pointer hover:bg-green-800/80 transition-colors"
+              title={`Used in ${asset.usageCount} place${asset.usageCount !== 1 ? 's' : ''} - Click to view`}
+            >
+              Used in {asset.usageCount}
+            </button>
           ) : (
-            <span className="inline-flex items-center rounded-full bg-gray-800 px-2 py-1 text-xs font-medium text-gray-400">
-              Unused
+            <span className="inline-flex items-center rounded-full bg-gray-800/80 backdrop-blur-sm px-2.5 py-1 text-xs font-medium text-gray-400">
+              Not used
             </span>
           )}
         </div>
@@ -661,26 +815,50 @@ function MediaAssetCard({ asset, onEdit, onReplace }: { asset: MediaAsset; onEdi
           </div>
         </div>
 
-        {/* Edit and Replace buttons - always visible */}
-        <div className="mt-3 flex justify-end gap-2">
-          <button
-            onClick={() => onReplace(asset)}
-            className="inline-flex items-center gap-1.5 rounded-md border border-gray-700 bg-gray-800 px-3 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:bg-gray-700 hover:border-gray-600"
-            aria-label={`Replace image: ${asset.title || asset.original_name || "Untitled"}`}
-            title={`Replace image: ${asset.title || asset.original_name || "Untitled"}`}
-          >
-            <RefreshCw className="h-3 w-3" />
-            Replace
-          </button>
-          <button
-            onClick={() => onEdit(asset)}
-            className="inline-flex items-center gap-1.5 rounded-md border border-gray-700 bg-gray-800 px-3 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:bg-gray-700 hover:border-gray-600"
-            aria-label={`Edit image: ${asset.title || asset.original_name || "Untitled"}`}
-            title={`Edit image: ${asset.title || asset.original_name || "Untitled"}`}
-          >
-            <Pencil className="h-3 w-3" />
-            Edit
-          </button>
+        {/* Action buttons */}
+        <div className="mt-3 flex justify-between gap-2">
+          {/* Delete button - safety gated */}
+          {asset.usageCount > 0 ? (
+            <button
+              disabled
+              className="inline-flex items-center gap-1.5 rounded-md border border-gray-800 bg-gray-900 px-3 py-1.5 text-xs font-medium text-gray-600 cursor-not-allowed"
+              title="This image is currently in use and cannot be deleted"
+            >
+              <Trash2 className="h-3 w-3" />
+              Delete
+            </button>
+          ) : (
+            <button
+              onClick={() => onDelete(asset)}
+              className="inline-flex items-center gap-1.5 rounded-md border border-rose-700/50 bg-rose-900/20 px-3 py-1.5 text-xs font-medium text-rose-400 transition-colors hover:bg-rose-900/40 hover:border-rose-600"
+              aria-label={`Delete image: ${asset.title || asset.original_name || "Untitled"}`}
+              title="Delete this image"
+            >
+              <Trash2 className="h-3 w-3" />
+              Delete
+            </button>
+          )}
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => onReplace(asset)}
+              className="inline-flex items-center gap-1.5 rounded-md border border-gray-700 bg-gray-800 px-3 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:bg-gray-700 hover:border-gray-600"
+              aria-label={`Replace image: ${asset.title || asset.original_name || "Untitled"}`}
+              title="Replace the image file while keeping all existing uses"
+            >
+              <RefreshCw className="h-3 w-3" />
+              Replace
+            </button>
+            <button
+              onClick={() => onEdit(asset)}
+              className="inline-flex items-center gap-1.5 rounded-md border border-gray-700 bg-gray-800 px-3 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:bg-gray-700 hover:border-gray-600"
+              aria-label={`Edit image: ${asset.title || asset.original_name || "Untitled"}`}
+              title="Edit image details"
+            >
+              <Pencil className="h-3 w-3" />
+              Edit
+            </button>
+          </div>
         </div>
       </div>
     </Card>

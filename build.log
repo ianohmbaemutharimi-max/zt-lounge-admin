@@ -6,39 +6,71 @@
 - Environments: .env.local
 
   Creating an optimized production build ...
-✓ Compiled successfully in 14.6s
+✓ Compiled successfully in 92s
   Running TypeScript ...
-  Finished TypeScript in 11.6s ...
+  Finished TypeScript in 67s ...
   Collecting page data using 3 workers ...
-  Generating static pages using 3 workers (0/23) ...
-  Generating static pages using 3 workers (5/23) 
-  Generating static pages using 3 workers (11/23) 
-  Generating static pages using 3 workers (17/23) 
-✓ Generating static pages using 3 workers (23/23) in 686ms
+  Generating static pages using 3 workers (0/34) ...
+  Generating static pages using 3 workers (8/34) 
+  Generating static pages using 3 workers (16/34) 
+  Generating static pages using 3 workers (25/34) 
+✓ Generating static pages using 3 workers (34/34) in 10.4s
   Finalizing page optimization ...
 
 Route (app)
-┌ ○ /
+┌ ƒ /
 ├ ○ /_not-found
 ├ ƒ /api/admin/[resource]
 ├ ƒ /api/admin/[resource]/[id]
+├ ƒ /api/admin/[resource]/batch
+├ ƒ /api/admin/bookings/[id]/confirm
+├ ƒ /api/admin/bookings/[id]/status
+├ ƒ /api/admin/business-settings/branding
+├ ƒ /api/admin/contact-messages/[id]/reply
+├ ƒ /api/admin/contact-messages/pending-count
+├ ƒ /api/admin/customer-memberships/[id]/cancel
+├ ƒ /api/admin/customer-memberships/[id]/renew
+├ ƒ /api/admin/google/connections
+├ ƒ /api/admin/google/oauth/callback
+├ ƒ /api/admin/google/oauth/start
+├ ƒ /api/admin/google/reviews/sync
+├ ƒ /api/admin/media_assets
+├ ƒ /api/admin/media_assets/[id]
+├ ƒ /api/admin/media_assets/[id]/replace
+├ ƒ /api/admin/media/import-external
+├ ƒ /api/admin/notifications
+├ ƒ /api/admin/notifications/mark-all-read
+├ ƒ /api/admin/notifications/mark-read-by-entity
+├ ƒ /api/admin/notifications/unread-count
 ├ ƒ /api/admin/roles
+├ ƒ /api/admin/services/[slug]/charges
+├ ƒ /api/admin/services/[slug]/charges/[id]
+├ ƒ /api/admin/team-directory
 ├ ƒ /api/admin/team-invitations
 ├ ƒ /api/admin/team-invitations/[id]
 ├ ƒ /api/admin/upload
 ├ ƒ /api/auth/login-audit
 ├ ƒ /api/auth/session
+├ ƒ /api/branding
+├ ƒ /api/chat
 ├ ƒ /api/dashboard/stats
 ├ ƒ /api/health
 ├ ƒ /api/invitations/accept
 ├ ƒ /api/media
+├ ƒ /api/membership-plans
+├ ƒ /api/public/testimonials
+├ ○ /chat
 ├ ƒ /dashboard
 ├ ƒ /dashboard/bookings
 ├ ƒ /dashboard/customers
 ├ ƒ /dashboard/gallery
+├ ƒ /dashboard/google-business-profile
 ├ ƒ /dashboard/media
+├ ƒ /dashboard/members
+├ ƒ /dashboard/memberships
 ├ ƒ /dashboard/menu
 ├ ƒ /dashboard/messages
+├ ƒ /dashboard/notifications
 ├ ƒ /dashboard/promotions
 ├ ƒ /dashboard/services
 ├ ƒ /dashboard/settings
@@ -46,6 +78,8 @@ Route (app)
 ├ ƒ /dashboard/testimonials
 ├ ƒ /dashboard/website
 ├ ○ /login
+├ ƒ /membership
+├ ○ /reviews
 └ ○ /unauthorized
 
 

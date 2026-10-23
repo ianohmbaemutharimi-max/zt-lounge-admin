@@ -81,4 +81,6 @@ declare module "lucide-react" {
   export const CreditCard: LucideIcon;
   export const Wallet: LucideIcon;
   export const Receipt: LucideIcon;
+  export const ShieldCheck: LucideIcon;
+  export const TriangleAlert: LucideIcon;
 }
