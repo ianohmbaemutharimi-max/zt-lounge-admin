@@ -360,7 +360,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-13 — Public website repository and runtime paths have not been verified
 **Severity:** Critical  
-**Status:** IN PROGRESS
+**Status:** BLOCKED—DATA REPAIR
 
 **Verified repository/branch:** `ianohmbaemutharimi-max/ztlounge`, working branch `fix/media-canonicalization`, created from `main` for isolated work. The current audit began from the GitHub source; no local browser/runtime verification has yet been performed.
 
@@ -447,6 +447,32 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 **Blocked reason:** no data changes performed. The next safe step requires approval for the verified URL-host corrections and reviewed asset/reference reassignment; unknown paths and hashes must not be guessed. After approval, each update must be applied and verified one at a time.
 
+### M-16 — Hard-coded public HTML media IDs do not exist in the live media registry
+**Severity:** Critical
+**Status:** BLOCKED—DATA REPAIR
+
+**Verified gap (read-only, 2026-10-29):**
+- Audited the 10 public HTML pages linked from `index.html`: home, restaurant, restaurant-menu, lounge, VIP, events, conference, grooming-care, contact, and gallery.
+- These pages contain 134 `data-media-id` occurrences and 37 unique IDs.
+- A read-only query of `public.media_assets` using those 37 IDs returned zero matching rows. Therefore the hard-coded HTML media IDs are stale relative to the current live registry.
+- The pages also contain 148 hard-coded Storage URL occurrences. Many URL paths may correspond to live Storage objects, but duplicate `public_url` rows and semantically incorrect references prevent safe one-to-one replacement by URL alone.
+- The strict `MediaDomResolver` now clears the original URL when an ID cannot resolve. This is intentional fail-closed behavior, but **the public branch must not be deployed until these stale IDs are mapped and repaired**, otherwise affected images will display the missing-media state.
+
+**Fix plan**
+1. Build a page/element-level mapping from each stale `data-media-id`, element role/alt text, source URL path, page scope, and live content reference.
+2. Match only when the target canonical media row is unambiguous and its intended content role is verified.
+3. Where the source URL maps to duplicate rows, wrong semantic references, relative URLs, or missing Storage objects, stop and request an explicit asset decision rather than guessing.
+4. Replace stale IDs in HTML with verified canonical IDs, or remove the element's media binding if the image is not intended to be managed by Media Library.
+5. Run browser tests on all 10 pages, including successful resolution and missing-media behavior, before deployment.
+
+**Acceptance evidence**
+- [ ] Every public `data-media-id` resolves to a live `media_assets.id` or is deliberately removed.
+- [ ] No stale URL is kept as a runtime fallback.
+- [ ] All page-level images and OG/favicon references are verified against intended assets.
+- [ ] Browser tests pass for all affected pages.
+
+**Fix evidence / tests:** _Read-only audit only. No HTML IDs or database records were changed._
+
 ## Execution order
 
 1. **Re-verify baseline and branch state.**
@@ -455,7 +481,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 4. **M-04** one authoritative reference inventory and fail-closed delete protection.
 5. **M-03 + M-14** admin UI and usage-label alignment.
 6. **M-11 + M-12** upload/delete regression tests.
-7. **M-05 + M-06 + M-07 + M-15** hash, duplicate, Storage, and semantic-reference reconciliation; production data changes require separate approval.
+7. **M-05 + M-06 + M-07 + M-15 + M-16** hash, duplicate, Storage, semantic-reference, and stale public-ID reconciliation; production data changes require separate approval.
 8. **M-08 + M-09** constraints and page-scope semantics; migrations require separate approval.
 9. **M-10** remove active legacy fallbacks after canonical references and browser output are verified.
 10. Final full checks and update every issue status with evidence.
@@ -475,7 +501,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 | 2026-10-29 | M-11 | Re-reviewed upload route against live schema and corrected content-hash comments; all runtime cases remain untested. | Commits `616fc6b137d8ce43f2496e36d5cb097dbab1953f`, `6489ffe17800e720dbe49cae6257ef3ace726973`; no CI statuses available. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-12 | Confirmed deletion guard covers all 11 reference columns, fails closed, and only deletes the database row; regression tests remain pending. | Live FK/column inventory; commit `0aab30e03974f9eb51dde0f16721cc2d00a7e013`; no CI statuses available. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-05 | Confirmed unique content-hash constraint and SHA-256 generation for new uploads; corrected contradictory upload-route comments. Legacy hash values remain unresolved pending object/byte reconciliation. | Live read-only SQL counts; `src/lib/images/processor.ts`; commits `6c3032b36b18c308fcfab64450ee7607cffb3306`, `6489ffe17800e720dbe49cae6257ef3ace726973`. No data writes. | IN PROGRESS |
-| 2026-10-29 | M-06/M-07/M-15 | Compared canonical URL paths against actual `storage.objects`, identified 65 exact bucket/key matches, two unmatched Storage-shaped URLs, six relative paths, 13 duplicate URL groups, and incorrect branding/content associations. | Read-only SQL against `media_assets`, `storage.objects`, `business_settings`, and all media-reference columns; project URL verified from connected Supabase project. No data or Storage writes. | IN PROGRESS |
+| 2026-10-29 | M-06/M-07/M-15/M-16 | Compared canonical URL paths against actual `storage.objects`, identified 65 exact bucket/key matches, two unmatched Storage-shaped URLs, six relative paths, 13 duplicate URL groups, incorrect branding/content associations, and 37 stale HTML media IDs. | Read-only SQL against `media_assets`, `storage.objects`, `business_settings`, all media-reference columns, and 10 public HTML pages. No data or Storage writes. | BLOCKED—APPROVAL / DATA REPAIR |
 
 ## Final completion criteria
 
