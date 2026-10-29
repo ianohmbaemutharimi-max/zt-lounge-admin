@@ -51,7 +51,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-01 — Drizzle schema and repository disagree with live `media_assets` schema
 **Severity:** Critical  
-**Status:** OPEN
+**Status:** FIXED—UNVERIFIED
 
 **Verified gap:** `src/db/schema.ts` and `src/lib/repository.ts` were observed describing legacy columns that were absent from the live table.
 
@@ -68,7 +68,13 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] TypeScript and relevant unit/integration tests pass.
 - [ ] No database write or migration was performed without approval.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Live read-only query on 2026-10-29 confirmed the exact `media_assets` columns and types: `id uuid NOT NULL`, `content_hash varchar NOT NULL`, `public_url text NOT NULL`, `file_size integer NULL`, `mime_type varchar NULL`, timestamps nullable with `now()` defaults, `created_by/updated_by uuid NULL`, `file_name/alt_text text NULL`, `media_type public.media_type NULL` defaulting to `general`, `display_id integer NOT NULL` backed by `public.media_display_id_seq`, and `page_id text NULL`.
+- Live FK inspection confirmed `created_by → profiles.id`, `updated_by → profiles.id`, and `page_id → website_pages.slug`; the latter corrects the older baseline note that described no FK.
+- Live constraints confirmed unique `content_hash` and unique `display_id`. This also contradicts the upload route's existing comment claiming there is no unique constraint; handle under M-05 before changing duplicate semantics.
+- Changed `src/db/schema.ts` in commit `d3c9714104f8d19e028d107c6dac92c82e2dd21a`: replaced stale `bucket/path/original_name/width/height/title/description/category/uploaded_by` fields with verified live columns and declared the observed enum values and sequence default.
+- Changed the `media_assets` response allowlist in `src/lib/repository.ts` in commit `34a2319c413aa712dd69fa889d62a30915239f6c` to stop advertising absent columns and expose live metadata fields (while continuing to suppress `content_hash` as sensitive).
+- **Verification pending:** no local TypeScript/lint/test execution has been performed in this session; this issue is not VERIFIED. Also check all schema references and any Drizzle insert callers before promoting status.
 
 ### M-02 — Media API uses nonexistent table/columns and wrong page labels
 **Severity:** Critical  
@@ -306,9 +312,18 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-13 — Public website repository and runtime paths have not been verified
 **Severity:** Critical  
-**Status:** OPEN
+**Status:** IN PROGRESS
 
-**Gap:** Admin-side findings alone cannot prove the public site uses canonical media references.
+**Verified repository/branch:** `ianohmbaemutharimi-max/ztlounge`, working branch `fix/media-canonicalization`, created from `main` for isolated work. The current audit began from the GitHub source; no local browser/runtime verification has yet been performed.
+
+**Verified public-code findings (2026-10-29):**
+- `assets/js/repositories/MediaResolver.js` enforces `media_id → media_assets.id → public_url` for content collections and does not use `image_url` as a fallback in `applyResolved()`.
+- `assets/js/repositories/BusinessRepository.js` still initializes resolved branding URLs from legacy `logo_url`, `logo_light_url`, and `favicon_url`; if canonical lookup fails it keeps those values.
+- `assets/js/branding-init.js` explicitly keeps existing/static branding when canonical logo/favicon resolution fails.
+- `assets/js/shared-components.js` still embeds hard-coded Supabase Storage URLs for both logo variants and hard-coded `data-media-id` values in injected header markup. These are active legacy fallback paths and must be traced/fixed without breaking header injection order.
+- `docs/MEDIA.md` and `docs/ARCHITECTURE.md` describe a 197-row live registry snapshot from 2026-10-18, but the live read-only SQL query on 2026-10-29 returned 73 rows. The current live database query is the source of truth; older counts are historical only.
+
+**Gap:** Admin-side findings alone cannot prove the public site uses canonical media references. Browser/network tests and a full renderer/repository inventory are still outstanding.
 
 **Fix plan**
 1. Confirm the exact public repository and branch before inspecting or editing.
@@ -363,6 +378,8 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 | Date | Issue | Change | Evidence | Status |
 |---|---|---|---|---|
 | 2026-10-29 | Tracker created | Recorded verified baseline, open gaps, safe fix sequence, and per-issue acceptance checks. No application code or database was changed by this tracker creation. | Prior read-only audit summary; re-verification required before each fix. | Tracking only |
+| 2026-10-29 | M-01 | Aligned Drizzle `media_assets` definition and generic repository response allowlist to the current live schema. | Live read-only schema/constraint queries; commits `d3c9714104f8d19e028d107c6dac92c82e2dd21a`, `34a2319c413aa712dd69fa889d62a30915239f6c`. Runtime/typecheck still pending. | FIXED—UNVERIFIED |
+| 2026-10-29 | M-13 | Confirmed public repo and isolated branch; began tracing public resolver and branding paths. Identified remaining legacy logo URL fallback code. | `MediaResolver.js`, `BusinessRepository.js`, `branding-init.js`, `shared-components.js` read from branch `fix/media-canonicalization`; no browser run yet. | IN PROGRESS |
 
 ## Final completion criteria
 
