@@ -139,7 +139,16 @@ async function checkMediaReferences(
       .select("*", { count: "exact", head: true })
       .eq(column, mediaId);
 
-    if (!error && count !== null && count > 0) {
+    // Fail closed: a failed reference query must never be interpreted as
+    // proof that an asset is unused. Bubble up so DELETE returns 500 instead
+    // of allowing a potentially destructive deletion.
+    if (error) {
+      throw new Error(`Media reference check failed for ${table}.${column}: ${error.message}`);
+    }
+    if (count === null) {
+      throw new Error(`Media reference check returned no count for ${table}.${column}`);
+    }
+    if (count > 0) {
       details.push({ table, column, count });
       total += count;
     }
