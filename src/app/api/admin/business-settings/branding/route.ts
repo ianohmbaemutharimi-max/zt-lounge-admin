@@ -25,7 +25,28 @@ export const dynamic = "force-dynamic";
 export const PATCH = withAdminAuth(async (req: NextRequest, auth) => {
   try {
     const body = await req.json();
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json({ error: "A branding update object is required" }, { status: 400 });
+    }
+
+    if (Object.prototype.hasOwnProperty.call(body, "logo_light_media_id")) {
+      return NextResponse.json(
+        { error: "Light-logo storage is not supported by the live business_settings schema; do not assume this update was saved." },
+        { status: 409 },
+      );
+    }
+
+    const allowedFields = new Set(["logo_media_id", "favicon_media_id"]);
+    if (Object.keys(body).some((field) => !allowedFields.has(field))) {
+      return NextResponse.json({ error: "Only logo_media_id and favicon_media_id can be updated" }, { status: 400 });
+    }
+
     const { logo_media_id, favicon_media_id } = body;
+
+    // These branding references are required by the application contract.
+    if (logo_media_id === null || favicon_media_id === null) {
+      return NextResponse.json({ error: "Logo and favicon references cannot be cleared" }, { status: 400 });
+    }
 
     // Validate at least one field is provided
     if (logo_media_id === undefined && favicon_media_id === undefined) {
