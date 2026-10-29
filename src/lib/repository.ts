@@ -81,7 +81,7 @@ const RESPONSE_ALLOWLISTS: Record<string, string[]> = {
   gallery: ["id", "title", "description", "image_url", "media_id", "category", "alt_text", "display_order", "is_featured", "is_active", "uploaded_by", "created_at", "updated_at", "type", "page_id"],
    testimonials: ["id", "customer_name", "image_url", "occupation", "rating", "comment", "is_featured", "approved", "created_at", "updated_at", "display_order", "page_id", "media_id", "source", "external_id", "external_url", "author_photo_url", "reviewed_at", "last_synced_at"],
    contact_messages: ["id", "full_name", "phone", "email", "subject", "message", "status", "replied_by", "replied_at", "created_at"],
-   media_assets: ["id", "bucket", "path", "public_url", "original_name", "mime_type", "file_size", "width", "height", "alt_text", "title", "description", "category", "created_at", "updated_at"],
+   media_assets: ["id", "public_url", "file_name", "mime_type", "file_size", "alt_text", "media_type", "display_id", "page_id", "created_at", "updated_at", "created_by", "updated_by"],
    faqs: ["id", "question", "answer", "display_order", "is_active", "category", "page_id", "is_featured", "created_at", "updated_at"],
   promotions: ["id", "title", "description", "banner_image", "discount_percent", "start_date", "end_date", "is_active", "page_id", "media_id", "show_on_homepage", "display_order", "created_at", "updated_at"],
   system_settings: ["id", "booking_buffer_minutes", "max_booking_days", "allow_online_booking", "require_staff_assignment", "enable_email_notifications", "enable_sms_notifications", "maintenance_mode", "created_at", "updated_at"],
