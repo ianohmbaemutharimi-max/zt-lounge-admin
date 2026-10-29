@@ -74,37 +74,25 @@ export const mediaAssets = pgTable("media_assets", {
 
 // ─── Business / System Settings ──────────────────────────────────────
 export const businessSettings = pgTable("business_settings", {
-  id: smallint("id").primaryKey().default(1),
-  businessName: text("business_name").notNull(),
-  tagline: text("tagline"),
-  description: text("description"),
-  phone: text("phone"),
-  whatsapp: text("whatsapp"),
-  email: text("email"),
+  id: uuid("id").primaryKey().defaultRandom(),
+  businessName: text("business_name"),
   address: text("address"),
-  city: text("city"),
-  country: text("country"),
-  latitude: numeric("latitude"),
-  longitude: numeric("longitude"),
-  googleMapsUrl: text("google_maps_url"),
+  phone: text("phone"),
+  email: text("email"),
+  whatsapp: text("whatsapp"),
   facebook: text("facebook"),
   instagram: text("instagram"),
+  googleMapsUrl: text("google_maps_url"),
+  city: text("city"),
   openingHours: jsonb("opening_hours"),
-  socialLinks: jsonb("social_links"),
-  currency: text("currency").default("KES").notNull(),
-  timezone: text("timezone").default("Africa/Nairobi").notNull(),
-  logoUrl: text("logo_url"),
-  faviconUrl: text("favicon_url"),
-    logoMediaId: uuid("logo_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
-  // Light colorway logo (logos/logo-white.webp) -> rendered on .logo-dark (dark header).
-  // The existing dark logo_media_id above renders on .logo-light (white header).
-  // Option B — see migration 20261003101000_add_logo_light_media_id.sql.
-  logoLightMediaId: uuid("logo_light_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
-  faviconMediaId: uuid("favicon_media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
-  // Canonical Google Review CTA configuration (global, not page-specific).
-  googleReviewUrl: text("google_review_url"),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  // These references exist in the live table but currently have no DB-level FK.
+  // Application guards and the shared media reference registry protect them.
+  logoMediaId: uuid("logo_media_id"),
+  faviconMediaId: uuid("favicon_media_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  createdBy: uuid("created_by").references(() => profiles.id, { onDelete: "set null" }),
+  updatedBy: uuid("updated_by").references(() => profiles.id, { onDelete: "set null" }),
 });
 
 export const systemSettings = pgTable("system_settings", {
