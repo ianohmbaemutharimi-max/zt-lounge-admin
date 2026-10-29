@@ -421,7 +421,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-15 — Canonical media references point to semantically incorrect assets
 **Severity:** Critical
-**Status:** OPEN
+**Status:** BLOCKED—APPROVAL
 
 **Verified gap (live data, 2026-10-29):**
 - `business_settings.logo_media_id` currently equals `11111111-1111-1111-1111-111111111111`, pointing to `favicon-default.png` with relative URL `/favicon-default.png`.
