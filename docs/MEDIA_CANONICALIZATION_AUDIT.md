@@ -160,7 +160,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-05 — `content_hash` has an unverified/incorrect contract
 **Severity:** Critical  
-**Status:** IN PROGRESS
+**Status:** BLOCKED—APPROVAL/BYTE ACCESS
 
 **Verified gap:** Prior audit values did not match a SHA-256 digest format, despite code/comments treating them as hashes. A unique constraint on `content_hash` was observed. The upload branch also handles duplicate hash errors, so the actual intended semantics must be established before changes.
 
@@ -181,11 +181,11 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - Live read-only SQL on 2026-10-29: 73 rows, 73 distinct values, zero values matching a 64-character SHA-256 hex digest; 67 values begin with `sha256:`. Live constraints include unique `media_assets_content_hash_key`.
 - `src/lib/images/processor.ts` computes SHA-256 of the normalized WebP bytes (or raw ICO bytes), so the new-upload hash algorithm is concrete and verified in source.
 - Corrected both contradictory upload-route comments in commits `6c3032b36b18c308fcfab64450ee7607cffb3306` and `6489ffe17800e720dbe49cae6257ef3ace726973`; code performs a preflight duplicate lookup and handles the unique constraint race with cleanup.
-- **Not safe to complete:** existing rows cannot be rehashed from metadata alone. Storage object mapping and byte-level hashes must be reconciled first (M-06/M-07). No hashes or rows were modified. No production upload was executed.
+- **Blocked reason:** existing rows cannot be rehashed from metadata alone. Storage object mapping and byte-level hashes must be reconciled first (M-06/M-07), and production data writes require explicit approval. The available connector did not provide object-byte downloads, so actual SHA-256 values cannot yet be recomputed. No hashes or rows were modified. No production upload was executed.
 
 ### M-06 — Duplicate public URLs and relative URL entries need asset-by-asset reconciliation
 **Severity:** High  
-**Status:** IN PROGRESS
+**Status:** BLOCKED—APPROVAL
 
 **Verified gap:** Prior audit observed repeated URL groups and six relative URL values. Duplicate URLs alone do not establish duplicate file bytes or safe merge candidates.
 
@@ -209,7 +209,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-07 — Storage identity and canonical URLs are not reconciled
 **Severity:** Critical  
-**Status:** IN PROGRESS
+**Status:** BLOCKED—APPROVAL
 
 **Verified gap:** Prior URL-to-object comparison produced zero matches, but the comparison was not sufficient to prove missing files. Some URL host/path values appeared suspicious and require confirmation.
 
@@ -231,11 +231,11 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - Read-only SQL against `storage.objects` found 197 objects across seven buckets: `favicons` 1, `gallery-images` 15, `hero-images` 2, `logos` 2, `menu-images` 13, `public-assets` 152, `service-images` 12.
 - Compared every media URL's `/storage/v1/object/public/{bucket}/{key}` suffix to live `storage.objects`: 73 total assets, 67 Storage-shaped URLs, 65 exact bucket/key matches, 2 unmatched Storage-shaped URLs (`public-assets/images/autospa/interior-webp.webp` and `public-assets/images/restaurant/kitchen.webp`), and 6 relative URLs (listed under M-06).
 - All 67 absolute media URLs use the host `pub-xyz.supabase.co`, which differs from the connected project's verified host. The bucket/key match is evidence for the object path only, not proof that the URL is usable.
-- No public URL or Storage object was changed. The host repair is a data write and remains pending explicit approval; the two unmatched paths require asset review, not guessed substitutions.
+- No public URL or Storage object was changed. **Blocked pending explicit approval** for the safe host repair of the 65 verified object-path matches; the two unmatched paths require asset review, not guessed substitutions. The six relative-path rows and 13 duplicate groups also need record-by-record decisions before any merge/delete.
 
 ### M-08 — Missing FK constraints for business settings media references
 **Severity:** High  
-**Status:** IN PROGRESS
+**Status:** BLOCKED—APPROVAL
 
 **Verified gap:** current live `business_settings.logo_media_id` and `favicon_media_id` columns have no FK constraints. Current values are non-dangling but point to semantically incorrect relative-path assets (tracked as M-15).
 
@@ -258,7 +258,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - `src/db/schema.ts` and `src/lib/repository.ts` now align the Drizzle table and API allowlists for business settings to current live columns (commits `49a832f4a39d225cbe18a0ac02c4b3ad1bda1aae`, `71e222b149eaf47281ed2af5bfce63c4ecbe4581`); `SettingsView` no longer offers fields that the live table cannot store and disables the unsupported light-logo picker (commit `1537af6076e893d9de560351ae1d57afe7ec0974`).
 - `src/lib/repository.ts` response/writable allowlists now include only live `business_settings` fields (commit `71e222b149eaf47281ed2af5bfce63c4ecbe4581`). `src/features/settings/settings-view.tsx` now edits only live business fields and clearly disables the light-logo picker until the missing column is added through an approved migration (commit `1537af6076e893d9de560351ae1d57afe7ec0974`).
 - `src/app/api/admin/[resource]/[id]/route.ts` now resolves branding only from media IDs and fails closed on canonical media lookup errors; it no longer reads `logo_url` or `favicon_url` fallback values (commit `4a9fade5f073e9049e72cf5eadc1c0f946d6f5e9`).
-- Existing values were not changed. FK migration and `logo_light_media_id` schema support remain blocked pending explicit approval.
+- Existing values were not changed. **Blocked pending explicit approval** for the FK migration and `logo_light_media_id` schema support; do not apply these changes to production until the migration plan is reviewed.
 
 ### M-09 — `media_assets.page_id` meaning and shared asset ownership are unclear
 **Severity:** High  
@@ -285,7 +285,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-10 — Legacy URL fallback paths remain to be fully inventoried and removed
 **Severity:** Critical  
-**Status:** IN PROGRESS
+**Status:** BLOCKED—DATA REPAIR
 
 **Verified gap:** Live schema included `hero_slides.image_url` and `promotions.banner_image`; prior audit found no populated values then. The public website repository and all renderers have not yet been comprehensively audited, so fallback removal is not verified.
 
@@ -308,7 +308,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - Public repository `ianohmbaemutharimi-max/ztlounge`, branch `fix/media-canonicalization` created from `main`.
 - Read-only live SQL confirmed `hero_slides.image_url` and `promotions.banner_image` are the only legacy image URL columns among the checked content tables; `menu_items`, `services`, `testimonials`, and `gallery` do not have `image_url`. Promotions currently has 0 rows; hero_slides has 2 rows and both have `media_id`.
 - MenuRepository was changed to use `media_id` and MediaResolver, and static MenuConfig fallback was removed (commit `2f2d1b5db09d881d2ad25bcecd969daee31b6248`).
-- **Remaining blockers:** business branding and testimonials reference semantically incorrect assets (M-15); services repository does not match live service-card schema; public URLs contain an invalid host despite most bucket/key paths matching Storage. These must be resolved before deleting all fallback code.
+- **Blocked reason:** business branding and testimonials reference semantically incorrect assets (M-15); services repository still does not match the live service-card schema; public URLs contain an invalid host despite most bucket/key paths matching Storage. Removing every fallback before these are repaired would leave broken imagery. No browser tests/CI results are available yet.
 - No browser/runtime verification has run; status remains in progress.
 
 ### M-11 — Upload route changes need runtime and regression verification
@@ -397,7 +397,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-14 — Admin terminology and operational guidance are too implementation-heavy
 **Severity:** Medium  
-**Status:** IN PROGRESS
+**Status:** FIXED—UNVERIFIED
 
 **Gap:** The current Media Library concepts do not consistently reflect the canonical schema, and usage labels may rely on nonexistent page fields.
 
@@ -417,7 +417,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - Media Library cards/edit dialog now use file name and type; the picker types and search labels match canonical fields and unsupported bucket filtering is removed (M-03 commits).
 - Settings image labels now display `file_name` rather than the nonexistent `title` field (commit `ee262246d5da1ce997e37c90f855b402f8d3b6fb`). The settings form and repository allowlists were also narrowed to fields present in live `business_settings`; the light-logo picker is disabled with an explanation until its missing column is added by an approved migration (commits `1537af6076e893d9de560351ae1d57afe7ec0974`, `71e222b149eaf47281ed2af5bfce63c4ecbe4581`).
 - Image picker category values are now mapped from upload categories (e.g. `services`) to the live enum labels (e.g. `service`) (commit `60f7739265863666af6c39f12af17dd29fd36a5d`).
-- **Verification pending:** usability/browser checks and all API save/load flows remain untested.
+- **Verification pending:** usability/browser checks and all API save/load flows remain untested. GitHub commit-status queries for both working branches returned no CI statuses, and a local checkout could not be established in this session.
 
 ### M-15 — Canonical media references point to semantically incorrect assets
 **Severity:** Critical
@@ -443,7 +443,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] All changed `media_id` references are accounted for and browser-verified.
 - [ ] Any production data writes are explicitly approved and verified.
 
-**Fix evidence / commit / tests:** _No data changes performed; mapping and approval required._
+**Blocked reason:** no data changes performed. The next safe step requires approval for the verified URL-host corrections and reviewed asset/reference reassignment; unknown paths and hashes must not be guessed. After approval, each update must be applied and verified one at a time.
 
 ## Execution order
 
