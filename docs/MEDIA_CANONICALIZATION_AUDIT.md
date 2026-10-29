@@ -313,7 +313,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-11 — Upload route changes need runtime and regression verification
 **Severity:** High  
-**Status:** OPEN
+**Status:** FIXED—UNVERIFIED
 
 **Existing branch changes to verify:** The working branch already contains changes to `src/app/api/admin/upload/route.ts` to use live field names and map upload categories to live `media_type` enum values. It also handles duplicate lookup errors and a unique-constraint error. These changes have not yet been proven by a complete test run.
 
@@ -330,11 +330,14 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] Failure cases return accurate errors and do not create orphaned records/objects.
 - [ ] Type checks and route tests pass.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Reviewed the upload route against live columns and enum values; upload inserts only live `media_assets` fields, maps legacy UI categories to valid enum labels, and fails closed if duplicate lookup errors.
+- Corrected the route's contradictory comments about `content_hash` uniqueness (commits `6c3032b36b18c308fcfab64450ee7607cffb3306`, `6489ffe17800e720dbe49cae6257ef3ace726973`). The unique-constraint race path remains in the route.
+- **No runtime tests run:** the GitHub commit-status query returned no CI statuses, and a local checkout was unavailable in this session. Upload, duplicate, failure-cleanup, TypeScript, and lint tests remain required; this issue is not VERIFIED.
 
 ### M-12 — Delete guard changes need regression verification
 **Severity:** High  
-**Status:** OPEN
+**Status:** FIXED—UNVERIFIED
 
 **Existing branch changes to verify:** The working branch has a fail-closed check in `src/app/api/admin/media_assets/[id]/route.ts` and an expanded reference list in `src/lib/media/reference-tables.ts`. These changes are not yet verified by a complete test run.
 
@@ -353,7 +356,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 **Fix evidence / commit / tests:**
 - Reviewed `checkMediaReferences()` against the live registry and confirmed it checks each of the 11 registered table/column pairs. Query errors and null counts throw, causing DELETE to return 500 rather than treating the asset as unused.
 - Clarified route comments so they no longer claim the Storage object is deleted; the endpoint only deletes the database row and defers Storage cleanup (commit `0aab30e03974f9eb51dde0f16721cc2d00a7e013`).
-- **Verification pending:** API tests must cover each reference table, `business_settings.logo_media_id`, `favicon_media_id`, query failures, and the 409/500 behavior. No deletion was executed.
+- **No runtime tests run:** the GitHub commit-status query returned no CI statuses, and a local checkout was unavailable in this session. API tests must cover each reference table, `business_settings.logo_media_id`, `favicon_media_id`, query failures, and the 409/500 behavior. No deletion was executed.
 
 ### M-13 — Public website repository and runtime paths have not been verified
 **Severity:** Critical  
@@ -464,6 +467,8 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 | 2026-10-29 | M-10 | Removed one confirmed legacy menu-image path by resolving menu media only through canonical media IDs; removed admin API legacy branding URL fallback; remaining public branding/services/testimonials fallbacks are inventoried but blocked on data/schema reconciliation. | Public repo commits `2f2d1b5db09d881d2ad25bcecd969daee31b6248`, `3678a8fe5fc24e6d79201554bf0945b868bdf79d`; admin commit `4a9fade5f073e9049e72cf5eadc1c0f946d6f5e9`; live SQL confirms menu/testimonial media IDs populated. | IN PROGRESS |
 | 2026-10-29 | M-04 | Reconciled the reference registry against live FK and column inventories; usage API and delete guard share the registry and fail closed on query errors. | Live read-only SQL inventory; `src/lib/media/reference-tables.ts`, M-02 commits, and delete guard reviewed. Regression tests pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-08 | Aligned business-settings schema/API/UI with live columns, added fail-closed branding resolution and rejects unsupported light-logo/null assignments. FK and light-logo column migration remain pending approval. | Commits `49a832f4a39d225cbe18a0ac02c4b3ad1bda1aae`, `71e222b149eaf47281ed2af5bfce63c4ecbe4581`, `1537af6076e893d9de560351ae1d57afe7ec0974`, `4a9fade5f073e9049e72cf5eadc1c0f946d6f5e9`, `0b87ede36a6b5b4eb5e81cc27103a28bf61bfca2`. No database writes. | IN PROGRESS |
+| 2026-10-29 | M-11 | Re-reviewed upload route against live schema and corrected content-hash comments; all runtime cases remain untested. | Commits `616fc6b137d8ce43f2496e36d5cb097dbab1953f`, `6489ffe17800e720dbe49cae6257ef3ace726973`; no CI statuses available. | FIXED—UNVERIFIED |
+| 2026-10-29 | M-12 | Confirmed deletion guard covers all 11 reference columns, fails closed, and only deletes the database row; regression tests remain pending. | Live FK/column inventory; commit `0aab30e03974f9eb51dde0f16721cc2d00a7e013`; no CI statuses available. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-05 | Confirmed unique content-hash constraint and SHA-256 generation for new uploads; corrected contradictory upload-route comments. Legacy hash values remain unresolved pending object/byte reconciliation. | Live read-only SQL counts; `src/lib/images/processor.ts`; commits `6c3032b36b18c308fcfab64450ee7607cffb3306`, `6489ffe17800e720dbe49cae6257ef3ace726973`. No data writes. | IN PROGRESS |
 | 2026-10-29 | M-06/M-07/M-15 | Compared canonical URL paths against actual `storage.objects`, identified 65 exact bucket/key matches, two unmatched Storage-shaped URLs, six relative paths, 13 duplicate URL groups, and incorrect branding/content associations. | Read-only SQL against `media_assets`, `storage.objects`, `business_settings`, and all media-reference columns; project URL verified from connected Supabase project. No data or Storage writes. | IN PROGRESS |
 
