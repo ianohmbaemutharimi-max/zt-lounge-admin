@@ -158,7 +158,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-05 — `content_hash` has an unverified/incorrect contract
 **Severity:** Critical  
-**Status:** OPEN
+**Status:** IN PROGRESS
 
 **Verified gap:** Prior audit values did not match a SHA-256 digest format, despite code/comments treating them as hashes. A unique constraint on `content_hash` was observed. The upload branch also handles duplicate hash errors, so the actual intended semantics must be established before changes.
 
@@ -175,7 +175,11 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] No hash values were fabricated from filenames or labels.
 - [ ] Any backfill/data migration is separately approved and has rollback/recovery planning.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Live read-only SQL on 2026-10-29: 73 rows, 73 distinct values, zero values matching a 64-character SHA-256 hex digest; 67 values begin with `sha256:`. Live constraints include unique `media_assets_content_hash_key`.
+- `src/lib/images/processor.ts` computes SHA-256 of the normalized WebP bytes (or raw ICO bytes), so the new-upload hash algorithm is concrete and verified in source.
+- Corrected the misleading upload-route comment in commit `6c3032b36b18c308fcfab64450ee7607cffb3306`; code already performs a preflight duplicate lookup and handles the unique constraint race with cleanup.
+- **Not safe to complete:** existing rows cannot be rehashed from metadata alone. Storage object mapping and byte-level hashes must be reconciled first (M-06/M-07). No hashes or rows were modified. No production upload was executed.
 
 ### M-06 — Duplicate public URLs and relative URL entries need asset-by-asset reconciliation
 **Severity:** High  
@@ -237,7 +241,10 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] Migration is approved before execution.
 - [ ] Post-migration constraint and application tests pass.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Current live read-only schema shows `media_assets.page_id` is nullable text with FK `media_assets_page_id_fkey` to `website_pages.slug`, contrary to the prior baseline's no-FK statement.
+- Current `business_settings` schema has `logo_media_id` and `favicon_media_id`, but no `logo_light_media_id`, `logo_url`, or `favicon_url`. Those missing columns conflict with older admin/public code assumptions and must be resolved through code alignment, not a database write.
+- Existing values were not changed. Any new FK/migration decisions remain pending explicit approval.
 
 ### M-09 — `media_assets.page_id` meaning and shared asset ownership are unclear
 **Severity:** High  
@@ -396,6 +403,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 | 2026-10-29 | M-02 | Replaced stale Media API schema queries and changed usage scans to fail closed; fixed page-label lookup and pagination/filter order. | Live read-only schema query; commits `88840664988c8c4fbe3945e1f22596b4b7c6526d`, `183274dd9049ca87524fd9353bc3a0b27ddd5d64`. Typecheck/API tests pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-03 | Reworked Media Library fields and edit form to match the live schema; API now rejects edits to unsupported metadata. | Commits `68559bd0987b07fad32ad7e0986ab9add4b69b5c`, `949bcf8d822b6c173b1e6cad93b0b42764450a68`, `0938c2bf2de3ecc1fd190d9bc5cff265af10f484`, `5235859088a8a5cb71d49f2f4c4e59023155630a`, `2bdef470d73d2c61f1e33851f06bd99b22526f78`, `9362c3253eb9a3fccb28e0e3bdb7dd005df8a3c2`. Runtime/typecheck tests pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-04 | Reconciled the reference registry against live FK and column inventories; usage API and delete guard share the registry and fail closed on query errors. | Live read-only SQL inventory; `src/lib/media/reference-tables.ts`, M-02 commits, and delete guard reviewed. Regression tests pending. | FIXED—UNVERIFIED |
+| 2026-10-29 | M-05 | Confirmed unique content-hash constraint and SHA-256 generation for new uploads; corrected the stale route comment. Legacy hash values remain unresolved pending object/byte reconciliation. | Live read-only SQL counts; `src/lib/images/processor.ts`; commit `6c3032b36b18c308fcfab64450ee7607cffb3306`. No data writes. | IN PROGRESS |
 
 ## Final completion criteria
 
