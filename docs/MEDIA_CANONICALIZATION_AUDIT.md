@@ -226,9 +226,9 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-08 — Missing FK constraints for business settings media references
 **Severity:** High  
-**Status:** OPEN
+**Status:** IN PROGRESS
 
-**Verified gap:** `business_settings.logo_media_id` and `favicon_media_id` had no FK constraints at the time of the prior audit, while their values did not appear dangling in the checks then run.
+**Verified gap:** current live `business_settings.logo_media_id` and `favicon_media_id` columns have no FK constraints. Current values are non-dangling but point to semantically incorrect relative-path assets (tracked as M-15).
 
 **Fix plan**
 1. Recheck live column types, nullability, existing values, and all write paths.
@@ -245,13 +245,15 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 **Fix evidence / commit / tests:**
 - Current live read-only schema shows `media_assets.page_id` is nullable text with FK `media_assets_page_id_fkey` to `website_pages.slug`, contrary to the prior baseline's no-FK statement.
 - Current `business_settings` schema has `logo_media_id` and `favicon_media_id`, but no `logo_light_media_id`, `logo_url`, or `favicon_url`. Those missing columns conflict with older admin/public code assumptions and must be resolved through code alignment, not a database write.
-- Existing values were not changed. Any new FK/migration decisions remain pending explicit approval.
+- `src/app/api/admin/business-settings/branding/route.ts` now rejects attempts to clear required logo/favicon references and explicitly rejects `logo_light_media_id` updates because that column is absent in the live schema (commit `0b87ede36a6b5b4eb5e81cc27103a28bf61bfca2`).
+- `src/app/api/admin/[resource]/[id]/route.ts` now resolves branding only from media IDs and fails closed on canonical media lookup errors; it no longer reads `logo_url` or `favicon_url` fallback values (commit `4a9fade5f073e9049e72cf5eadc1c0f946d6f5e9`).
+- Existing values were not changed. FK migration and `logo_light_media_id` schema support remain blocked pending explicit approval.
 
 ### M-09 — `media_assets.page_id` meaning and shared asset ownership are unclear
 **Severity:** High  
 **Status:** FIXED—UNVERIFIED
 
-**Verified gap:** `page_id` was observed as nullable text without an FK. Most rows had a value, but the field's intended semantics are not established.
+**Verified gap:** `page_id` is nullable text with an FK to `website_pages.slug`; the field's use as page-scope metadata is established by the live constraint and values, while exclusive ownership semantics are not assumed.
 
 **Fix plan**
 1. Search application code and historical migrations for how `page_id` is assigned, filtered, and displayed.
@@ -350,6 +352,8 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - `assets/js/repositories/BusinessRepository.js` still initializes resolved branding URLs from legacy `logo_url`, `logo_light_url`, and `favicon_url`; if canonical lookup fails it keeps those values.
 - `assets/js/branding-init.js` explicitly keeps existing/static branding when canonical logo/favicon resolution fails.
 - `assets/js/shared-components.js` still embeds hard-coded Supabase Storage URLs for both logo variants and hard-coded `data-media-id` values in injected header markup. These are active legacy fallback paths and must be traced/fixed without breaking header injection order.
+- Admin `src/app/api/admin/[resource]/[id]/route.ts` no longer falls back to legacy `logo_url`/`favicon_url` when resolving business settings; canonical lookup errors return an error instead (commit `4a9fade5f073e9049e72cf5eadc1c0f946d6f5e9`).
+- Admin branding PATCH rejects null logo/favicon assignments and reports the unsupported light-logo field rather than pretending it was persisted (commit `0b87ede36a6b5b4eb5e81cc27103a28bf61bfca2`).
 - `assets/js/repositories/MenuRepository.js` previously read `menu_items.image_url` directly and used local `MenuConfig` fallbacks. Live SQL confirms `menu_items.image_url` does not exist and all 5 live menu rows have `media_id`; the repository was changed to resolve those IDs only through `MediaResolver` and removed its static item/category fallback (public repo commit `2f2d1b5db09d881d2ad25bcecd969daee31b6248`).
 - `assets/js/repositories/ServicesRepository.js` still uses the absent `services.type` field, resolves page keys to UUIDs despite live `services.page_id` being text page slugs, and falls back to local config rows with legacy `image_url` mappings. Live SQL shows 64 services, all grouped through `service_card_type_id` (39 nav, 12 info, 13 pkg); 6 package rows intentionally have no `media_id`. This path needs a separate verified mapping to live card-type/page semantics before removing its fallback.
 - `assets/js/repositories/TestimonialsRepository.js` still has local config fallback and maps `image_url`; live `testimonials` has no `image_url` column and its 3 canonical rows currently reference logo.webp assets. Do not remove that fallback until the wrong media references in M-15 are corrected and verified.
@@ -390,7 +394,10 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] Shared assets and deletion consequences are clear.
 - [ ] UI usability checks completed.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Media Library cards/edit dialog now use file name and type; the picker types and search labels match canonical fields and unsupported bucket filtering is removed (M-03 commits).
+- Settings image labels now display `file_name` rather than the nonexistent `title` field (commit `ee262246d5da1ce997e37c90f855b402f8d3b6fb`).
+- **Verification pending:** usability/browser checks and all API save/load flows remain untested.
 
 ### M-15 — Canonical media references point to semantically incorrect assets
 **Severity:** Critical
