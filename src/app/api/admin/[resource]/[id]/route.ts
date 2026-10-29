@@ -144,79 +144,34 @@ export const GET = async (req: NextRequest, ctx: any) => {
 
 
 
-        // Special handling for business_settings: resolve logo and favicon
-
+        // Canonical branding only: media_id -> media_assets.public_url.
+        // Legacy logo_url/favicon_url fields are not present in the live schema
+        // and must never be used as fallback sources.
         if (table === "business-settings") {
+          const mediaIds = [data.logo_media_id, data.favicon_media_id].filter(
+            (value: unknown): value is string => typeof value === "string" && value.length > 0,
+          );
+          const mediaMap = new Map<string, string>();
 
-          const mediaIds = new Set<string>();
-
-          if (data.logo_media_id) mediaIds.add(data.logo_media_id);
-
-          if (data.favicon_media_id) mediaIds.add(data.favicon_media_id);
-
-
-
-          if (mediaIds.size > 0) {
-
+          if (mediaIds.length > 0) {
             const { data: assets, error } = await auth.supabase
-
               .from("media_assets")
-
               .select("id, public_url")
+              .in("id", mediaIds);
 
-              .in("id", Array.from(mediaIds));
-
-
-
-            if (!error && assets) {
-
-              const mediaMap = new Map(assets.map((a: any) => [a.id, a.public_url]));
-
-              
-
-              // Resolve logo: prioritize media_assets.public_url, fallback to logo_url
-
-              data.resolved_logo_url = data.logo_media_id && mediaMap.has(data.logo_media_id)
-
-                ? mediaMap.get(data.logo_media_id)
-
-                : data.logo_url || null;
-
-              
-
-              // Resolve favicon: prioritize media_assets.public_url, fallback to favicon_url
-
-              data.resolved_favicon_url = data.favicon_media_id && mediaMap.has(data.favicon_media_id)
-
-                ? mediaMap.get(data.favicon_media_id)
-
-                : data.favicon_url || null;
-
-            } else {
-
-              // Fallback to legacy URLs on error
-
-              data.resolved_logo_url = data.logo_url || null;
-
-              data.resolved_favicon_url = data.favicon_url || null;
-
+            if (error) {
+              console.error("[business-settings] canonical branding lookup failed:", error.message);
+              throw new Error("Unable to resolve canonical branding media");
             }
 
-          } else {
-
-            // No media_ids, use legacy URLs
-
-            data.resolved_logo_url = data.logo_url || null;
-
-            data.resolved_favicon_url = data.favicon_url || null;
-
+            for (const asset of assets ?? []) {
+              if (asset.public_url) mediaMap.set(asset.id, asset.public_url);
+            }
           }
 
+          data.resolved_logo_url = data.logo_media_id ? mediaMap.get(data.logo_media_id) ?? null : null;
+          data.resolved_favicon_url = data.favicon_media_id ? mediaMap.get(data.favicon_media_id) ?? null : null;
         }
-
-
-
-
 
 
 
