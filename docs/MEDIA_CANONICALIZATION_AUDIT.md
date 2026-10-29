@@ -271,7 +271,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-10 — Legacy URL fallback paths remain to be fully inventoried and removed
 **Severity:** Critical  
-**Status:** OPEN
+**Status:** IN PROGRESS
 
 **Verified gap:** Live schema included `hero_slides.image_url` and `promotions.banner_image`; prior audit found no populated values then. The public website repository and all renderers have not yet been comprehensively audited, so fallback removal is not verified.
 
@@ -290,7 +290,12 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] Missing-media behavior is explicit and tested.
 - [ ] No database column was dropped without approval.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Public repository `ianohmbaemutharimi-max/ztlounge`, branch `fix/media-canonicalization` created from `main`.
+- Read-only live SQL confirmed `hero_slides.image_url` and `promotions.banner_image` are the only legacy image URL columns among the checked content tables; `menu_items`, `services`, `testimonials`, and `gallery` do not have `image_url`. Promotions currently has 0 rows; hero_slides has 2 rows and both have `media_id`.
+- MenuRepository was changed to use `media_id` and MediaResolver, and static MenuConfig fallback was removed (commit `2f2d1b5db09d881d2ad25bcecd969daee31b6248`).
+- **Remaining blockers:** business branding and testimonials reference semantically incorrect assets (M-15); services repository does not match live service-card schema; public URLs contain an invalid host despite most bucket/key paths matching Storage. These must be resolved before deleting all fallback code.
+- No browser/runtime verification has run; status remains in progress.
 
 ### M-11 — Upload route changes need runtime and regression verification
 **Severity:** High  
@@ -344,6 +349,9 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - `assets/js/repositories/BusinessRepository.js` still initializes resolved branding URLs from legacy `logo_url`, `logo_light_url`, and `favicon_url`; if canonical lookup fails it keeps those values.
 - `assets/js/branding-init.js` explicitly keeps existing/static branding when canonical logo/favicon resolution fails.
 - `assets/js/shared-components.js` still embeds hard-coded Supabase Storage URLs for both logo variants and hard-coded `data-media-id` values in injected header markup. These are active legacy fallback paths and must be traced/fixed without breaking header injection order.
+- `assets/js/repositories/MenuRepository.js` previously read `menu_items.image_url` directly and used local `MenuConfig` fallbacks. Live SQL confirms `menu_items.image_url` does not exist and all 5 live menu rows have `media_id`; the repository was changed to resolve those IDs only through `MediaResolver` and removed its static item/category fallback (public repo commit `2f2d1b5db09d881d2ad25bcecd969daee31b6248`).
+- `assets/js/repositories/ServicesRepository.js` still uses the absent `services.type` field, resolves page keys to UUIDs despite live `services.page_id` being text page slugs, and falls back to local config rows with legacy `image_url` mappings. Live SQL shows 64 services, all grouped through `service_card_type_id` (39 nav, 12 info, 13 pkg); 6 package rows intentionally have no `media_id`. This path needs a separate verified mapping to live card-type/page semantics before removing its fallback.
+- `assets/js/repositories/TestimonialsRepository.js` still has local config fallback and maps `image_url`; live `testimonials` has no `image_url` column and its 3 canonical rows currently reference logo.webp assets. Do not remove that fallback until the wrong media references in M-15 are corrected and verified.
 - `docs/MEDIA.md` and `docs/ARCHITECTURE.md` describe a 197-row live registry snapshot from 2026-10-18, but the live read-only SQL query on 2026-10-29 returned 73 rows. The current live database query is the source of truth; older counts are historical only.
 
 **Gap:** Admin-side findings alone cannot prove the public site uses canonical media references. Browser/network tests and a full renderer/repository inventory are still outstanding.
@@ -428,9 +436,10 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 |---|---|---|---|---|
 | 2026-10-29 | Tracker created | Recorded verified baseline, open gaps, safe fix sequence, and per-issue acceptance checks. No application code or database was changed by this tracker creation. | Prior read-only audit summary; re-verification required before each fix. | Tracking only |
 | 2026-10-29 | M-01 | Aligned Drizzle `media_assets` definition and generic repository response allowlist to the current live schema. | Live read-only schema/constraint queries; commits `d3c9714104f8d19e028d107c6dac92c82e2dd21a`, `34a2319c413aa712dd69fa889d62a30915239f6c`. Runtime/typecheck still pending. | FIXED—UNVERIFIED |
-| 2026-10-29 | M-13 | Confirmed public repo and isolated branch; began tracing public resolver and branding paths. Identified remaining legacy logo URL fallback code. | `MediaResolver.js`, `BusinessRepository.js`, `branding-init.js`, `shared-components.js` read from branch `fix/media-canonicalization`; no browser run yet. | IN PROGRESS |
+| 2026-10-29 | M-13 | Confirmed public repo and isolated branch; traced canonical content gateway and found active legacy paths in branding, services, and testimonials. Changed MenuRepository to canonical media resolution. | Public repo branch `fix/media-canonicalization`; commit `2f2d1b5db09d881d2ad25bcecd969daee31b6248`; live schema/row-count SQL. Browser run pending. | IN PROGRESS |
 | 2026-10-29 | M-02 | Replaced stale Media API schema queries and changed usage scans to fail closed; fixed page-label lookup and pagination/filter order. | Live read-only schema query; commits `88840664988c8c4fbe3945e1f22596b4b7c6526d`, `183274dd9049ca87524fd9353bc3a0b27ddd5d64`. Typecheck/API tests pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-03 | Reworked Media Library fields and edit form to match the live schema; API now rejects edits to unsupported metadata and the UI exposes pagination. | Commits `68559bd0987b07fad32ad7e0986ab9add4b69b5c`, `949bcf8d822b6c173b1e6cad93b0b42764450a68`, `0938c2bf2de3ecc1fd190d9bc5cff265af10f484`, `5235859088a8a5cb71d49f2f4c4e59023155630a`, `2bdef470d73d2c61f1e33851f06bd99b22526f78`, `9362c3253eb9a3fccb28e0e3bdb7dd005df8a3c2`, `ca0c3f9b4e4632c76205fd81f97eb9207bc66495`. Runtime/typecheck tests pending. | FIXED—UNVERIFIED |
+| 2026-10-29 | M-10 | Removed one confirmed legacy menu-image path by resolving menu media only through canonical media IDs; remaining branding/services/testimonials fallbacks are inventoried but blocked on data/schema reconciliation. | Public repo commit `2f2d1b5db09d881d2ad25bcecd969daee31b6248`; live SQL confirms menu media IDs populated. | IN PROGRESS |
 | 2026-10-29 | M-04 | Reconciled the reference registry against live FK and column inventories; usage API and delete guard share the registry and fail closed on query errors. | Live read-only SQL inventory; `src/lib/media/reference-tables.ts`, M-02 commits, and delete guard reviewed. Regression tests pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-05 | Confirmed unique content-hash constraint and SHA-256 generation for new uploads; corrected the stale route comment. Legacy hash values remain unresolved pending object/byte reconciliation. | Live read-only SQL counts; `src/lib/images/processor.ts`; commit `6c3032b36b18c308fcfab64450ee7607cffb3306`. No data writes. | IN PROGRESS |
 | 2026-10-29 | M-06/M-07/M-15 | Compared canonical URL paths against actual `storage.objects`, identified 65 exact bucket/key matches, two unmatched Storage-shaped URLs, six relative paths, 13 duplicate URL groups, and incorrect branding/content associations. | Read-only SQL against `media_assets`, `storage.objects`, `business_settings`, and all media-reference columns. No data or Storage writes. | IN PROGRESS |
