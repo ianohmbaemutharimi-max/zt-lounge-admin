@@ -17,8 +17,6 @@ export interface ImageBrowserProps {
   onSelect: (asset: SelectableMediaAsset) => void;
   /** Whether the browser is actively displayed (controls query enable/disable) */
   enabled?: boolean;
-  /** Optional bucket filter (matches existing MediaPickerModal behavior) */
-  bucket?: string;
   /** Optional category filter (enforces category locking: only show assets with matching category) */
   category?: ImageCategory;
 }
@@ -36,7 +34,7 @@ export interface ImageBrowserProps {
  * - ImageChangeDialog (inline, LOOP 16B) — current
  * - MediaPickerModal (thin modal shell wrapper, retained for embeddability)
  */
-export function ImageBrowser({ selectedMediaId, onSelect, enabled = true, bucket, category }: ImageBrowserProps) {
+export function ImageBrowser({ selectedMediaId, onSelect, enabled = true, category }: ImageBrowserProps) {
   const [search, setSearch] = useState("");
   const [offset, setOffset] = useState(0);
   const limit = 24;
@@ -64,7 +62,6 @@ export function ImageBrowser({ selectedMediaId, onSelect, enabled = true, bucket
         search: search || undefined,
         limit,
         offset,
-        ...(bucket && { bucket }),
         ...(category && { category }),
       });
       return response;
@@ -87,7 +84,7 @@ export function ImageBrowser({ selectedMediaId, onSelect, enabled = true, bucket
         <Search className="absolute left-3 top-3 h-4 w-4 text-stone-500" />
         <Input
           type="text"
-          placeholder="Search images by name or title…"
+          placeholder="Search by file name or alt text…"
           value={search}
           onChange={(e) => handleSearch(e.target.value)}
           className="pl-10"
@@ -135,14 +132,14 @@ export function ImageBrowser({ selectedMediaId, onSelect, enabled = true, bucket
                   : "border-stone-700 hover:border-stone-500"
               )}
               type="button"
-              title={asset.title || asset.original_name || "Untitled"}
+              title={asset.file_name || "Unnamed file"}
             >
               {/* Thumbnail */}
               {asset.public_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={asset.public_url}
-                  alt={asset.alt_text || asset.title || "Image"}
+                  alt={asset.alt_text || asset.file_name || "Image"}
                   className="h-full w-full object-cover"
                 />
               ) : (
@@ -163,19 +160,14 @@ export function ImageBrowser({ selectedMediaId, onSelect, enabled = true, bucket
 
               {/* Metadata on hover */}
               <div className="absolute bottom-0 left-0 right-0 translate-y-full space-y-1 bg-black/90 p-2 text-left text-xs transition-transform group-hover:translate-y-0">
-                {asset.title && (
+                {asset.file_name && (
                   <p className="font-semibold text-white truncate">
-                    {asset.title}
+                    {asset.file_name}
                   </p>
                 )}
-                {asset.original_name && (
+                {asset.media_type && (
                   <p className="truncate text-stone-400">
-                    {asset.original_name}
-                  </p>
-                )}
-                {asset.width && asset.height && (
-                  <p className="text-stone-500">
-                    {asset.width} × {asset.height}
+                    {asset.media_type}
                   </p>
                 )}
                 {(asset.usageCount ?? 0) > 0 ? (
