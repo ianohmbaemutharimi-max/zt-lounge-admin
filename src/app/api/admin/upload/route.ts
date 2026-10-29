@@ -243,13 +243,11 @@ export async function POST(request: NextRequest) {
 
     console.log("[UPLOAD] Generating storage path");
     
-    // 8. Content hash (SHA-256 of final normalized WebP buffer)
-    // Duplicate detection is handled in APPLICATION code:
-    // the live database has NO uniqueness constraint on
-    // media_assets.content_hash, and per the architecture we must NOT
-    // introduce one. We detect an identical normalized upload here and
-    // return a 409 so administrators can reuse the existing media asset
-    // from the Media Library instead of creating a duplicate storage object.
+    // 8. Content hash (SHA-256 of final normalized WebP/ICO bytes).
+    // Existing live schema enforces UNIQUE(media_assets.content_hash).
+    // The application preflight gives a friendly 409; the database constraint
+    // remains the race-safe guard for simultaneous uploads. Legacy stored hash
+    // values are tracked separately and must not be fabricated or rewritten.
     const contentHash = processed.contentHash;
 
     // Generate storage path (UUID-based, no client control)
