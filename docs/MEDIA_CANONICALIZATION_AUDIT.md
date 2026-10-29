@@ -202,7 +202,10 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] Images render correctly in the public site and admin.
 - [ ] Any data-changing cleanup was explicitly approved and verified after execution.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Live read-only SQL confirms 13 duplicate `public_url` groups. The largest is the same `.../images/branding/logo.webp` URL repeated by eight asset rows; the other groups include duplicate auto-spa, conference, events, lounge, restaurant, and VIP images.
+- Six rows use relative paths: `/favicon-default.png`, `/logo-default.svg`, and `/icon-service-1.svg` through `/icon-service-4.svg`. Fetching these exact root paths in the public GitHub repository returned NOT_FOUND; full repository-wide path search remains pending.
+- The duplicate rows are referenced by different content records (including services/gallery/testimonials), so equal URLs alone are not permission to merge or delete. No rows were changed.
 
 ### M-07 — Storage identity and canonical URLs are not reconciled
 **Severity:** Critical  
@@ -223,7 +226,12 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] Missing objects are distinguished from URL parser/host mismatch.
 - [ ] Public URL behavior is tested for representative assets and all repaired exceptions.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Current project URL from the connected Supabase project is `https://jczwilrysvnhcjzjztbi.supabase.co`.
+- Read-only SQL against `storage.objects` found 197 objects across seven buckets: `favicons` 1, `gallery-images` 15, `hero-images` 2, `logos` 2, `menu-images` 13, `public-assets` 152, `service-images` 12.
+- Compared every media URL's `/storage/v1/object/public/{bucket}/{key}` suffix to live `storage.objects`: 73 total assets, 67 Storage-shaped URLs, 65 exact bucket/key matches, 2 unmatched Storage-shaped URLs (`public-assets/images/autospa/interior-webp.webp` and `public-assets/images/restaurant/kitchen.webp`), and 6 relative URLs (listed under M-06).
+- All 67 absolute media URLs use the host `pub-xyz.supabase.co`, which differs from the connected project's verified host. The bucket/key match is evidence for the object path only, not proof that the URL is usable.
+- No public URL or Storage object was changed. The host repair is a data write and remains pending explicit approval; the two unmatched paths require asset review, not guessed substitutions.
 
 ### M-08 — Missing FK constraints for business settings media references
 **Severity:** High  
@@ -410,9 +418,9 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 **Status:** OPEN
 
 **Verified gap (live data, 2026-10-29):**
-- `business_settings.logo_media_id` points to the row named `favicon-default.png` with relative URL `/favicon-default.png`.
-- `business_settings.favicon_media_id` points to the row named `logo-default.svg` with relative URL `/logo-default.svg`.
-- Eight separate `media_assets` rows named `logo.webp` share one public URL; five are referenced by `services.media_id` and three by `testimonials.media_id`. Their stored `media_type` values are `service` and `testimonial` respectively, so the same logo image is currently assigned as service/testimonial imagery.
+- `business_settings.logo_media_id` currently equals `11111111-1111-1111-1111-111111111111`, pointing to `favicon-default.png` with relative URL `/favicon-default.png`.
+- `business_settings.favicon_media_id` currently equals `22222222-2222-2222-2222-222222222222`, pointing to `logo-default.svg` with relative URL `/logo-default.svg`.
+- Eight separate `media_assets` rows named `logo.webp` share one public URL; five are referenced by service records (`Barbershop`, `Beard Grooming`, `Classic Haircut`, `Kids Haircut`, `Premium Package`) and three by testimonials (`Grace Wanjiku`, `John Patron`, `Mary Customer`). Their stored `media_type` values are `service` and `testimonial` respectively, so the same logo image is currently assigned as service/testimonial imagery. The affected content record IDs are listed in the read-only audit notes for the data-repair review; no IDs or references were modified.
 - The public Storage inventory contains `public-assets/images/branding/logo.webp` and separate `logos/logo.webp` / `logos/logo-white.webp` objects. The live media registry has no canonical row named `logo-white.webp` in the queried set.
 - This is a data/reference-integrity issue, not something a URL resolver can safely correct by guessing.
 
@@ -457,7 +465,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 | 2026-10-29 | M-04 | Reconciled the reference registry against live FK and column inventories; usage API and delete guard share the registry and fail closed on query errors. | Live read-only SQL inventory; `src/lib/media/reference-tables.ts`, M-02 commits, and delete guard reviewed. Regression tests pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-08 | Aligned business-settings schema/API/UI with live columns, added fail-closed branding resolution and rejects unsupported light-logo/null assignments. FK and light-logo column migration remain pending approval. | Commits `49a832f4a39d225cbe18a0ac02c4b3ad1bda1aae`, `71e222b149eaf47281ed2af5bfce63c4ecbe4581`, `1537af6076e893d9de560351ae1d57afe7ec0974`, `4a9fade5f073e9049e72cf5eadc1c0f946d6f5e9`, `0b87ede36a6b5b4eb5e81cc27103a28bf61bfca2`. No database writes. | IN PROGRESS |
 | 2026-10-29 | M-05 | Confirmed unique content-hash constraint and SHA-256 generation for new uploads; corrected contradictory upload-route comments. Legacy hash values remain unresolved pending object/byte reconciliation. | Live read-only SQL counts; `src/lib/images/processor.ts`; commits `6c3032b36b18c308fcfab64450ee7607cffb3306`, `6489ffe17800e720dbe49cae6257ef3ace726973`. No data writes. | IN PROGRESS |
-| 2026-10-29 | M-06/M-07/M-15 | Compared canonical URL paths against actual `storage.objects`, identified 65 exact bucket/key matches, two unmatched Storage-shaped URLs, six relative paths, 13 duplicate URL groups, and incorrect branding/content associations. | Read-only SQL against `media_assets`, `storage.objects`, `business_settings`, and all media-reference columns. No data or Storage writes. | IN PROGRESS |
+| 2026-10-29 | M-06/M-07/M-15 | Compared canonical URL paths against actual `storage.objects`, identified 65 exact bucket/key matches, two unmatched Storage-shaped URLs, six relative paths, 13 duplicate URL groups, and incorrect branding/content associations. | Read-only SQL against `media_assets`, `storage.objects`, `business_settings`, and all media-reference columns; project URL verified from connected Supabase project. No data or Storage writes. | IN PROGRESS |
 
 ## Final completion criteria
 
