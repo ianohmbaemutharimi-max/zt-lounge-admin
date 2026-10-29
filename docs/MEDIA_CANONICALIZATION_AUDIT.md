@@ -78,7 +78,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-02 — Media API uses nonexistent table/columns and wrong page labels
 **Severity:** Critical  
-**Status:** OPEN
+**Status:** FIXED—UNVERIFIED
 
 **Verified gap:** `src/app/api/media/route.ts` was observed querying absent `media_usage`, absent `media_assets.bucket/path/title/category`, and absent `website_pages.page_key/title`. It also returned `hasMore: false` and performed usage filtering after pagination, which can make results inaccurate.
 
@@ -97,7 +97,11 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] Usage labels resolve against verified page fields.
 - [ ] API tests and type checks pass.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Live read-only SQL on 2026-10-29 reconfirmed `media_assets` has no `bucket`, `path`, `title`, or `category` columns and `website_pages` has `id/name/slug` rather than `page_key/title`.
+- Replaced the stale summary/list logic in `src/app/api/media/route.ts` (commit `88840664988c8c4fbe3945e1f22596b4b7c6526d`, followed by summary response correction `183274dd9049ca87524fd9353bc3a0b27ddd5d64`). The route now queries live asset fields, searches `file_name/alt_text/public_url`, filters `media_type`, derives usage from the shared reference registry, includes logo/favicon references, resolves page names through `website_pages.name/slug`, applies used/unused filtering before output pagination, and returns an error if a required usage/label query fails.
+- Summary no longer queries absent `media_usage` or `bucket` fields; it counts usage across registered reference columns and reports distinct media types.
+- **Verification pending:** API integration tests and TypeScript checks have not run. Also verify the reference registry's table/column list against all live references (M-04), and test pagination beyond one page. Status remains unverified.
 
 ### M-03 — Media Library UI edits fields that do not exist in the canonical table
 **Severity:** High  
@@ -380,6 +384,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 | 2026-10-29 | Tracker created | Recorded verified baseline, open gaps, safe fix sequence, and per-issue acceptance checks. No application code or database was changed by this tracker creation. | Prior read-only audit summary; re-verification required before each fix. | Tracking only |
 | 2026-10-29 | M-01 | Aligned Drizzle `media_assets` definition and generic repository response allowlist to the current live schema. | Live read-only schema/constraint queries; commits `d3c9714104f8d19e028d107c6dac92c82e2dd21a`, `34a2319c413aa712dd69fa889d62a30915239f6c`. Runtime/typecheck still pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-13 | Confirmed public repo and isolated branch; began tracing public resolver and branding paths. Identified remaining legacy logo URL fallback code. | `MediaResolver.js`, `BusinessRepository.js`, `branding-init.js`, `shared-components.js` read from branch `fix/media-canonicalization`; no browser run yet. | IN PROGRESS |
+| 2026-10-29 | M-02 | Replaced stale Media API schema queries and changed usage scans to fail closed; fixed page-label lookup and pagination/filter order. | Live read-only schema query; commits `88840664988c8c4fbe3945e1f22596b4b7c6526d`, `183274dd9049ca87524fd9353bc3a0b27ddd5d64`. Typecheck/API tests pending. | FIXED—UNVERIFIED |
 
 ## Final completion criteria
 
