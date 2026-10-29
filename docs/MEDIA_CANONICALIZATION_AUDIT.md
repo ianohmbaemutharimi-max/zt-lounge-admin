@@ -183,7 +183,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-06 — Duplicate public URLs and relative URL entries need asset-by-asset reconciliation
 **Severity:** High  
-**Status:** OPEN
+**Status:** IN PROGRESS
 
 **Verified gap:** Prior audit observed repeated URL groups and six relative URL values. Duplicate URLs alone do not establish duplicate file bytes or safe merge candidates.
 
@@ -204,7 +204,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-07 — Storage identity and canonical URLs are not reconciled
 **Severity:** Critical  
-**Status:** OPEN
+**Status:** IN PROGRESS
 
 **Verified gap:** Prior URL-to-object comparison produced zero matches, but the comparison was not sufficient to prove missing files. Some URL host/path values appeared suspicious and require confirmation.
 
@@ -248,7 +248,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-09 — `media_assets.page_id` meaning and shared asset ownership are unclear
 **Severity:** High  
-**Status:** OPEN
+**Status:** FIXED—UNVERIFIED
 
 **Verified gap:** `page_id` was observed as nullable text without an FK. Most rows had a value, but the field's intended semantics are not established.
 
@@ -264,7 +264,10 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] Page filtering does not hide a shared asset from valid references.
 - [ ] Any schema change has explicit approval.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Live `page_id` values on 2026-10-29 are page slugs already present in `website_pages.slug` (`grooming-care`, `restaurant`, `home`, `conference`, `vip`, `lounge`, `events`, `restaurant-menu`), plus 7 nulls; the live FK to `website_pages.slug` confirms this is page-scope metadata.
+- The registry/API does not use `page_id` as proof of exclusive ownership or as a deletion guard; usage is derived from actual content `media_id` references. Shared references remain counted separately.
+- No `page_id` data was changed. Remaining question is whether the admin should expose it as a filter/upload context; it must not be treated as exclusive ownership.
 
 ### M-10 — Legacy URL fallback paths remain to be fully inventoried and removed
 **Severity:** Critical  
@@ -362,7 +365,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-14 — Admin terminology and operational guidance are too implementation-heavy
 **Severity:** Medium  
-**Status:** OPEN
+**Status:** IN PROGRESS
 
 **Gap:** The current Media Library concepts do not consistently reflect the canonical schema, and usage labels may rely on nonexistent page fields.
 
@@ -380,6 +383,32 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 **Fix evidence / commit / tests:** _Add after implementation._
 
+### M-15 — Canonical media references point to semantically incorrect assets
+**Severity:** Critical
+**Status:** OPEN
+
+**Verified gap (live data, 2026-10-29):**
+- `business_settings.logo_media_id` points to the row named `favicon-default.png` with relative URL `/favicon-default.png`.
+- `business_settings.favicon_media_id` points to the row named `logo-default.svg` with relative URL `/logo-default.svg`.
+- Eight separate `media_assets` rows named `logo.webp` share one public URL; five are referenced by `services.media_id` and three by `testimonials.media_id`. Their stored `media_type` values are `service` and `testimonial` respectively, so the same logo image is currently assigned as service/testimonial imagery.
+- The public Storage inventory contains `public-assets/images/branding/logo.webp` and separate `logos/logo.webp` / `logos/logo-white.webp` objects. The live media registry has no canonical row named `logo-white.webp` in the queried set.
+- This is a data/reference-integrity issue, not something a URL resolver can safely correct by guessing.
+
+**Fix plan**
+1. Inspect the actual bytes/previews of the candidate logo, favicon, service, and testimonial objects.
+2. Produce a mapping of each affected content record and current `media_id` to the intended canonical asset.
+3. Confirm the correct logo/favicon assets and create or reuse canonical asset rows only after approval.
+4. Reassign content references only after review; preserve auditability and test all affected public components.
+5. Do not delete/merge the old rows or Storage objects until reference and byte checks are complete.
+
+**Acceptance evidence**
+- [ ] Branding settings resolve to the intended logo and favicon.
+- [ ] Service and testimonial records display their intended imagery, not a logo.
+- [ ] All changed `media_id` references are accounted for and browser-verified.
+- [ ] Any production data writes are explicitly approved and verified.
+
+**Fix evidence / commit / tests:** _No data changes performed; mapping and approval required._
+
 ## Execution order
 
 1. **Re-verify baseline and branch state.**
@@ -388,7 +417,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 4. **M-04** one authoritative reference inventory and fail-closed delete protection.
 5. **M-03 + M-14** admin UI and usage-label alignment.
 6. **M-11 + M-12** upload/delete regression tests.
-7. **M-05 + M-06 + M-07** hash, duplicate, and Storage reconciliation; data changes require separate approval.
+7. **M-05 + M-06 + M-07 + M-15** hash, duplicate, Storage, and semantic-reference reconciliation; production data changes require separate approval.
 8. **M-08 + M-09** constraints and page-scope semantics; migrations require separate approval.
 9. **M-10** remove active legacy fallbacks after canonical references and browser output are verified.
 10. Final full checks and update every issue status with evidence.
@@ -401,9 +430,10 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 | 2026-10-29 | M-01 | Aligned Drizzle `media_assets` definition and generic repository response allowlist to the current live schema. | Live read-only schema/constraint queries; commits `d3c9714104f8d19e028d107c6dac92c82e2dd21a`, `34a2319c413aa712dd69fa889d62a30915239f6c`. Runtime/typecheck still pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-13 | Confirmed public repo and isolated branch; began tracing public resolver and branding paths. Identified remaining legacy logo URL fallback code. | `MediaResolver.js`, `BusinessRepository.js`, `branding-init.js`, `shared-components.js` read from branch `fix/media-canonicalization`; no browser run yet. | IN PROGRESS |
 | 2026-10-29 | M-02 | Replaced stale Media API schema queries and changed usage scans to fail closed; fixed page-label lookup and pagination/filter order. | Live read-only schema query; commits `88840664988c8c4fbe3945e1f22596b4b7c6526d`, `183274dd9049ca87524fd9353bc3a0b27ddd5d64`. Typecheck/API tests pending. | FIXED—UNVERIFIED |
-| 2026-10-29 | M-03 | Reworked Media Library fields and edit form to match the live schema; API now rejects edits to unsupported metadata. | Commits `68559bd0987b07fad32ad7e0986ab9add4b69b5c`, `949bcf8d822b6c173b1e6cad93b0b42764450a68`, `0938c2bf2de3ecc1fd190d9bc5cff265af10f484`, `5235859088a8a5cb71d49f2f4c4e59023155630a`, `2bdef470d73d2c61f1e33851f06bd99b22526f78`, `9362c3253eb9a3fccb28e0e3bdb7dd005df8a3c2`. Runtime/typecheck tests pending. | FIXED—UNVERIFIED |
+| 2026-10-29 | M-03 | Reworked Media Library fields and edit form to match the live schema; API now rejects edits to unsupported metadata and the UI exposes pagination. | Commits `68559bd0987b07fad32ad7e0986ab9add4b69b5c`, `949bcf8d822b6c173b1e6cad93b0b42764450a68`, `0938c2bf2de3ecc1fd190d9bc5cff265af10f484`, `5235859088a8a5cb71d49f2f4c4e59023155630a`, `2bdef470d73d2c61f1e33851f06bd99b22526f78`, `9362c3253eb9a3fccb28e0e3bdb7dd005df8a3c2`, `ca0c3f9b4e4632c76205fd81f97eb9207bc66495`. Runtime/typecheck tests pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-04 | Reconciled the reference registry against live FK and column inventories; usage API and delete guard share the registry and fail closed on query errors. | Live read-only SQL inventory; `src/lib/media/reference-tables.ts`, M-02 commits, and delete guard reviewed. Regression tests pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-05 | Confirmed unique content-hash constraint and SHA-256 generation for new uploads; corrected the stale route comment. Legacy hash values remain unresolved pending object/byte reconciliation. | Live read-only SQL counts; `src/lib/images/processor.ts`; commit `6c3032b36b18c308fcfab64450ee7607cffb3306`. No data writes. | IN PROGRESS |
+| 2026-10-29 | M-06/M-07/M-15 | Compared canonical URL paths against actual `storage.objects`, identified 65 exact bucket/key matches, two unmatched Storage-shaped URLs, six relative paths, 13 duplicate URL groups, and incorrect branding/content associations. | Read-only SQL against `media_assets`, `storage.objects`, `business_settings`, and all media-reference columns. No data or Storage writes. | IN PROGRESS |
 
 ## Final completion criteria
 
