@@ -1,0 +1,376 @@
+# ZT Lounge Media Canonicalization — Audit & Fix Tracker
+
+**Purpose:** Make `media_assets` the single canonical media registry, remove legacy URL fallbacks only after proving they are unused, and make the Media Library understandable to administrators.
+
+**Rule:** Fix one issue at a time. After each fix, update this file with the exact files changed, evidence collected, tests run, and remaining risks. Do not mark an issue complete because code was merely changed.
+
+## Safety and evidence rules
+
+- [ ] Read the current branch and working-tree state before editing. Preserve unrelated user changes; do not reset, stash, or overwrite them.
+- [ ] Verify every relevant claim against the live Supabase schema/data and the exact Git branch being changed.
+- [ ] Use read-only SQL for investigation. No database writes, migrations, storage deletion, record merging, or URL/data cleanup without explicit approval.
+- [ ] Do not infer that a Storage object is missing from a URL mismatch alone. Confirm the actual bucket and object key first.
+- [ ] Do not deduplicate assets just because their `public_url` values match. Confirm bytes, intended uses, references, and expected display before merging anything.
+- [ ] No silent fallback to a hard-coded or legacy URL. A missing canonical media reference must produce a visible, diagnosable missing-media state.
+- [ ] Do not remove a legacy database column until code, queries, triggers, views, policies, and public-site usage have been checked and a migration is explicitly approved.
+- [ ] After every fix, run the narrowest relevant tests, then the wider type/lint/build/browser checks where available. Record actual commands and results.
+- [ ] If a tool/test fails, report the failure and stop relying on that test as evidence. Never report an unrun test as passed.
+- [ ] Update the status and evidence in this document in the same change/commit as each completed issue, where practical.
+
+## Canonical contract
+
+1. **Storage** owns the actual file bytes and the bucket/object key.
+2. **`public.media_assets`** owns the canonical asset row and stable `id`, plus verified metadata such as `public_url`, `file_name`, `mime_type`, `file_size`, `media_type`, and a real content hash once its contract is repaired.
+3. **Content tables** own content and refer to media using `media_id` (or the explicitly named equivalent, such as `page_seo.og_image_media_id`).
+4. **Business settings** choose which canonical asset is the logo and favicon through `logo_media_id` and `favicon_media_id`; they must not maintain a second independent URL authority.
+5. **A shared resolver/reference registry** must be used consistently by rendering, Media Library usage reporting, and delete protection.
+6. **The administrator sees** a human-readable file name, media type, and understandable “Used in” labels—not internal UUIDs or raw implementation details.
+7. **Page scope is not ownership by default.** An asset can be shared by multiple pages. Do not treat `media_assets.page_id` as exclusive ownership until the intended meaning is explicitly confirmed.
+
+## Verified baseline
+
+These observations came from the read-only audit. Re-check them against the current branch and live database before implementing a fix, because the environment may have changed.
+
+- [x] Live `media_assets` schema was observed with: `id`, `content_hash`, `public_url`, `file_size`, `mime_type`, `created_at`, `updated_at`, `created_by`, `updated_by`, `file_name`, `alt_text`, `media_type`, `display_id`, `page_id`.
+- [x] Live schema did **not** show `bucket`, `path`, `original_name`, `width`, `height`, `title`, `description`, or `category` on `media_assets`.
+- [x] Live `website_pages` columns observed were `id`, `name`, `slug`, `is_active`, `service_cards_enabled`, `service_packages_enabled`, `created_at`, `updated_at`; `page_key` and `title` were absent.
+- [x] Live `media_type` enum values observed: `service`, `gallery`, `general`, `menu`, `testimonial`, `branding`, `hero`, `promotion`, `seo`, `feature`.
+- [x] `public.media_usage` was not present when checked.
+- [x] The prior audit observed 73 `media_assets` rows, 54 distinct `public_url` values, 13 duplicate-URL groups, and 6 relative URL values. Recount before acting.
+- [x] The prior audit found all 73 `content_hash` values failed the expected SHA-256-shaped format check. Some values looked like labels (for example, `sha256:classic-haircut`), not hashes. Recheck before data changes.
+- [x] The prior audit found 9 tables/columns with FKs to `media_assets.id`: `branding_assets.media_id`, `gallery.media_id`, `hero_slides.media_id`, `menu_items.media_id`, `page_features.media_id`, `page_seo.og_image_media_id`, `promotions.media_id`, `services.media_id`, `testimonials.media_id`.
+- [x] `business_settings.logo_media_id` and `business_settings.favicon_media_id` existed but had no FK constraints at audit time. Prior dangling-reference checks returned zero; recheck before proposing constraints.
+- [x] `media_assets_view` reported 75 references but omitted the two `business_settings` references; a separate scan counted 77 non-null references across the listed columns. Recompute using one authoritative method.
+- [x] `hero_slides.image_url` and `promotions.banner_image` existed in the live schema, and the prior audit found no populated values in either. Recheck before removing fallback code or considering a migration.
+- [x] The prior URL-to-Storage-object comparison returned no matches for the compared URLs. This is **not proof of missing files**; URL parsing, hostnames, bucket names, and object keys must be reconciled.
+- [ ] Public website repository/rendering paths have not yet been comprehensively audited in this tracker. No claim that public-site fallback removal is complete is allowed until that audit is done.
+
+## Issues and one-by-one fix plan
+
+Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXED—UNVERIFIED** = code changed but required verification is incomplete; **VERIFIED** = acceptance checks passed and evidence is recorded; **BLOCKED** = needs evidence, decision, or approval.
+
+### M-01 — Drizzle schema and repository disagree with live `media_assets` schema
+**Severity:** Critical  
+**Status:** OPEN
+
+**Verified gap:** `src/db/schema.ts` and `src/lib/repository.ts` were observed describing legacy columns that were absent from the live table.
+
+**Fix plan**
+1. Re-read the live schema and current branch versions of both files.
+2. Search all references to the legacy fields and classify them as runtime query, type-only, UI-only, migration-only, or dead code.
+3. Align the application schema/repository with the verified live contract. Do not invent replacement columns.
+4. Separate content-specific fields (for example, a service title) from global asset metadata.
+5. Do not modify the database to fit stale code unless a separate, approved design decision requires it.
+
+**Acceptance evidence**
+- [ ] Field-by-field schema comparison attached to this issue.
+- [ ] No live query selects/inserts/updates columns absent from the verified schema.
+- [ ] TypeScript and relevant unit/integration tests pass.
+- [ ] No database write or migration was performed without approval.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-02 — Media API uses nonexistent table/columns and wrong page labels
+**Severity:** Critical  
+**Status:** OPEN
+
+**Verified gap:** `src/app/api/media/route.ts` was observed querying absent `media_usage`, absent `media_assets.bucket/path/title/category`, and absent `website_pages.page_key/title`. It also returned `hasMore: false` and performed usage filtering after pagination, which can make results inaccurate.
+
+**Fix plan**
+1. Inspect the current route and every caller/consumer before editing.
+2. Define the response contract from verified live columns and the canonical reference inventory.
+3. Replace nonexistent usage-table queries with the approved, shared reference-accounting implementation.
+4. Use real `website_pages.name/slug` fields for labels.
+5. Implement correct pagination and filtering semantics; calculate totals/usage without silently dropping failed reference queries.
+6. Return explicit errors when a required usage query fails rather than classifying the asset as unused.
+
+**Acceptance evidence**
+- [ ] API contract matches the live schema.
+- [ ] Pagination tested with more than one page and with used/unused filters.
+- [ ] Failed usage lookup cannot return a misleading “unused” result.
+- [ ] Usage labels resolve against verified page fields.
+- [ ] API tests and type checks pass.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-03 — Media Library UI edits fields that do not exist in the canonical table
+**Severity:** High  
+**Status:** OPEN
+
+**Verified gap:** `src/features/media` was observed expecting legacy fields and offering edits for `title`, `description`, and `category`, which were absent from live `media_assets`.
+
+**Fix plan**
+1. Inventory every field rendered and edited by the Media Library.
+2. Decide field ownership based on verified schema: global asset metadata belongs on the asset row only when a live column supports it; content titles/descriptions belong to their content records.
+3. Keep admin labels simple: file name, media type, alt text if supported, and “Used in” destinations.
+4. Remove controls that imply writes to nonexistent columns; do not silently discard user input.
+5. Explain shared use clearly and avoid presenting page scope as exclusive ownership.
+
+**Acceptance evidence**
+- [ ] Every editable field maps to a real, verified writable column/API.
+- [ ] Saving and reloading proves edits persist.
+- [ ] UI displays human-readable usage labels and handles shared assets.
+- [ ] No UUIDs are required for routine admin tasks.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-04 — Usage reporting and delete protection do not share reliable reference accounting
+**Severity:** Critical  
+**Status:** OPEN
+
+**Verified gap:** The prior `media_assets_view` count omitted `business_settings.logo_media_id` and `favicon_media_id`. The branch has a reference registry in `src/lib/media/reference-tables.ts`; verify it is actually shared by every usage and deletion path.
+
+**Fix plan**
+1. Enumerate all actual media reference columns from the live database, including views, functions, triggers, APIs, and settings.
+2. Compare that inventory to `MEDIA_REFERENCE_TABLES`.
+3. Make usage display and delete guard consume the same verified inventory or one canonical database abstraction.
+4. Fail closed if any reference query fails, times out, or returns an indeterminate count.
+5. Include logo/favicon references in usage totals and labels.
+6. Ensure deletion checks run server-side and cannot be bypassed by client filtering.
+
+**Acceptance evidence**
+- [ ] Registry-to-live-schema reconciliation is recorded.
+- [ ] A known asset referenced in each supported table is reported as used.
+- [ ] Logo and favicon each appear in usage accounting.
+- [ ] Query failure blocks deletion and does not report zero references.
+- [ ] Referenced assets cannot be deleted; unreferenced test assets follow the intended deletion policy.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-05 — `content_hash` has an unverified/incorrect contract
+**Severity:** Critical  
+**Status:** OPEN
+
+**Verified gap:** Prior audit values did not match a SHA-256 digest format, despite code/comments treating them as hashes. A unique constraint on `content_hash` was observed. The upload branch also handles duplicate hash errors, so the actual intended semantics must be established before changes.
+
+**Fix plan**
+1. Inspect the exact live constraint/index definitions and upload behavior.
+2. Determine whether `content_hash` is intended to be a cryptographic digest, a legacy label, or another unique key. Do not assume.
+3. If it must be a digest, design a safe backfill plan that computes hashes from actual bytes and checks collisions before writes.
+4. Resolve the uniqueness strategy and duplicate-upload behavior before altering data.
+5. Do not rewrite hashes, remove uniqueness, merge rows, or delete assets without explicit approval.
+
+**Acceptance evidence**
+- [ ] Contract is documented and consistent in DB, API, and comments.
+- [ ] Duplicate-upload behavior is tested against actual file bytes.
+- [ ] No hash values were fabricated from filenames or labels.
+- [ ] Any backfill/data migration is separately approved and has rollback/recovery planning.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-06 — Duplicate public URLs and relative URL entries need asset-by-asset reconciliation
+**Severity:** High  
+**Status:** OPEN
+
+**Verified gap:** Prior audit observed repeated URL groups and six relative URL values. Duplicate URLs alone do not establish duplicate file bytes or safe merge candidates.
+
+**Fix plan**
+1. Recount and list every duplicate URL group and every relative URL row.
+2. For each candidate, identify the actual Storage object, verify the bytes/hash, inspect all references, and check expected public rendering.
+3. Decide whether rows represent accidental duplicates, intentional shared assets, or incorrect metadata.
+4. Propose any merge or data repair as a reviewed mapping first; preserve references and auditability.
+5. Do not delete or merge records as part of the code-only fix.
+
+**Acceptance evidence**
+- [ ] Candidate-by-candidate reconciliation table exists.
+- [ ] Every changed reference is accounted for and validated.
+- [ ] Images render correctly in the public site and admin.
+- [ ] Any data-changing cleanup was explicitly approved and verified after execution.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-07 — Storage identity and canonical URLs are not reconciled
+**Severity:** Critical  
+**Status:** OPEN
+
+**Verified gap:** Prior URL-to-object comparison produced zero matches, but the comparison was not sufficient to prove missing files. Some URL host/path values appeared suspicious and require confirmation.
+
+**Fix plan**
+1. Read the actual Storage buckets and object keys using read-only queries/API inspection.
+2. Verify the URL format and derive bucket/object keys using the actual configured Storage URL contract, not guessed string parsing.
+3. Match each asset row to the real object and test URL accessibility where supported.
+4. Identify unresolved rows precisely: valid external/relative assets, resolvable Storage assets, malformed URLs, or truly missing objects.
+5. Do not rewrite URLs or delete Storage objects until each case is classified and approved.
+
+**Acceptance evidence**
+- [ ] Every canonical asset has a documented resolution status.
+- [ ] Bucket/key mapping is verified, not inferred.
+- [ ] Missing objects are distinguished from URL parser/host mismatch.
+- [ ] Public URL behavior is tested for representative assets and all repaired exceptions.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-08 — Missing FK constraints for business settings media references
+**Severity:** High  
+**Status:** OPEN
+
+**Verified gap:** `business_settings.logo_media_id` and `favicon_media_id` had no FK constraints at the time of the prior audit, while their values did not appear dangling in the checks then run.
+
+**Fix plan**
+1. Recheck live column types, nullability, existing values, and all write paths.
+2. Confirm desired delete behavior and whether settings can ever legitimately reference a removed asset.
+3. Propose FK constraints (and appropriate delete behavior) only after data validation and explicit migration approval.
+4. Keep application-level delete protection even if FKs are added, for clear admin feedback.
+
+**Acceptance evidence**
+- [ ] Current data has zero dangling references.
+- [ ] Constraint and delete semantics are reviewed.
+- [ ] Migration is approved before execution.
+- [ ] Post-migration constraint and application tests pass.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-09 — `media_assets.page_id` meaning and shared asset ownership are unclear
+**Severity:** High  
+**Status:** OPEN
+
+**Verified gap:** `page_id` was observed as nullable text without an FK. Most rows had a value, but the field's intended semantics are not established.
+
+**Fix plan**
+1. Search application code and historical migrations for how `page_id` is assigned, filtered, and displayed.
+2. Determine whether it means upload context, default page/filter, or actual ownership.
+3. Document the chosen meaning. A shared asset must be allowed to serve multiple content records/pages.
+4. Do not convert the field to a foreign key, rename it, or delete values until semantics and data are verified.
+
+**Acceptance evidence**
+- [ ] Existing behavior and intended semantics are documented.
+- [ ] Shared assets remain discoverable from every use.
+- [ ] Page filtering does not hide a shared asset from valid references.
+- [ ] Any schema change has explicit approval.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-10 — Legacy URL fallback paths remain to be fully inventoried and removed
+**Severity:** Critical  
+**Status:** OPEN
+
+**Verified gap:** Live schema included `hero_slides.image_url` and `promotions.banner_image`; prior audit found no populated values then. The public website repository and all renderers have not yet been comprehensively audited, so fallback removal is not verified.
+
+**Fix plan**
+1. Search both admin and public-site repositories for `image_url`, `banner_image`, `logo_url`, `favicon_url`, hard-coded Storage URLs, direct URL columns, and fallback expressions.
+2. Trace each match to its source, runtime caller, database field, and rendered component. Distinguish genuine fallbacks from unrelated fields.
+3. Verify every affected record has a valid canonical media reference and that the resolver returns the intended asset.
+4. Change renderers and forms to use the canonical `media_id → media_assets.id → media_assets.public_url` path only.
+5. When a canonical reference is missing, show an explicit missing-media state; do not quietly substitute an unrelated image or old URL.
+6. Remove old schema definitions/columns only after code and database dependency checks and explicit migration approval.
+
+**Acceptance evidence**
+- [ ] Both repositories and relevant branches are searched and results recorded.
+- [ ] No unapproved legacy fallback remains in active render paths.
+- [ ] Canonical references and rendered assets are checked for every affected content type.
+- [ ] Missing-media behavior is explicit and tested.
+- [ ] No database column was dropped without approval.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-11 — Upload route changes need runtime and regression verification
+**Severity:** High  
+**Status:** OPEN
+
+**Existing branch changes to verify:** The working branch already contains changes to `src/app/api/admin/upload/route.ts` to use live field names and map upload categories to live `media_type` enum values. It also handles duplicate lookup errors and a unique-constraint error. These changes have not yet been proven by a complete test run.
+
+**Fix plan**
+1. Re-read the route, its callers, and live constraints.
+2. Verify every mapped `media_type` is a valid live enum value.
+3. Confirm duplicate handling matches the approved `content_hash` contract (M-05).
+4. Test successful upload, invalid type, duplicate upload, DB lookup failure, and Storage upload failure without damaging existing assets.
+5. Never claim this issue verified solely because the code compiles.
+
+**Acceptance evidence**
+- [ ] Route behavior is tested using a safe test asset/environment.
+- [ ] No test writes/deletes production data without approval.
+- [ ] Failure cases return accurate errors and do not create orphaned records/objects.
+- [ ] Type checks and route tests pass.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-12 — Delete guard changes need regression verification
+**Severity:** High  
+**Status:** OPEN
+
+**Existing branch changes to verify:** The working branch has a fail-closed check in `src/app/api/admin/media_assets/[id]/route.ts` and an expanded reference list in `src/lib/media/reference-tables.ts`. These changes are not yet verified by a complete test run.
+
+**Fix plan**
+1. Confirm the reference registry covers all real live references and is used by the deletion route.
+2. Test referenced asset, unreferenced asset, null count, and reference-query error cases.
+3. Confirm the API returns a clear conflict/error instead of deleting when usage cannot be determined.
+4. Ensure no delete operation reaches Storage or database until the guard succeeds.
+
+**Acceptance evidence**
+- [ ] All supported references are protected.
+- [ ] Query failures block deletion.
+- [ ] No false “unused” result is possible from a failed check.
+- [ ] Tests pass and actual database/storage mutation behavior is documented.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-13 — Public website repository and runtime paths have not been verified
+**Severity:** Critical  
+**Status:** OPEN
+
+**Gap:** Admin-side findings alone cannot prove the public site uses canonical media references.
+
+**Fix plan**
+1. Confirm the exact public repository and branch before inspecting or editing.
+2. Search content loaders, hero/gallery/menu/service/testimonial/promotion renderers, logo/favicon initialization, JSON-LD/SEO image handling, CSS backgrounds, and inline HTML.
+3. Trace media IDs from each content query to the resolver and rendered URL.
+4. Test representative content types in browser/DOM/network logs.
+5. Fix only confirmed legacy paths; record any intentional external image use as an explicit exception.
+
+**Acceptance evidence**
+- [ ] Repository, branch, commit, and search scope are recorded.
+- [ ] Every active media rendering path has a documented source.
+- [ ] No hidden URL fallback remains unaccounted for.
+- [ ] Browser verification confirms expected assets load.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+### M-14 — Admin terminology and operational guidance are too implementation-heavy
+**Severity:** Medium  
+**Status:** OPEN
+
+**Gap:** The current Media Library concepts do not consistently reflect the canonical schema, and usage labels may rely on nonexistent page fields.
+
+**Fix plan**
+1. Use plain admin labels: **File name**, **Type**, **Alt text**, **Used in**, and **Upload status**, only where supported by the API.
+2. Explain the relationship succinctly: “Content records select a media item; the Media Library manages the shared file.”
+3. Display shared usage and warn before deletion; do not ask admins to manage UUIDs or raw URLs.
+4. Separate global file metadata from per-content text and page placement.
+
+**Acceptance evidence**
+- [ ] Labels match real behavior.
+- [ ] Admin can identify an asset and where it is used without UUID knowledge.
+- [ ] Shared assets and deletion consequences are clear.
+- [ ] UI usability checks completed.
+
+**Fix evidence / commit / tests:** _Add after implementation._
+
+## Execution order
+
+1. **Re-verify baseline and branch state.**
+2. **M-13 public-site audit** and full legacy-fallback inventory before removing any fallback.
+3. **M-01 + M-02** schema/API contract alignment.
+4. **M-04** one authoritative reference inventory and fail-closed delete protection.
+5. **M-03 + M-14** admin UI and usage-label alignment.
+6. **M-11 + M-12** upload/delete regression tests.
+7. **M-05 + M-06 + M-07** hash, duplicate, and Storage reconciliation; data changes require separate approval.
+8. **M-08 + M-09** constraints and page-scope semantics; migrations require separate approval.
+9. **M-10** remove active legacy fallbacks after canonical references and browser output are verified.
+10. Final full checks and update every issue status with evidence.
+
+## Change log
+
+| Date | Issue | Change | Evidence | Status |
+|---|---|---|---|---|
+| 2026-10-29 | Tracker created | Recorded verified baseline, open gaps, safe fix sequence, and per-issue acceptance checks. No application code or database was changed by this tracker creation. | Prior read-only audit summary; re-verification required before each fix. | Tracking only |
+
+## Final completion criteria
+
+- [ ] Live schema, application types, APIs, and UI agree.
+- [ ] All active public/admin media paths use canonical media references or documented, approved exceptions.
+- [ ] Legacy fallbacks are removed from active render paths; no silent fallback hides missing references.
+- [ ] Usage counts include all verified reference columns and fail closed on errors.
+- [ ] Upload and deletion lifecycle tests pass.
+- [ ] Hash, duplicate URL, and Storage-object reconciliation is resolved or explicitly documented as an approved exception.
+- [ ] No destructive data/schema/storage operation occurred without approval.
+- [ ] Every issue above is marked **VERIFIED** or has a clearly documented **BLOCKED** reason; no issue is marked complete without evidence.
