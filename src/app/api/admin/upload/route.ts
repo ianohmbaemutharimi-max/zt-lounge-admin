@@ -265,7 +265,9 @@ export async function POST(request: NextRequest) {
     const supabaseAdmin = await getSupabaseAdmin();
     console.log("[UPLOAD] Admin client created, checking for duplicate content hash");
     
-    // Application-level duplicate detection (no DB constraint created).
+    // Application-level preflight against the live UNIQUE constraint on
+    // media_assets.content_hash. The database constraint remains the race-safe
+    // final guard; do not remove it without an approved schema decision.
     const { data: dupes, error: dupesError } = await supabaseAdmin
       .from("media_assets")
       .select("id, file_name, public_url")
