@@ -8,26 +8,18 @@ import { z } from "zod";
 import { CheckCircle2, Image as ImageIcon } from "lucide-react";
 import { api } from "@/lib/api";
 import { queryKeys } from "@/lib/query-keys";
-import { PageHeader, Card, Spinner, EmptyState, Button, Field, Input, Select, Textarea } from "@/components/ui";
+import { PageHeader, Card, Spinner, EmptyState, Button, Field, Input } from "@/components/ui";
 import { ImageChangeDialog } from "@/features/media/image-change-dialog";
 import { getSelectableMedia } from "@/lib/media/selection";
 
 const schema = z.object({
   business_name: z.string().min(2, "Business name is required"),
-  description: z.string().optional(),
   phone: z.string().min(7, "Phone is required"),
   whatsapp: z.string().optional(),
   email: z.string().email("Invalid email"),
   address: z.string().min(3, "Address is required"),
   city: z.string().optional(),
-  country: z.string().optional(),
   google_maps_url: z.union([z.string().url("Invalid URL"), z.literal("")]).optional(),
-  google_maps_reviews_url: z.union([z.string().url("Invalid URL"), z.literal("")]).optional(),
-  google_reviews_api_key: z.string().optional(),
-  latitude: z.union([z.coerce.number().min(-90, "Latitude must be between -90 and 90").max(90, "Latitude must be between -90 and 90"), z.literal("")]).optional(),
-  longitude: z.union([z.coerce.number().min(-180, "Longitude must be between -180 and 180").max(180, "Longitude must be between -180 and 180"), z.literal("")]).optional(),
-  currency: z.string().min(2),
-  timezone: z.string().min(2),
 });
 type FormValues = z.infer<typeof schema>;
 
@@ -36,7 +28,6 @@ export function SettingsView() {
   const [saved, setSaved] = useState(false);
   const [sysDraft, setSysDraft] = useState<Record<number, string>>({});
     const [logoPickerOpen, setLogoPickerOpen] = useState(false);
-  const [logoLightPickerOpen, setLogoLightPickerOpen] = useState(false);
   const [faviconPickerOpen, setFaviconPickerOpen] = useState(false);
 
   const settings = useQuery({ queryKey: queryKeys["business-settings"].all(), queryFn: () => api.list("business-settings") });
@@ -46,7 +37,6 @@ export function SettingsView() {
 
   // Resolve logo and favicon assets from media
     const logoAsset = media.data?.find((m: any) => m.id === biz?.logo_media_id);
-  const logoLightAsset = media.data?.find((m: any) => m.id === biz?.logo_light_media_id);
   const faviconAsset = media.data?.find((m: any) => m.id === biz?.favicon_media_id);
 
   const form = useForm<FormValues>({ 
@@ -56,21 +46,13 @@ export function SettingsView() {
   useEffect(() => {
     if (biz) {
       form.reset({
-        business_name: biz.business_name,
-        description: biz.description ?? "",
+        business_name: biz.business_name ?? "",
         phone: biz.phone ?? "",
         whatsapp: biz.whatsapp ?? "",
         email: biz.email ?? "",
         address: biz.address ?? "",
         city: biz.city ?? "",
-        country: biz.country ?? "",
         google_maps_url: biz.google_maps_url ?? "",
-        google_maps_reviews_url: biz.google_maps_reviews_url ?? "",
-        google_reviews_api_key: biz.google_reviews_api_key ?? "",
-        latitude: biz.latitude ?? "",
-        longitude: biz.longitude ?? "",
-        currency: biz.currency ?? "KES",
-        timezone: biz.timezone ?? "Africa/Nairobi",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,7 +71,7 @@ export function SettingsView() {
   });
 
   const saveBranding = useMutation({
-        mutationFn: async (updates: { logo_media_id?: string | null; logo_light_media_id?: string | null; favicon_media_id?: string | null }) => {
+        mutationFn: async (updates: { logo_media_id?: string | null; favicon_media_id?: string | null }) => {
       const response = await fetch("/api/admin/business-settings/branding", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -114,10 +96,6 @@ export function SettingsView() {
     await saveBranding.mutateAsync({ logo_media_id: media_id });
   };
 
-  const handleLogoLightMediaSave = async ({ media_id }: { media_id: string | null }) => {
-    await saveBranding.mutateAsync({ logo_light_media_id: media_id });
-  };
-
   const handleFaviconMediaSave = async ({ media_id }: { media_id: string | null }) => {
     await saveBranding.mutateAsync({ favicon_media_id: media_id });
   };
@@ -139,9 +117,6 @@ export function SettingsView() {
           <form onSubmit={form.handleSubmit((v) => saveBiz.mutate(v))} className="space-y-4">
             <Field label="Business Name" error={form.formState.errors.business_name?.message}>
               <Input {...form.register("business_name")} />
-            </Field>
-            <Field label="Description" error={form.formState.errors.description?.message}>
-              <Textarea {...form.register("description")} placeholder="Brief description of your business" rows={3} />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Phone" error={form.formState.errors.phone?.message}><Input {...form.register("phone")} /></Field>
@@ -189,40 +164,12 @@ export function SettingsView() {
                 )}
               </div>
 
-              {/* Light Logo (logo-white.webp renders on light/white header via .logo-light slot) */}
-              <div className="space-y-2">
+              {/* Light logo is unavailable until its missing live DB column is added through an approved migration. */}
+              <div className="space-y-2 rounded-lg border border-stone-700 p-4">
                 <label className="text-sm font-medium text-white">Light Logo</label>
-                {logoLightAsset ? (
-                  <div className="group relative aspect-video overflow-hidden rounded-lg border border-stone-700">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={logoLightAsset.public_url}
-                      alt={logoLightAsset.file_name || "Light Logo"}
-                      className="h-full w-full object-contain bg-stone-900"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setLogoLightPickerOpen(true)}
-                      >
-                        Change Light Logo
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setLogoLightPickerOpen(true)}
-                    className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-stone-700 bg-stone-900/50 text-stone-500 transition-colors hover:border-stone-600 hover:text-stone-400"
-                  >
-                    <ImageIcon className="h-8 h-8" />
-                    <span className="text-sm">Select Light Logo</span>
-                  </button>
-                )}
-                {logoLightAsset && (
-                  <p className="text-xs text-muted">{logoLightAsset.file_name || "Untitled"}</p>
-                )}
+                <p className="text-xs text-muted">
+                  Not available yet: the live business_settings table has no logo_light_media_id column. This picker is disabled to avoid a save that cannot persist.
+                </p>
               </div>
 
               {/* Favicon */}
@@ -265,42 +212,11 @@ export function SettingsView() {
             <p className="pt-2 text-xs font-semibold uppercase tracking-wider text-muted">Location &amp; Maps</p>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="City"><Input {...form.register("city")} placeholder="Optional" /></Field>
-              <Field label="Country"><Input {...form.register("country")} placeholder="Optional" /></Field>
             </div>
             <Field label="Google Maps URL" error={form.formState.errors.google_maps_url?.message}>
               <Input {...form.register("google_maps_url")} placeholder="https://maps.app.goo.gl/..." />
             </Field>
-            <Field label="Google Reviews URL" error={form.formState.errors.google_maps_reviews_url?.message}>
-              <Input {...form.register("google_maps_reviews_url")} placeholder="https://maps.app.goo.gl/..." />
-            </Field>
-            <Field label="Google Reviews API Key" error={form.formState.errors.google_reviews_api_key?.message}>
-              <Input {...form.register("google_reviews_api_key")} placeholder="Leave blank to clear" />
-            </Field>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Latitude" error={form.formState.errors.latitude?.message}>
-                <Input {...form.register("latitude")} type="number" step="any" placeholder="Optional (e.g. -1.2921)" />
-              </Field>
-              <Field label="Longitude" error={form.formState.errors.longitude?.message}>
-                <Input {...form.register("longitude")} type="number" step="any" placeholder="Optional (e.g. 36.8219)" />
-              </Field>
-            </div>
-
-            <p className="pt-2 text-xs font-semibold uppercase tracking-wider text-muted">System</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Currency">
-                <Select {...form.register("currency")}>
-                  <option value="KES">KES — Kenyan Shilling</option>
-                  <option value="USD">USD — US Dollar</option>
-                  <option value="EUR">EUR — Euro</option>
-                </Select>
-              </Field>
-              <Field label="Timezone">
-                <Select {...form.register("timezone")}>
-                  <option value="Africa/Nairobi">Africa/Nairobi (EAT)</option>
-                  <option value="UTC">UTC</option>
-                </Select>
-              </Field>
-            </div>
+            <p className="text-xs text-muted">Only fields supported by the current live business_settings table are editable here. Additional settings require a reviewed database migration.</p>
             {saveBiz.isError && <p className="text-sm text-rose-400">{(saveBiz.error as Error).message}</p>}
             <div className="flex justify-end">
               <Button type="submit" disabled={saveBiz.isPending}>{saveBiz.isPending ? "Saving…" : "Save Business Info"}</Button>
@@ -346,16 +262,6 @@ export function SettingsView() {
         currentImageUrl={logoAsset?.public_url ?? null}
                 onSave={handleLogoMediaSave}
         title="Edit Logo"
-        uploadCategory="branding"
-        allowRemove={false}
-      />
-      <ImageChangeDialog
-        open={logoLightPickerOpen}
-        onClose={() => setLogoLightPickerOpen(false)}
-        currentMediaId={biz?.logo_light_media_id}
-        currentImageUrl={logoLightAsset?.public_url ?? null}
-        onSave={handleLogoLightMediaSave}
-        title="Edit Light Logo"
         uploadCategory="branding"
         allowRemove={false}
       />
