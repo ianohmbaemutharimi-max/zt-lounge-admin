@@ -26,6 +26,21 @@ import {
 } from "@/lib/storage/paths";
 import { processImage, MAX_FILE_SIZE } from "@/lib/images/processor";
 
+// Map UI upload categories to the actual public.media_type enum.
+// The live enum has no membership value; until that schema/relationship is
+// introduced, membership uploads are classified as general rather than using
+// an invalid enum label.
+const MEDIA_TYPE_BY_CATEGORY: Record<ImageCategory, string> = {
+  hero: "hero",
+  gallery: "gallery",
+  menu: "menu",
+  services: "service",
+  testimonials: "testimonial",
+  branding: "branding",
+  promotions: "promotion",
+  memberships: "general",
+};
+
 /**
  * CRITICAL: Sharp requires Node.js runtime (not Edge).
  * Edge runtime does not support native modules like Sharp.
@@ -253,11 +268,19 @@ export async function POST(request: NextRequest) {
     // Application-level duplicate detection (no DB constraint created).
     const { data: dupes, error: dupesError } = await supabaseAdmin
       .from("media_assets")
-      .select("id, title, original_name")
+      .select("id, file_name, public_url")
       .eq("content_hash", contentHash)
       .limit(1);
 
-    if (!dupesError && dupes && dupes.length > 0) {
+    if (dupesError) {
+      console.error("[UPLOAD] Duplicate lookup failed:", dupesError.message, "code:", dupesError.code);
+      return NextResponse.json(
+        { success: false, error: "Could not verify whether this asset already exists. Please retry." },
+        { status: 500 }
+      );
+    }
+
+    if (dupes && dupes.length > 0) {
       const existing = dupes[0];
       console.log("[UPLOAD] Duplicate content hash detected:", existing.id);
       return NextResponse.json(
@@ -308,15 +331,12 @@ export async function POST(request: NextRequest) {
     const { data: fileUploadRecord, error: dbError } = await supabaseAdmin
       .from("media_assets")
       .insert({
-        bucket: uploadBucket,
-        path: storagePath,
         public_url: publicUrl,
-        original_name: originalName,
-        mime_type: isFaviconIco ? "image/x-icon" : declaredMimeType,
+        file_name: originalName,
+        mime_type: isFaviconIco ? "image/x-icon" : "image/webp",
         file_size: processed.size,
-        width: processed.width,
-        height: processed.height,
-        uploaded_by: profile.id,
+        created_by: profile.id,
+        media_type: MEDIA_TYPE_BY_CATEGORY[category],
         content_hash: contentHash,
       })
       .select()
@@ -342,11 +362,27 @@ export async function POST(request: NextRequest) {
         });
       }
 
+      // The database's unique content_hash constraint handles simultaneous
+      // uploads that race past the first duplicate lookup.
+      if (dbError.code === "23505" && dbError.message.includes("content_hash")) {
+        const { data: existing } = await supabaseAdmin
+          .from("media_assets")
+          .select("id, file_name, public_url")
+          .eq("content_hash", contentHash)
+          .maybeSingle();
+        return NextResponse.json(
+          {
+            success: false,
+            error: "An identical image already exists in the Media Library. Select the existing asset instead.",
+            existingMediaId: existing?.id,
+            code: "DUPLICATE_MEDIA",
+          },
+          { status: 409 }
+        );
+      }
+
       return NextResponse.json(
-        { 
-          success: false, 
-          error: "Failed to save upload record" 
-        },
+        { success: false, error: "Failed to save upload record" },
         { status: 500 }
       );
     }
