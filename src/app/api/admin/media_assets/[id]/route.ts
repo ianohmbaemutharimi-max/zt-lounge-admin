@@ -84,7 +84,7 @@ export const PATCH = withSuperAdminAuth(
 
 /**
  * DELETE /api/admin/media_assets/[id]
- * Delete media asset and its storage file
+ * Delete a media_assets database row after all canonical references are verified absent
  * Requires super_admin role
  * 
  * SAFETY CONTRACT:
@@ -104,7 +104,7 @@ export const DELETE = withSuperAdminAuth(
 
       const repo = new Repository(auth.supabase as any);
 
-      // Verify media asset exists and get storage path
+      // Verify media asset exists. Storage deletion is intentionally deferred.
       const existing = await repo.findById("media_assets", id);
       if (!existing) {
         return notFoundError("Media asset not found");
