@@ -105,7 +105,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-03 — Media Library UI edits fields that do not exist in the canonical table
 **Severity:** High  
-**Status:** OPEN
+**Status:** FIXED—UNVERIFIED
 
 **Verified gap:** `src/features/media` was observed expecting legacy fields and offering edits for `title`, `description`, and `category`, which were absent from live `media_assets`.
 
@@ -122,7 +122,12 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] UI displays human-readable usage labels and handles shared assets.
 - [ ] No UUIDs are required for routine admin tasks.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Updated `src/features/media/media-library-view.tsx` to consume live fields (`file_name`, `media_type`, `alt_text`, `public_url`, file size/timestamps, usage) and removed display dependencies on `bucket/path/original_name/width/height/title/description/category` (commit `68559bd0987b07fad32ad7e0986ab9add4b69b5c`).
+- Replaced `src/features/media/media-edit-modal.tsx` so only live `alt_text` and `media_type` are editable; labels use file name/type/alt text, and content-specific titles/descriptions are not written to the shared asset row (commit `949bcf8d822b6c173b1e6cad93b0b42764450a68`).
+- Updated delete/usage dialogs to show the real `file_name` (commits `0938c2bf2de3ecc1fd190d9bc5cff265af10f484`, `5235859088a8a5cb71d49f2f4c4e59023155630a`).
+- Restricted repository writable fields to `alt_text` and `media_type` (commit `2bdef470d73d2c61f1e33851f06bd99b22526f78`) and added API validation to reject unsupported fields/enum values instead of silently ignoring them (commit `9362c3253eb9a3fccb28e0e3bdb7dd005df8a3c2`).
+- **Verification pending:** no UI build, typecheck, API tests, or browser test has run. Status remains unverified until the form can save and reload a real test record in a safe environment.
 
 ### M-04 — Usage reporting and delete protection do not share reliable reference accounting
 **Severity:** Critical  
@@ -385,6 +390,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 | 2026-10-29 | M-01 | Aligned Drizzle `media_assets` definition and generic repository response allowlist to the current live schema. | Live read-only schema/constraint queries; commits `d3c9714104f8d19e028d107c6dac92c82e2dd21a`, `34a2319c413aa712dd69fa889d62a30915239f6c`. Runtime/typecheck still pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-13 | Confirmed public repo and isolated branch; began tracing public resolver and branding paths. Identified remaining legacy logo URL fallback code. | `MediaResolver.js`, `BusinessRepository.js`, `branding-init.js`, `shared-components.js` read from branch `fix/media-canonicalization`; no browser run yet. | IN PROGRESS |
 | 2026-10-29 | M-02 | Replaced stale Media API schema queries and changed usage scans to fail closed; fixed page-label lookup and pagination/filter order. | Live read-only schema query; commits `88840664988c8c4fbe3945e1f22596b4b7c6526d`, `183274dd9049ca87524fd9353bc3a0b27ddd5d64`. Typecheck/API tests pending. | FIXED—UNVERIFIED |
+| 2026-10-29 | M-03 | Reworked Media Library fields and edit form to match the live schema; API now rejects edits to unsupported metadata. | Commits `68559bd0987b07fad32ad7e0986ab9add4b69b5c`, `949bcf8d822b6c173b1e6cad93b0b42764450a68`, `0938c2bf2de3ecc1fd190d9bc5cff265af10f484`, `5235859088a8a5cb71d49f2f4c4e59023155630a`, `2bdef470d73d2c61f1e33851f06bd99b22526f78`, `9362c3253eb9a3fccb28e0e3bdb7dd005df8a3c2`. Runtime/typecheck tests pending. | FIXED—UNVERIFIED |
 
 ## Final completion criteria
 
