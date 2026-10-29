@@ -11,7 +11,10 @@ import {
   time,
   jsonb,
   serial,
+  varchar,
+  pgEnum,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // ─── Roles & Profiles ────────────────────────────────────────────────
 // Reconciled to match the actual Supabase database (UUID primary keys,
@@ -35,25 +38,38 @@ export const profiles = pgTable("profiles", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+// Live enum values verified against public.media_type in Supabase.
+export const mediaTypeEnum = pgEnum("media_type", [
+  "hero",
+  "gallery",
+  "branding",
+  "service",
+  "testimonial",
+  "promotion",
+  "menu",
+  "seo",
+  "feature",
+  "general",
+]);
+
 // ─── Media Library ───────────────────────────────────────────────────
+// Keep this definition aligned to the live table. Storage bucket/object-key
+// metadata is not stored as separate columns in this canonical registry.
 export const mediaAssets = pgTable("media_assets", {
   id: uuid("id").primaryKey().defaultRandom(),
-  bucket: text("bucket").notNull(),
-  path: text("path").notNull(),
+  contentHash: varchar("content_hash").notNull().unique(),
   publicUrl: text("public_url").notNull(),
-  originalName: text("original_name"),
-  mimeType: text("mime_type"),
   fileSize: integer("file_size"),
-  width: integer("width"),
-  height: integer("height"),
+  mimeType: varchar("mime_type"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+  createdBy: uuid("created_by").references(() => profiles.id, { onDelete: "set null" }),
+  updatedBy: uuid("updated_by").references(() => profiles.id, { onDelete: "set null" }),
+  fileName: text("file_name"),
   altText: text("alt_text"),
-  title: text("title"),
-  description: text("description"),
-  contentHash: text("content_hash"),
-  category: text("category"), // First-class category field (nullable for legacy assets)
-  uploadedBy: uuid("uploaded_by").references(() => profiles.id, { onDelete: "set null" }),
-  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  mediaType: mediaTypeEnum("media_type").default("general"),
+  displayId: integer("display_id").notNull().unique().default(sql`nextval('public.media_display_id_seq'::regclass)`),
+  pageId: text("page_id").references(() => websitePages.slug),
 });
 
 // ─── Business / System Settings ──────────────────────────────────────
