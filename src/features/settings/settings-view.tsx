@@ -161,7 +161,7 @@ export function SettingsView() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={logoAsset.public_url}
-                      alt={logoAsset.title || "Logo"}
+                      alt={logoAsset.file_name || "Logo"}
                       className="h-full w-full object-contain bg-stone-900"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
@@ -185,7 +185,7 @@ export function SettingsView() {
                   </button>
                 )}
                                 {logoAsset && (
-                  <p className="text-xs text-muted">{logoAsset.title || "Untitled"}</p>
+                  <p className="text-xs text-muted">{logoAsset.file_name || "Untitled"}</p>
                 )}
               </div>
 
@@ -197,7 +197,7 @@ export function SettingsView() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={logoLightAsset.public_url}
-                      alt={logoLightAsset.title || "Light Logo"}
+                      alt={logoLightAsset.file_name || "Light Logo"}
                       className="h-full w-full object-contain bg-stone-900"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
@@ -221,7 +221,7 @@ export function SettingsView() {
                   </button>
                 )}
                 {logoLightAsset && (
-                  <p className="text-xs text-muted">{logoLightAsset.title || "Untitled"}</p>
+                  <p className="text-xs text-muted">{logoLightAsset.file_name || "Untitled"}</p>
                 )}
               </div>
 
@@ -233,7 +233,7 @@ export function SettingsView() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={faviconAsset.public_url}
-                      alt={faviconAsset.title || "Favicon"}
+                      alt={faviconAsset.file_name || "Favicon"}
                       className="h-full w-full object-contain bg-stone-900"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
@@ -257,7 +257,7 @@ export function SettingsView() {
                   </button>
                 )}
                 {faviconAsset && (
-                  <p className="text-xs text-muted">{faviconAsset.title || "Untitled"}</p>
+                  <p className="text-xs text-muted">{faviconAsset.file_name || "Untitled"}</p>
                 )}
               </div>
             </div>
