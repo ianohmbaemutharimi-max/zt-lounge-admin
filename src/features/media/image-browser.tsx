@@ -10,6 +10,17 @@ import { Info } from "lucide-react";
 import { Input, Button, Spinner, Badge } from "@/components/ui";
 import { cn } from "@/lib/utils";
 
+const MEDIA_TYPE_BY_UPLOAD_CATEGORY: Record<ImageCategory, string> = {
+  hero: "hero",
+  gallery: "gallery",
+  menu: "menu",
+  services: "service",
+  testimonials: "testimonial",
+  branding: "branding",
+  promotions: "promotion",
+  memberships: "general",
+};
+
 export interface ImageBrowserProps {
   /** Currently selected media ID (for visual indication) */
   selectedMediaId?: string | null;
@@ -38,6 +49,7 @@ export function ImageBrowser({ selectedMediaId, onSelect, enabled = true, catego
   const [search, setSearch] = useState("");
   const [offset, setOffset] = useState(0);
   const limit = 24;
+  const mediaTypeFilter = category ? MEDIA_TYPE_BY_UPLOAD_CATEGORY[category] : undefined;
 
   // Reset offset when search changes
   const handleSearch = useCallback((value: string) => {
@@ -56,13 +68,13 @@ export function ImageBrowser({ selectedMediaId, onSelect, enabled = true, catego
 
   // Fetch media with search and pagination (canonical /api/media via getSelectableMedia)
   const query = useQuery({
-    queryKey: ["media-picker", search, offset, category],
+    queryKey: ["media-picker", search, offset, mediaTypeFilter],
     queryFn: async () => {
       const response = await getSelectableMedia({
         search: search || undefined,
         limit,
         offset,
-        ...(category && { category }),
+        ...(mediaTypeFilter && { category: mediaTypeFilter }),
       });
       return response;
     },
