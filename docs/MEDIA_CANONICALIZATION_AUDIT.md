@@ -413,7 +413,8 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 **Fix evidence / commit / tests:**
 - Media Library cards/edit dialog now use file name and type; the picker types and search labels match canonical fields and unsupported bucket filtering is removed (M-03 commits).
-- Settings image labels now display `file_name` rather than the nonexistent `title` field (commit `ee262246d5da1ce997e37c90f855b402f8d3b6fb`).
+- Settings image labels now display `file_name` rather than the nonexistent `title` field (commit `ee262246d5da1ce997e37c90f855b402f8d3b6fb`). The settings form and repository allowlists were also narrowed to fields present in live `business_settings`; the light-logo picker is disabled with an explanation until its missing column is added by an approved migration (commits `1537af6076e893d9de560351ae1d57afe7ec0974`, `71e222b149eaf47281ed2af5bfce63c4ecbe4581`).
+- Image picker category values are now mapped from upload categories (e.g. `services`) to the live enum labels (e.g. `service`) (commit `60f7739265863666af6c39f12af17dd29fd36a5d`).
 - **Verification pending:** usability/browser checks and all API save/load flows remain untested.
 
 ### M-15 — Canonical media references point to semantically incorrect assets
