@@ -131,7 +131,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 
 ### M-04 — Usage reporting and delete protection do not share reliable reference accounting
 **Severity:** Critical  
-**Status:** OPEN
+**Status:** FIXED—UNVERIFIED
 
 **Verified gap:** The prior `media_assets_view` count omitted `business_settings.logo_media_id` and `favicon_media_id`. The branch has a reference registry in `src/lib/media/reference-tables.ts`; verify it is actually shared by every usage and deletion path.
 
@@ -150,7 +150,11 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] Query failure blocks deletion and does not report zero references.
 - [ ] Referenced assets cannot be deleted; unreferenced test assets follow the intended deletion policy.
 
-**Fix evidence / commit / tests:** _Add after implementation._
+**Fix evidence / commit / tests:**
+- Read-only live FK inventory on 2026-10-29 confirmed nine FK columns referencing `media_assets.id`: `branding_assets.media_id`, `gallery.media_id`, `hero_slides.media_id`, `menu_items.media_id`, `page_features.media_id`, `page_seo.og_image_media_id`, `promotions.media_id`, `services.media_id`, and `testimonials.media_id`.
+- A separate live column inventory confirmed `business_settings.logo_media_id` and `business_settings.favicon_media_id` exist but are not FK-constrained; both are included in `MEDIA_REFERENCE_TABLES`. `logo_light_media_id` is **not present in the current live `business_settings` table**, contrary to earlier branch assumptions; this needs explicit treatment in M-13/M-01 rather than adding a phantom reference.
+- The API usage scanner now uses the shared registry and fails the request if any required usage query fails (M-02 commits). The delete guard in `src/app/api/admin/media_assets/[id]/route.ts` already uses the same registry and throws on query errors or null counts (existing branch change; regression verification pending).
+- **Verification pending:** no integration tests have proven every reference path, logo/favicon counts, or deletion failure behavior. Status remains unverified.
 
 ### M-05 — `content_hash` has an unverified/incorrect contract
 **Severity:** Critical  
@@ -391,6 +395,7 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 | 2026-10-29 | M-13 | Confirmed public repo and isolated branch; began tracing public resolver and branding paths. Identified remaining legacy logo URL fallback code. | `MediaResolver.js`, `BusinessRepository.js`, `branding-init.js`, `shared-components.js` read from branch `fix/media-canonicalization`; no browser run yet. | IN PROGRESS |
 | 2026-10-29 | M-02 | Replaced stale Media API schema queries and changed usage scans to fail closed; fixed page-label lookup and pagination/filter order. | Live read-only schema query; commits `88840664988c8c4fbe3945e1f22596b4b7c6526d`, `183274dd9049ca87524fd9353bc3a0b27ddd5d64`. Typecheck/API tests pending. | FIXED—UNVERIFIED |
 | 2026-10-29 | M-03 | Reworked Media Library fields and edit form to match the live schema; API now rejects edits to unsupported metadata. | Commits `68559bd0987b07fad32ad7e0986ab9add4b69b5c`, `949bcf8d822b6c173b1e6cad93b0b42764450a68`, `0938c2bf2de3ecc1fd190d9bc5cff265af10f484`, `5235859088a8a5cb71d49f2f4c4e59023155630a`, `2bdef470d73d2c61f1e33851f06bd99b22526f78`, `9362c3253eb9a3fccb28e0e3bdb7dd005df8a3c2`. Runtime/typecheck tests pending. | FIXED—UNVERIFIED |
+| 2026-10-29 | M-04 | Reconciled the reference registry against live FK and column inventories; usage API and delete guard share the registry and fail closed on query errors. | Live read-only SQL inventory; `src/lib/media/reference-tables.ts`, M-02 commits, and delete guard reviewed. Regression tests pending. | FIXED—UNVERIFIED |
 
 ## Final completion criteria
 
