@@ -23,7 +23,7 @@ export interface ImageChangeDialogProps {
   canonicalOnly?: boolean;
   /** Whether the media picker browser is actively enabled (controls query fetch) */
   enabled?: boolean;
-  /** Optional bucket filter passed to the media picker */
+  /** @deprecated Bucket metadata is not present in the canonical media_assets schema. */
   bucket?: string;
 }
 
@@ -40,7 +40,6 @@ export function ImageChangeDialog({
   allowRemove = true,
   canonicalOnly = false,
   enabled,
-  bucket,
 }: ImageChangeDialogProps) {
   const qc = useQueryClient();
   const [selectedImage, setSelectedImage] = useState<SelectableMediaAsset | null>(null);
@@ -217,8 +216,7 @@ export function ImageChangeDialog({
             selectedMediaId={selectedImage?.id}
             onSelect={handleMediaSelect}
             enabled={enabled}
-            bucket={bucket}
-            category={uploadCategory}
+              category={uploadCategory}
           />
         </div>
       ) : (
