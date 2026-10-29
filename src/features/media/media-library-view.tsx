@@ -75,6 +75,7 @@ function formatDate(dateString: string): string {
 export function MediaLibraryView() {
   const [filter, setFilter] = useState<string>("all"); // "all", "used", "unused"
   const [categoryFilter, setCategoryFilter] = useState<string>(""); // live media_type enum filter
+  const [pageOffset, setPageOffset] = useState(0);
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [selectedAsset, setSelectedAsset] = useState<MediaAsset | null>(null);
@@ -94,18 +95,20 @@ export function MediaLibraryView() {
   // Debounce search
   const handleSearchChange = (value: string) => {
     setSearch(value);
+    setPageOffset(0);
     const timer = setTimeout(() => setDebouncedSearch(value), 300);
     return () => clearTimeout(timer);
   };
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["media", { filter, category: categoryFilter, search: debouncedSearch }],
+    queryKey: ["media", { filter, category: categoryFilter, search: debouncedSearch, offset: pageOffset }],
     queryFn: () =>
       fetchMedia({
         filter: filter || undefined,
         category: categoryFilter || undefined,
         search: debouncedSearch || undefined,
         limit: 50,
+        offset: pageOffset,
       }),
   });
 
@@ -383,21 +386,21 @@ export function MediaLibraryView() {
             <div className="flex gap-2">
               <Button
                 variant={filter === "all" ? "gold" : "ghost"}
-                onClick={() => setFilter("all")}
+                onClick={() => { setFilter("all"); setPageOffset(0); }}
                 className="text-sm"
               >
                 All Images
               </Button>
               <Button
                 variant={filter === "used" ? "gold" : "ghost"}
-                onClick={() => setFilter("used")}
+                onClick={() => { setFilter("used"); setPageOffset(0); }}
                 className="text-sm"
               >
                 Used
               </Button>
               <Button
                 variant={filter === "unused" ? "gold" : "ghost"}
-                onClick={() => setFilter("unused")}
+                onClick={() => { setFilter("unused"); setPageOffset(0); }}
                 className="text-sm"
               >
                 Unused
@@ -408,7 +411,7 @@ export function MediaLibraryView() {
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={categoryFilter === "" ? "gold" : "ghost"}
-                onClick={() => setCategoryFilter("")}
+                onClick={() => { setCategoryFilter(""); setPageOffset(0); }}
                 className="text-sm"
               >
                 All Types
@@ -417,7 +420,7 @@ export function MediaLibraryView() {
                 <Button
                   key={cat}
                   variant={categoryFilter === cat ? "gold" : "ghost"}
-                  onClick={() => setCategoryFilter(cat)}
+                  onClick={() => { setCategoryFilter(cat); setPageOffset(0); }}
                   className="text-sm capitalize"
                 >
                   {cat === "uncategorized" ? "Unspecified" : cat}
@@ -432,6 +435,7 @@ export function MediaLibraryView() {
                 onClick={() => {
                   setFilter("all");
                   setCategoryFilter("");
+                  setPageOffset(0);
                   setSearch("");
                   setDebouncedSearch("");
                 }}
@@ -469,6 +473,30 @@ export function MediaLibraryView() {
               onViewUsage={handleUsageClick}
             />
           ))}
+        </div>
+      )}
+
+      {total > 0 && (
+        <div className="mt-6 flex items-center justify-between gap-3 text-sm text-gray-400">
+          <span>
+            Showing {Math.min(pageOffset + 1, total)}–{Math.min(pageOffset + assets.length, total)} of {total}
+          </span>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              disabled={pageOffset === 0 || isLoading}
+              onClick={() => setPageOffset(Math.max(0, pageOffset - 50))}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="ghost"
+              disabled={!data?.pagination.hasMore || isLoading}
+              onClick={() => setPageOffset(pageOffset + 50)}
+            >
+              Next
+            </Button>
+          </div>
         </div>
       )}
 
