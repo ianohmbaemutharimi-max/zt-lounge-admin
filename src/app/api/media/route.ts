@@ -178,15 +178,15 @@ export const GET = withAdminAuth(async (req: NextRequest, _ctx, auth) => {
         getUsageSummary(auth.supabase),
       ]);
       if (assetsError) throw new Error("Could not count media assets");
-      const { count: mediaTypesCount, error: typesError } = await auth.supabase
+      const { data: mediaTypes, error: typesError } = await auth.supabase
         .from("media_assets")
-        .select("media_type", { count: "exact", head: true });
+        .select("media_type");
       if (typesError) throw new Error("Could not summarize media types");
 
       return NextResponse.json({
         totalAssets: totalAssets ?? 0,
         totalUsage,
-        totalMediaAssets: mediaTypesCount ?? 0,
+        uniqueMediaTypes: new Set((mediaTypes ?? []).map((row: { media_type: string | null }) => row.media_type).filter(Boolean)).size,
       });
     }
 
