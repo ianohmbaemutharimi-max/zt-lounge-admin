@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
+import { resolveImageUrls } from "@/lib/media/resolver";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -50,8 +51,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ data: [] });
     }
 
-    // Map to camelCase public contract
-    const promotions = (data || []).map((row: any) => ({
+    // Resolve media_id through the canonical media_assets.public_url contract.
+    const resolvedRows = await resolveImageUrls(supabase, data ?? []);
+
+    // Map to the existing camelCase public contract without constructing Storage URLs.
+    const promotions = resolvedRows.map((row: any) => ({
       id: row.id,
       title: row.title,
       description: row.description || "",
@@ -59,9 +63,7 @@ export async function GET(request: NextRequest) {
       startDate: row.start_date,
       endDate: row.end_date,
       mediaId: row.media_id,
-      imageUrl: row.media_id
-        ? `https://${process.env.NEXT_PUBLIC_SUPABASE_PROJECT_REF || 'jczwilrysvnhcjzjztbi'}.supabase.co/storage/v1/object/public/media/${row.media_id}`
-        : "",
+      imageUrl: row.resolved_image_url ?? "",
       displayOrder: row.display_order || 0,
     }));
 
