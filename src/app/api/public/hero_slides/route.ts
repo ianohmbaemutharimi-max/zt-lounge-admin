@@ -41,7 +41,10 @@ export async function GET(request: NextRequest) {
       { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
-    let query = supabase.from("hero_slides").select("*").eq("is_active", true);
+    let query = supabase
+      .from("hero_slides")
+      .select("id, page_id, media_id, alt_text, href, display_order, is_active, is_featured, created_at")
+      .eq("is_active", true);
 
     if (pageId) {
       query = query.eq("page_id", pageId);
