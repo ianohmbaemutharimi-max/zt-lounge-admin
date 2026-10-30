@@ -29,7 +29,6 @@ export const profiles = pgTable("profiles", {
   fullName: text("full_name").notNull(),
   phone: text("phone"),
   roleId: uuid("role_id").references(() => roles.id, { onDelete: "set null" }).notNull(),
-  avatarUrl: text("avatar_url"),
   isActive: boolean("is_active").default(true).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
@@ -131,7 +130,6 @@ export const heroSlides = pgTable("hero_slides", {
   title: text("title").default(""),
   highlight: text("highlight").default(""),
   subtitle: text("subtitle").default(""),
-  imageUrl: text("image_url").default(""),
   mediaId: uuid("media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
   altText: text("alt_text").default(""),
   ctaText: text("cta_text").default(""),
@@ -521,9 +519,7 @@ export const promotions = pgTable("promotions", {
   mediaId: uuid("media_id").references(() => mediaAssets.id, { onDelete: "set null" }),
   title: text("title").notNull(),
   description: text("description"),
-  // DEPRECATED legacy field — kept for backward compatibility only.
-  // New records must use media_id; banner_image is never the source of truth.
-  bannerImage: text("banner_image"),
+  // Canonical image reference is media_id → media_assets.public_url.
   discountPercent: numeric("discount_percent").default("0"),
   startDate: date("start_date"),
   endDate: date("end_date"),
