@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
+import { resolveImageUrls } from "@/lib/media/resolver";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -58,8 +59,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Resolve every slide image from media_assets.public_url; never use image_url fallbacks.
+    const resolvedRows = await resolveImageUrls(supabase, data ?? []);
+
     return NextResponse.json({
-      data: (data ?? []).map(mapHeroSlideRow),
+      data: resolvedRows.map(mapHeroSlideRow),
       pagination: {
         limit,
         offset,
@@ -81,6 +85,7 @@ function mapHeroSlideRow(row: Record<string, unknown>) {
     id: row.id,
     pageId: row.page_id ?? null,
     mediaId: row.media_id ?? null,
+    resolvedImageUrl: row.resolved_image_url ?? null,
     altText: row.alt_text ?? "",
     href: row.href ?? "",
     displayOrder: Number(row.display_order ?? 0),
