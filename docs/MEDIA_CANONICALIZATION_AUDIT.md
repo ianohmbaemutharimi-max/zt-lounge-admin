@@ -513,3 +513,57 @@ Statuses: **OPEN** = not fixed; **IN PROGRESS** = currently being worked; **FIXE
 - [ ] Hash, duplicate URL, and Storage-object reconciliation is resolved or explicitly documented as an approved exception.
 - [ ] No destructive data/schema/storage operation occurred without approval.
 - [ ] Every issue above is marked **VERIFIED** or has a clearly documented **BLOCKED** reason; no issue is marked complete without evidence.
+
+
+---
+
+## Implementation addendum — 2026-11-01: role-specific media assets
+
+**Status: IN PROGRESS — code and migration prepared; production migration and object-copy execution not yet run.**
+
+### Fresh live-schema corrections
+
+A fresh read-only audit of the canonical Supabase project on 2026-11-01 supersedes conflicting schema notes above:
+
+- `media_assets.page_id` is **UUID**, with FK `media_assets_page_id_fkey` to `website_pages(id) ON DELETE CASCADE` (not text → slug).
+- `business_settings.logo_light_media_id` exists and has FK `ON DELETE RESTRICT`; the same table has `logo_media_id` and `favicon_media_id`, also `ON DELETE RESTRICT`.
+- `media_assets.content_hash` currently has the unique constraint `media_assets_content_hash_key`. It is the reason identical file bytes cannot yet be stored as separate role-specific records.
+- The live `media_type` enum includes `hero, gallery, branding, service, testimonial, promotion, menu, seo, feature, general`.
+- The six previously identified Service/Gallery/Hero duplicate groups still resolve to shared physical objects under `public-assets/images/...`. Their media IDs are separate, but their Storage object paths are not.
+
+### Intended invariant
+
+Each media record represents one independently managed content-role asset:
+
+- Each upload creates a new `media_assets.id`.
+- Each upload writes a new UUID-based Storage path under `assets/images/{role}/...`.
+- Identical bytes are permitted across different roles and records; `content_hash` is an integrity fingerprint, not a global identity or deduplication key.
+- Replacing an asset preserves its ID and role, so all references to that one ID update together.
+- Deleting an asset is blocked while any canonical content reference exists. After the row is deleted, its Storage object is removed only if no other media registry row still points at the same public URL. Unknown/external URLs are not eligible for automatic deletion.
+- The dark logo, light logo, and favicon are all included in usage reporting and delete protection.
+
+### Code changes prepared on `fix/media-role-specific-assets`
+
+- Drizzle schema corrected to live `media_assets.page_id UUID → website_pages.id` and all three live business-settings media FKs.
+- Removed Drizzle's global uniqueness declaration for `content_hash`.
+- Added `logo_light_media_id` to repository allowlists, media usage scans, delete reference checks, branding API validation, and Settings UI picker.
+- Upload API no longer rejects identical content hashes and continues to generate unique role-based UUID paths.
+- Media Library now requires an explicit content role when uploading; replacing an existing asset derives and preserves its role.
+- Replace API now reads/writes only live `media_assets` columns and parses Storage identity from `public_url`; it does not assume nonexistent `bucket` or `path` columns.
+- Delete API checks all canonical references, then removes a Storage object only when no remaining media registry row points at the same URL.
+- Added migration `20261101120000_allow_role_specific_media_copies.sql` to drop the global unique constraint and create a non-unique lookup index. It has **not** been applied to production.
+- Added `scripts/migrate-shared-media-by-role.mjs`. It defaults to dry-run; `--apply` additionally requires `ALLOW_PRODUCTION_MEDIA_MIGRATION=true`. It copies every record in duplicate Storage-object groups into its own role folder, updates only that record's `public_url`, verifies old URLs are no longer referenced, then removes the old shared object. It preserves all media IDs and content references.
+
+### Remaining verification / execution
+
+- [ ] Review the generated migration and code diff.
+- [ ] Run TypeScript, ESLint, and targeted Media Library tests.
+- [ ] Deploy the application code before enabling duplicate-content uploads.
+- [ ] Apply the database migration after the compatible code is deployed.
+- [ ] Run the copy script once in dry-run mode; inspect all proposed asset IDs, roles, and destination paths.
+- [ ] Run with `--apply` only after the dry-run matches the six known duplicate groups and any additional groups are understood.
+- [ ] Re-audit that no two media rows share a Storage object path, all media IDs remain unchanged, all original content references remain intact, and all URLs resolve.
+- [ ] Verify deleting one unreferenced Service asset leaves Gallery/Hero assets and their files intact.
+- [ ] Confirm production runtime and browser tests. No TypeScript/lint/build/Playwright tests have yet been run in this connector session.
+
+**No production database rows, constraints, or Storage objects were changed by this implementation pass.**
