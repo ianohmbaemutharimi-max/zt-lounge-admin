@@ -57,7 +57,7 @@ export const mediaTypeEnum = pgEnum("media_type", [
 // metadata is not stored as separate columns in this canonical registry.
 export const mediaAssets = pgTable("media_assets", {
   id: uuid("id").primaryKey().defaultRandom(),
-  contentHash: varchar("content_hash").notNull().unique(),
+  contentHash: varchar("content_hash").notNull(),
   publicUrl: text("public_url").notNull(),
   fileSize: integer("file_size"),
   mimeType: varchar("mime_type"),
@@ -69,7 +69,7 @@ export const mediaAssets = pgTable("media_assets", {
   altText: text("alt_text"),
   mediaType: mediaTypeEnum("media_type").default("general"),
   displayId: integer("display_id").notNull().unique().default(sql`nextval('public.media_display_id_seq'::regclass)`),
-  pageId: text("page_id").references(() => websitePages.slug),
+  pageId: uuid("page_id").references(() => websitePages.id, { onDelete: "cascade" }),
 });
 
 // ─── Business / System Settings ──────────────────────────────────────
@@ -85,10 +85,10 @@ export const businessSettings = pgTable("business_settings", {
   googleMapsUrl: text("google_maps_url"),
   city: text("city"),
   openingHours: jsonb("opening_hours"),
-  // These references exist in the live table but currently have no DB-level FK.
-  // Application guards and the shared media reference registry protect them.
-  logoMediaId: uuid("logo_media_id"),
-  faviconMediaId: uuid("favicon_media_id"),
+  // Live media references use RESTRICT so an assigned branding asset cannot be deleted.
+  logoMediaId: uuid("logo_media_id").references(() => mediaAssets.id, { onDelete: "restrict" }),
+  faviconMediaId: uuid("favicon_media_id").references(() => mediaAssets.id, { onDelete: "restrict" }),
+  logoLightMediaId: uuid("logo_light_media_id").references(() => mediaAssets.id, { onDelete: "restrict" }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
   createdBy: uuid("created_by").references(() => profiles.id, { onDelete: "set null" }),
