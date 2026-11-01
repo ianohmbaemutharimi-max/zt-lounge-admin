@@ -244,10 +244,8 @@ export async function POST(request: NextRequest) {
     console.log("[UPLOAD] Generating storage path");
     
     // 8. Content hash (SHA-256 of final normalized WebP/ICO bytes).
-    // Existing live schema enforces UNIQUE(media_assets.content_hash).
-    // The application preflight gives a friendly 409; the database constraint
-    // remains the race-safe guard for simultaneous uploads. Legacy stored hash
-    // values are tracked separately and must not be fabricated or rewritten.
+    // Hashes are metadata, not global asset identity: identical bytes may be
+    // uploaded into separate role-specific paths and receive distinct media IDs.
     const contentHash = processed.contentHash;
 
     // Generate storage path (UUID-based, no client control)
@@ -258,42 +256,11 @@ export async function POST(request: NextRequest) {
     const uploadBucket = isFaviconIco ? FAVICONS_BUCKET : PUBLIC_ASSETS_BUCKET;
     console.log("[UPLOAD] Storage path:", storagePath);
 
-    console.log("[UPLOAD] Creating admin client");
-    
     const supabaseAdmin = await getSupabaseAdmin();
-    console.log("[UPLOAD] Admin client created, checking for duplicate content hash");
-    
-    // Application-level preflight against the live UNIQUE constraint on
-    // media_assets.content_hash. The database constraint remains the race-safe
-    // final guard; do not remove it without an approved schema decision.
-    const { data: dupes, error: dupesError } = await supabaseAdmin
-      .from("media_assets")
-      .select("id, file_name, public_url")
-      .eq("content_hash", contentHash)
-      .limit(1);
 
-    if (dupesError) {
-      console.error("[UPLOAD] Duplicate lookup failed:", dupesError.message, "code:", dupesError.code);
-      return NextResponse.json(
-        { success: false, error: "Could not verify whether this asset already exists. Please retry." },
-        { status: 500 }
-      );
-    }
-
-    if (dupes && dupes.length > 0) {
-      const existing = dupes[0];
-      console.log("[UPLOAD] Duplicate content hash detected:", existing.id);
-      return NextResponse.json(
-        {
-          success: false,
-          error: "An identical image already exists in the Media Library. " +
-            "Select it from the library (or remove the existing asset) instead of uploading a duplicate.",
-          existingMediaId: existing.id,
-          code: "DUPLICATE_MEDIA",
-        },
-        { status: 409 }
-      );
-    }
+    // Every upload creates a new role-specific object and media_assets row.
+    // Do not deduplicate by content hash across content roles.
+    console.log("[UPLOAD] Uploading independent role-specific media object");
 
     console.log("[UPLOAD] No duplicate detected, starting storage upload");
     const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
