@@ -22,7 +22,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * PATCH /api/admin/media_assets/[id]
- * Update supported media asset metadata (alt_text, media_type)
+ * Update supported media asset metadata (alt_text)
  * Requires super_admin role
  */
 export const PATCH = withSuperAdminAuth(
@@ -39,23 +39,14 @@ export const PATCH = withSuperAdminAuth(
         return validationError("A media metadata object is required");
       }
 
-      const allowedFields = new Set(["alt_text", "media_type"]);
+      const allowedFields = new Set(["alt_text"]);
       const unexpectedFields = Object.keys(body).filter((field) => !allowedFields.has(field));
       if (unexpectedFields.length > 0) {
-        return validationError("Only alt_text and media_type can be edited on a media asset");
+        return validationError("Only alt_text can be edited on a media asset; the content role is immutable");
       }
 
       if (body.alt_text !== undefined && body.alt_text !== null && typeof body.alt_text !== "string") {
         return validationError("alt_text must be a string or null");
-      }
-
-      const allowedMediaTypes = new Set([
-        "hero", "gallery", "branding", "service", "testimonial",
-        "promotion", "menu", "seo", "feature", "general",
-      ]);
-      if (body.media_type !== undefined && body.media_type !== null &&
-          (typeof body.media_type !== "string" || !allowedMediaTypes.has(body.media_type))) {
-        return validationError("media_type is not a supported media type");
       }
 
       if (Object.keys(body).length === 0) {
