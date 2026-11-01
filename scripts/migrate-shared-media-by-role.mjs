@@ -80,7 +80,11 @@ const plan = [];
 
 for (const [objectKey, rows] of duplicateGroups) {
   for (const row of rows) {
-    const folder = ROLE_FOLDER[row.media_type];
+    let folder = ROLE_FOLDER[row.media_type];
+    if (row.media_type === "general") {
+      const legacyRoleFolder = row.location.path.split("/").find((part) => part === "memberships" || part === "general");
+      if (legacyRoleFolder) folder = legacyRoleFolder;
+    }
     if (!folder) {
       throw new Error("Unsupported media_type " + row.media_type + " for asset " + row.id + "; no copy has been made for this group.");
     }
