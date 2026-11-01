@@ -77,14 +77,14 @@ export const PATCH = withSuperAdminAuth(
 
 /**
  * DELETE /api/admin/media_assets/[id]
- * Delete a media_assets database row after all canonical references are verified absent
- * Requires super_admin role
- * 
+ * Delete a media_assets row after all canonical references are verified absent.
+ * The physical object is removed only when no other media row points to the
+ * same bucket/object key. Requires super_admin role.
+ *
  * SAFETY CONTRACT:
- * - Checks all CMS references before deletion
- * - Rejects deletion if asset is in use
- * - Returns 409 Conflict with usage details if referenced
- * - Only deletes database record (storage cleanup deferred)
+ * - Fails closed if any canonical reference query fails.
+ * - Rejects deletion if the asset is in use.
+ * - Retains shared or unrecognized Storage objects.
  */
 export const DELETE = withSuperAdminAuth(
   async (req: NextRequest, ctx: { params: Promise<{ id: string }> }, auth) => {
