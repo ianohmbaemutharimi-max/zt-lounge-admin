@@ -41,6 +41,7 @@ const MEDIA_TYPE_BY_CATEGORY: Record<ImageCategory, string> = {
   memberships: "general",
   seo: "seo",
   feature: "feature",
+  general: "general",
 };
 
 /**
