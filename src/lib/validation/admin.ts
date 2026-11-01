@@ -98,7 +98,7 @@ export const ORDERABLE_COLUMNS: Record<string, string[]> = {
 // SEARCHABLE FIELDS
 // ============================================================
 export const SEARCHABLE_FIELDS: Record<string, string[]> = {
-  bookings: ["booking_number", "customer_id", "staff_id"],
+  bookings: ["booking_number", "customer_id", "service_category_id"],
   customers: ["full_name", "email", "phone"],
   services: ["name", "description"],
   "service-categories": ["name", "description"],
@@ -121,7 +121,7 @@ export const SEARCHABLE_FIELDS: Record<string, string[]> = {
 // FILTERABLE FIELDS
 // ============================================================
 export const FILTERABLE_FIELDS: Record<string, string[]> = {
-  bookings: ["status", "booking_date", "customer_id", "service_id", "staff_id", "created_by"],
+  bookings: ["status", "booking_date", "customer_id", "service_category_id", "profile_id", "created_by"],
   customers: ["is_active", "gender"],
     services: ["category_id", "is_active", "featured", "page_id", "card_type", "type"],
   service_charges: ["service_id", "status"],

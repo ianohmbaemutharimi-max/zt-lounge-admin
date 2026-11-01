@@ -32,7 +32,7 @@ import {
   Toaster,
 } from "@/components/ui";
 import { DataTable, type Column } from "@/components/data-table";
-import { cn, formatDate, formatKES, formatTime, timeAgo } from "@/lib/utils";
+import { cn, formatDate, formatTime, timeAgo } from "@/lib/utils";
 import { queryKeys } from "@/lib/query-keys";
 
 type BookingForm = BookingValidation;
@@ -74,8 +74,14 @@ export function BookingsView() {
     refetchOnWindowFocus: "always", // Override global default to ensure real-time updates
   });
   const customers = useQuery({ queryKey: queryKeys.customers.all(), queryFn: () => api.list("customers") });
-  const services = useQuery({ queryKey: queryKeys.services.all(), queryFn: () => api.list("services") });
-  const staff = useQuery({ queryKey: queryKeys.staff.all(), queryFn: () => api.list("staff") });
+  const categories = useQuery({
+    queryKey: ["service-categories"],
+    queryFn: () => api.list("service-categories", {
+      filter: { is_active: true },
+      orderBy: "display_order",
+      ascending: "true",
+    }),
+  });
   const notes = useQuery({
     queryKey: queryKeys["booking-notes"].all(viewing?.id),
     queryFn: () => api.list("booking-notes"),
@@ -139,8 +145,7 @@ export function BookingsView() {
         booking_number: `ZT-${1000 + Date.now() % 100000}`,
         status: values.status || "pending",
         customer_id: normalizeOptionalUuid(values.customerId ?? editing?.customerId),
-        service_id: normalizeOptionalUuid(values.serviceId),
-        staff_id: normalizeOptionalUuid(values.staffId),
+        service_category_id: values.serviceCategoryId,
         booking_date: values.bookingDate || today,
         start_time: values.startTime || "09:00",
         end_time: values.endTime || "10:00",
@@ -165,7 +170,7 @@ export function BookingsView() {
 
   const form = useForm<BookingForm>({
     resolver: zodResolver(bookingValidationSchema) as any,
-    defaultValues: { status: "pending", guests: 2, customerId: "", serviceId: "", staffId: "", bookingDate: "", startTime: "", endTime: "", guest_name: "", guest_email: "", guest_phone: "" } as any,
+    defaultValues: { status: "pending", guests: 2, customerId: "", serviceCategoryId: "", bookingDate: "", startTime: "", endTime: "", guest_name: "", guest_email: "", guest_phone: "" } as any,
   });
 
   function openForm(booking?: any) {
@@ -174,8 +179,7 @@ export function BookingsView() {
       booking
         ? {
             customerId: booking.customerId ?? "",
-            serviceId: booking.serviceId,
-            staffId: booking.staffId,
+            serviceCategoryId: booking.serviceCategoryId ?? "",
             bookingDate: booking.bookingDate,
             startTime: booking.startTime?.slice(0, 5) || "",
             endTime: booking.endTime?.slice(0, 5) || "",
@@ -187,8 +191,7 @@ export function BookingsView() {
           }
         : { 
             customerId: "", 
-            serviceId: "", 
-            staffId: "", 
+            serviceCategoryId: "", 
             bookingDate: "", 
             startTime: "", 
             endTime: "", 
@@ -212,10 +215,9 @@ export function BookingsView() {
         ...b,
         // Customer identity comes from server (enriched with COALESCE logic)
         // customerName, customerPhone, customerEmail are already populated
-        serviceName: byId(services.data, b.serviceId)?.name ?? "—",
-        staffName: byId(staff.data, b.staffId)?.fullName ?? "—",
+        categoryName: byId(categories.data, b.serviceCategoryId)?.name ?? "Unassigned",
       })),
-    [bookings.data, services.data, staff.data]
+    [bookings.data, categories.data]
   );
 
   const columns: Column<any>[] = [
@@ -227,8 +229,7 @@ export function BookingsView() {
       </div>
     )},
     { header: "Phone", cell: (b) => <span className="text-stone-300">{safePhone(b.customerPhone)}</span> },
-    { header: "Service", cell: (b) => <span className="text-stone-300">{b.serviceName}</span> },
-    { header: "Staff", cell: (b) => <span className="text-stone-300">{b.staffName}</span> },
+    { header: "Service category", cell: (b) => <span className="text-stone-300">{b.categoryName}</span> },
     { header: "Date", cell: (b) => formatDate(b.bookingDate) },
     { header: "Time", cell: (b) => `${formatTime(b.startTime)} - ${formatTime(b.endTime)}` },
     { header: "Status", cell: (b) => <Badge status={b.status}>{b.status}</Badge> },
@@ -305,7 +306,7 @@ export function BookingsView() {
         <DataTable
           data={rows}
           columns={columns}
-          searchKeys={["bookingNumber", "customerName", "serviceName", "status"]}
+          searchKeys={["bookingNumber", "customerName", "categoryName", "status"]}
           searchPlaceholder="Search bookings…"
           emptyTitle="No bookings yet"
           emptyDescription="Create your first booking to see it here."
@@ -355,8 +356,7 @@ export function BookingsView() {
           <div className="space-y-4 text-sm">
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Customer</p><p className="mt-1 font-medium">{viewing.customerName}</p></div>
-              <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Service</p><p className="mt-1 font-medium">{viewing.serviceName}</p></div>
-              <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Staff</p><p className="mt-1 font-medium">{viewing.staffName}</p></div>
+              <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Service category</p><p className="mt-1 font-medium">{viewing.categoryName ?? "Unassigned"}</p></div>
               <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Date & Time</p><p className="mt-1 font-medium">{formatDate(viewing.bookingDate)}</p><p className="mt-1 text-sm text-muted">{formatTime(viewing.startTime)} - {formatTime(viewing.endTime)}</p></div>
               <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Guests</p><p className="mt-1 font-medium">{viewing.guests} {viewing.guests === 1 ? 'guest' : 'guests'}</p></div>
               <div className="rounded-xl bg-panel-2 p-3"><p className="text-xs text-muted">Phone</p><p className="mt-1 font-medium">{safePhone(viewing.customerPhone)}</p></div>
@@ -425,16 +425,12 @@ export function BookingsView() {
                 Optionally link to an existing customer. Name and phone above are required either way.
               </p>
             </Field>
-            <Field label="Service" error={form.formState.errors.serviceId?.message}>
-              <Select {...form.register("serviceId")}>
-                <option value={0}>Select service…</option>
-                {(services.data ?? []).map((s: any) => <option key={s.id} value={s.id}>{s.name} — {formatKES(s.price)}</option>)}
-              </Select>
-            </Field>
-            <Field label="Assigned Staff" error={form.formState.errors.staffId?.message}>
-              <Select {...form.register("staffId")}>
-                <option value={0}>Select staff…</option>
-                {(staff.data ?? []).filter((s: any) => s.isActive).map((s: any) => <option key={s.id} value={s.id}>{s.fullName} ({s.role})</option>)}
+            <Field label="Service category *" error={form.formState.errors.serviceCategoryId?.message}>
+              <Select {...form.register("serviceCategoryId")}>
+                <option value="">Select service category…</option>
+                {(categories.data ?? []).map((category: any) => (
+                  <option key={category.id} value={category.id}>{category.name}</option>
+                ))}
               </Select>
             </Field>
             <Field label="Date" error={form.formState.errors.bookingDate?.message}>
@@ -455,11 +451,13 @@ export function BookingsView() {
               <Field label="Guest Email" error={form.formState.errors.guest_email?.message}>
                 <Input type="email" {...form.register("guest_email")} placeholder="customer@email.com" />
               </Field>
-              <Field label="Status">
-                <Select {...form.register("status")}>
-                  {["pending", "confirmed", "completed", "cancelled", "no_show"].map((s) => <option key={s} value={s}>{s}</option>)}
-                </Select>
-              </Field>
+              {editing && (
+                <Field label="Status">
+                  <Select {...form.register("status")}>
+                    {["pending", "confirmed", "completed", "cancelled", "no_show"].map((s) => <option key={s} value={s}>{s}</option>)}
+                  </Select>
+                </Field>
+              )}
             </div>
             {save.isError && <p className="text-sm text-rose-400">{(save.error as Error).message}</p>}
             <div className="flex justify-end gap-2 pt-2">

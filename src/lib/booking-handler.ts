@@ -42,47 +42,33 @@ export class BookingHandler {
   }
 
   /**
-   * Create booking via the live admin_booking(booking_data jsonb) RPC contract.
-   *
-   * The RPC reads exactly these jsonb keys:
-   *   customer_id, service_id, booking_date, start_time, end_time, guests,
-   *   special_requests, internal_notes, status (default 'confirmed'),
-   *   guest_name, guest_phone, guest_email
-   * It generates booking_number server-side and does NOT accept staff_id,
-   * created_by, or booking_number. When customer_id is provided AND status is
-   * 'confirmed' it creates a confirmed booking linked to that customer;
-   * otherwise it creates a pending booking with the guest contact snapshot
-   * (customer_id = NULL).
+   * Create booking through the live public.admin_booking(...) RPC signature.
+   * The database validates the active service category, date/time, and customer,
+   * then creates a pending booking and generates its booking number server-side.
+   * This RPC does not accept a service ID, staff ID, or caller-selected status.
    */
   private async createBookingViaRPC(data: BookingValidation) {
-    // Get the supabase client from the repository
     const supabase = (this.repo as any).supabase as SupabaseClient<any>;
 
-    const binding_data = {
-      customer_id: data.customerId || null,
-      service_id: data.serviceId,
-      booking_date: data.bookingDate,
-      start_time: data.startTime,
-      end_time: data.endTime,
-      guests: data.guests,
-      // admin form provides a status; the RPC defaults to 'confirmed'
-      status: data.status,
-      special_requests: data.specialRequests || null,
-      internal_notes: data.internalNotes || null,
-      guest_name: data.guest_name || null,
-      guest_phone: data.guest_phone || null,
-      guest_email: data.guest_email || null,
-    };
-
+    // Match the live public.admin_booking(...) RPC signature exactly.
+    // Category identity is the canonical booking classification.
     const { data: result, error } = await supabase.rpc("admin_booking", {
-      booking_data: binding_data,
+      p_customer_id: data.customerId || null,
+      p_service_category_id: data.serviceCategoryId,
+      p_profile_id: null,
+      p_booking_date: data.bookingDate,
+      p_start_time: data.startTime,
+      p_end_time: data.endTime,
+      p_full_name: data.guest_name || null,
+      p_phone: data.guest_phone || null,
+      p_email: data.guest_email || null,
+      p_guests: data.guests ?? 1,
+      p_special_requests: data.specialRequests || null,
+      p_created_by: null,
+      p_booking_number: null,
     });
 
-    if (error) {
-      throw error;
-    }
-
-    // The RPC returns a jsonb object: booking_id, booking_number, status, ...
+    if (error) throw error;
     return result;
   }
 
@@ -186,6 +172,17 @@ export class BookingHandler {
       return validationErr(validation.error);
     }
 
+    // The category is required for every admin edit and must still be active.
+    // The FK protects referential integrity; this check also enforces the active flag.
+    try {
+      const category = await this.repo.findById("service-categories", validation.data.serviceCategoryId);
+      if (!category || category.is_active !== true) {
+        return validationErr("Selected service category does not exist or is inactive.");
+      }
+    } catch {
+      return internalErr("Could not validate the selected service category.");
+    }
+
     // If status is being changed, validate the transition
     if (validation.data.status) {
       try {
@@ -207,7 +204,7 @@ export class BookingHandler {
 
     try {
       // CONTRACT BRIDGE: validation.data uses the public API camelCase contract
-      // (customerId, serviceId, staffId, bookingDate, startTime, endTime,
+      // (customerId, serviceCategoryId, bookingDate, startTime, endTime,
       // specialRequests) but Repository.update -> sanitizePayload allowlists
       // snake_case DB columns. Inverse-map via the canonical mapping layer so
       // those edits persist instead of being silently dropped by the allowlist.
@@ -259,11 +256,8 @@ export class BookingHandler {
       if (errorMessage.includes("customer")) {
         return validationErr("Invalid customer ID.");
       }
-      if (errorMessage.includes("service")) {
-        return validationErr("Invalid service ID.");
-      }
-      if (errorMessage.includes("staff")) {
-        return validationErr("Invalid staff ID.");
+      if (errorMessage.includes("service category")) {
+        return validationErr("Invalid or inactive service category.");
       }
       return validationErr("Invalid reference in booking data.");
     }
