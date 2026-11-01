@@ -14,8 +14,8 @@
  *
  * Rules:
  *  - Add a table here the moment it gets a `media_id`-style FK column.
- *  - `business_settings` carries two separate columns (`logo_media_id`,
- *    `favicon_media_id`); both are listed so the DELETE guard checks each one.
+ *  - `business_settings` carries three separate columns (`logo_media_id`,
+ *    `logo_light_media_id`, `favicon_media_id`); all are listed so the DELETE guard checks each one.
  *    The usage scan handles `business_settings` with a single `.or()` query
  *    (see `/api/media/route.ts`), so it filters these out of its `.in()` batch.
  *  - Include every live media_assets reference, including columns without an
