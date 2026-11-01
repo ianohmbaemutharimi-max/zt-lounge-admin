@@ -139,6 +139,7 @@ export function MediaLibraryView() {
     mutationFn: async ({ file, category }: { file: File; category: string }) => {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("category", category);
 
       const xhr = new XMLHttpRequest();
 
