@@ -38,6 +38,7 @@ export const MEDIA_REFERENCE_TABLES = [
   // Branding columns are two distinct FKs on the same table.
   { table: "business_settings", column: "logo_media_id" },
   { table: "business_settings", column: "favicon_media_id" },
+  { table: "business_settings", column: "logo_light_media_id" },
 ] as const;
 
 export type MediaReferenceTable = typeof MEDIA_REFERENCE_TABLES[number];
