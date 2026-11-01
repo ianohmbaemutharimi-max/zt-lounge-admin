@@ -170,7 +170,9 @@ for (const [objectKey, rows] of duplicateGroups) {
       if (remaining?.length) stillReferenced = true;
     }
 
-    if (!stillReferenced) {
+    const sourceObjectIsStillTheTarget = groupPlan.some((item) => item.targetPath === item.oldPath);
+
+    if (!stillReferenced && !sourceObjectIsStillTheTarget) {
       const { error: removeError } = await supabase.storage
         .from(groupPlan[0].bucket)
         .remove([groupPlan[0].oldPath]);
