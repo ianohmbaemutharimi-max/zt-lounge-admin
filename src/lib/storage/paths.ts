@@ -140,7 +140,7 @@ export function parsePublicStorageUrl(publicUrl: string): { bucket: string; path
 
     const bucket = decodeURIComponent(objectRef.slice(0, separator));
     const path = objectRef.slice(separator + 1).split("/").map(decodeURIComponent).join("/");
-    if (!bucket || !path || hasPathTraversal(path)) return null;
+    if (!bucket || !path || hasPathTraversal(path) || path.split("/").some((part) => part === "." || part === "..")) return null;
     return { bucket, path };
   } catch {
     return null;
