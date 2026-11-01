@@ -86,8 +86,8 @@ export const businessSettings = pgTable("business_settings", {
   city: text("city"),
   openingHours: jsonb("opening_hours"),
   // Live media references use RESTRICT so an assigned branding asset cannot be deleted.
-  logoMediaId: uuid("logo_media_id").references(() => mediaAssets.id, { onDelete: "restrict" }),
-  faviconMediaId: uuid("favicon_media_id").references(() => mediaAssets.id, { onDelete: "restrict" }),
+  logoMediaId: uuid("logo_media_id").notNull().references(() => mediaAssets.id, { onDelete: "restrict" }),
+  faviconMediaId: uuid("favicon_media_id").notNull().references(() => mediaAssets.id, { onDelete: "restrict" }),
   logoLightMediaId: uuid("logo_light_media_id").references(() => mediaAssets.id, { onDelete: "restrict" }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
