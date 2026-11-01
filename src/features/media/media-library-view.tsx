@@ -84,6 +84,7 @@ export function MediaLibraryView() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [usageModalOpen, setUsageModalOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploadCategory, setUploadCategory] = useState<string>("branding");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
@@ -135,10 +136,9 @@ export function MediaLibraryView() {
 
   // Upload mutation
   const uploadMutation = useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async ({ file, category }: { file: File; category: string }) => {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("category", "branding"); // Default category for media library
 
       const xhr = new XMLHttpRequest();
 
@@ -185,7 +185,7 @@ export function MediaLibraryView() {
     if (file) {
       setUploadedFileName(file.name);
       setUploadError(null);
-      uploadMutation.mutate(file);
+      uploadMutation.mutate({ file, category: uploadCategory });
     }
   };
 
@@ -196,7 +196,7 @@ export function MediaLibraryView() {
 
   // Replace mutation - replaces image file while preserving media_assets.id
   const replaceMutation = useMutation({
-    mutationFn: async ({ assetId, file, category }: { assetId: string; file: File; category: string }) => {
+    mutationFn: async ({ assetId, file }: { assetId: string; file: File }) => {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("category", category);
@@ -258,7 +258,6 @@ export function MediaLibraryView() {
       replaceMutation.mutate({
         assetId: selectedAsset.id,
         file: replaceFile,
-        category: "branding", // Default category for media library
       });
     }
   };
@@ -355,7 +354,7 @@ export function MediaLibraryView() {
         actions={
           <Button
             variant="gold"
-            onClick={() => setUploadOpen(true)}
+            onClick={() => { setUploadCategory(categoryFilter === "service" ? "services" : categoryFilter === "testimonial" ? "testimonials" : categoryFilter === "promotion" ? "promotions" : categoryFilter || "branding"); setUploadOpen(true); }}
             className="gap-2"
           >
             <Plus className="h-4 w-4" />
@@ -517,6 +516,27 @@ export function MediaLibraryView() {
               <p>{uploadError}</p>
             </div>
           )}
+
+          <Field label="Content role">
+            <select
+              value={uploadCategory}
+              onChange={(event) => setUploadCategory(event.target.value)}
+              className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-100"
+              disabled={uploadProgress > 0}
+            >
+              <option value="services">Services</option>
+              <option value="gallery">Gallery</option>
+              <option value="hero">Hero slides</option>
+              <option value="menu">Menu</option>
+              <option value="testimonials">Testimonials</option>
+              <option value="promotions">Promotions</option>
+              <option value="branding">Branding</option>
+              <option value="seo">SEO images</option>
+              <option value="feature">Page features</option>
+              <option value="memberships">Memberships</option>
+            </select>
+            <p className="mt-1 text-xs text-gray-500">Each upload creates a new media ID and a separate storage path for this role, even when the image bytes match another asset.</p>
+          </Field>
 
           <Field label="Image File">
             <div className="flex items-center gap-4">
