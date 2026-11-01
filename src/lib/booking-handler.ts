@@ -179,6 +179,17 @@ export class BookingHandler {
       return validationErr(validation.error);
     }
 
+    // The category is required for every admin edit and must still be active.
+    // The FK protects referential integrity; this check also enforces the active flag.
+    try {
+      const category = await this.repo.findById("service-categories", validation.data.serviceCategoryId);
+      if (!category || category.is_active !== true) {
+        return validationErr("Selected service category does not exist or is inactive.");
+      }
+    } catch {
+      return internalErr("Could not validate the selected service category.");
+    }
+
     // If status is being changed, validate the transition
     if (validation.data.status) {
       try {
