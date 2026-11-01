@@ -32,6 +32,20 @@ export const CONTENT_TABLE_CATEGORY_MAP = {
 
 export type ContentTable = keyof typeof CONTENT_TABLE_CATEGORY_MAP;
 
+const MEDIA_TYPE_BY_CATEGORY: Record<ImageCategory, string> = {
+  hero: "hero",
+  gallery: "gallery",
+  menu: "menu",
+  services: "service",
+  testimonials: "testimonial",
+  branding: "branding",
+  promotions: "promotion",
+  memberships: "general",
+  seo: "seo",
+  feature: "feature",
+  general: "general",
+};
+
 /**
  * Reverse mapping: category → allowed content tables
  */
@@ -138,7 +152,7 @@ export async function validateMediaCategoryForMutation(
     // Query the media asset to check its category
     const { data: asset, error } = await supabase
       .from("media_assets")
-      .select("id, category")
+      .select("id, media_type")
       .eq("id", mediaId)
       .single();
 
@@ -149,10 +163,10 @@ export async function validateMediaCategoryForMutation(
       };
     }
 
-    if (asset.category !== requiredCategory) {
+    const requiredMediaType = MEDIA_TYPE_BY_CATEGORY[requiredCategory];\n\n    if (asset.media_type !== requiredMediaType) {
       return {
         valid: false,
-        error: `Category mismatch: ${table}.${columnName} requires media with category="${requiredCategory}", but referenced asset has category="${asset.category}"`
+        error: `Category mismatch: ${table}.${columnName} requires media with category="${requiredCategory}", but referenced asset has media_type="${asset.media_type}"`
       };
     }
 
