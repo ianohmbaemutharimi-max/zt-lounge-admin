@@ -55,34 +55,27 @@ export class BookingHandler {
    * (customer_id = NULL).
    */
   private async createBookingViaRPC(data: BookingValidation) {
-    // Get the supabase client from the repository
     const supabase = (this.repo as any).supabase as SupabaseClient<any>;
 
-    const binding_data = {
-      customer_id: data.customerId || null,
-      service_id: data.serviceId,
-      booking_date: data.bookingDate,
-      start_time: data.startTime,
-      end_time: data.endTime,
-      guests: data.guests,
-      // admin form provides a status; the RPC defaults to 'confirmed'
-      status: data.status,
-      special_requests: data.specialRequests || null,
-      internal_notes: data.internalNotes || null,
-      guest_name: data.guest_name || null,
-      guest_phone: data.guest_phone || null,
-      guest_email: data.guest_email || null,
-    };
-
+    // Match the live public.admin_booking(...) RPC signature exactly.
+    // Category identity is the canonical booking classification.
     const { data: result, error } = await supabase.rpc("admin_booking", {
-      booking_data: binding_data,
+      p_customer_id: data.customerId || null,
+      p_service_category_id: data.serviceCategoryId,
+      p_profile_id: null,
+      p_booking_date: data.bookingDate,
+      p_start_time: data.startTime,
+      p_end_time: data.endTime,
+      p_full_name: data.guest_name || null,
+      p_phone: data.guest_phone || null,
+      p_email: data.guest_email || null,
+      p_guests: data.guests ?? 1,
+      p_special_requests: data.specialRequests || null,
+      p_created_by: null,
+      p_booking_number: null,
     });
 
-    if (error) {
-      throw error;
-    }
-
-    // The RPC returns a jsonb object: booking_id, booking_number, status, ...
+    if (error) throw error;
     return result;
   }
 
@@ -259,11 +252,8 @@ export class BookingHandler {
       if (errorMessage.includes("customer")) {
         return validationErr("Invalid customer ID.");
       }
-      if (errorMessage.includes("service")) {
-        return validationErr("Invalid service ID.");
-      }
-      if (errorMessage.includes("staff")) {
-        return validationErr("Invalid staff ID.");
+      if (errorMessage.includes("service category")) {
+        return validationErr("Invalid or inactive service category.");
       }
       return validationErr("Invalid reference in booking data.");
     }
