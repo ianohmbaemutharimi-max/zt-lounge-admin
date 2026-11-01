@@ -52,8 +52,8 @@ async function scanMediaUsage(supabase: any, assetIds: string[]): Promise<UsageM
     (async () => {
       const { data, error } = await supabase
         .from("business_settings")
-        .select("id, logo_media_id, favicon_media_id")
-        .or(`logo_media_id.in.(${assetIds.join(",")}),favicon_media_id.in.(${assetIds.join(",")})`);
+        .select("id, logo_media_id, logo_light_media_id, favicon_media_id")
+        .or(`logo_media_id.in.(${assetIds.join(",")}),logo_light_media_id.in.(${assetIds.join(",")}),favicon_media_id.in.(${assetIds.join(",")})`);
 
       if (error) {
         console.error("[media] usage reference query failed for business_settings:", error.message);
@@ -62,7 +62,7 @@ async function scanMediaUsage(supabase: any, assetIds: string[]): Promise<UsageM
 
       for (const row of (data ?? []) as Array<Record<string, unknown>>) {
         const rowId = String(row.id ?? "");
-        for (const column of ["logo_media_id", "favicon_media_id"] as const) {
+        for (const column of ["logo_media_id", "logo_light_media_id", "favicon_media_id"] as const) {
           const assetId = String(row[column] ?? "");
           if (assetId && idSet.has(assetId)) {
             addUsage(usageByAsset, assetId, {
@@ -81,7 +81,7 @@ async function scanMediaUsage(supabase: any, assetIds: string[]): Promise<UsageM
 
 function humanTableLabel(table: string, column: string): string {
   if (table === "business_settings") {
-    return column === "favicon_media_id" ? "Branding → Favicon" : "Branding → Logo";
+    return column === "favicon_media_id" ? "Branding → Favicon" : column === "logo_light_media_id" ? "Branding → Light logo" : "Branding → Logo";
   }
   const labels: Record<string, string> = {
     hero_slides: "Hero",
