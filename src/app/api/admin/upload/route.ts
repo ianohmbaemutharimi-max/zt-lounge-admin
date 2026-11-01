@@ -16,7 +16,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer, getSupabaseAdmin } from "@/lib/supabase/server";
-import { CONTENT_MANAGER_ROLES } from "@/lib/auth/server";
 import { 
   sanitizeCategory,
   generateStoragePath,
@@ -266,7 +265,7 @@ export async function POST(request: NextRequest) {
     console.log("[UPLOAD] Uploading independent role-specific media object");
 
     console.log("[UPLOAD] Starting storage upload");
-    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await supabaseAdmin.storage
       .from(uploadBucket)
       .upload(storagePath, processed.buffer, {
         contentType: isFaviconIco ? "image/x-icon" : "image/webp",
