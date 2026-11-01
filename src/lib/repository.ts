@@ -59,7 +59,7 @@ const SENSITIVE_FIELDS = new Set([
 const RESPONSE_ALLOWLISTS: Record<string, string[]> = {
   roles: ["id", "name", "description", "created_at"],
   profiles: ["id", "full_name", "phone", "avatar_url", "is_active", "created_at", "updated_at"],
-     business_settings: ["id", "business_name", "email", "phone", "address", "google_maps_url", "whatsapp", "facebook", "instagram", "opening_hours", "logo_media_id", "favicon_media_id", "city", "created_at", "updated_at"],
+     business_settings: ["id", "business_name", "email", "phone", "address", "google_maps_url", "whatsapp", "facebook", "instagram", "opening_hours", "logo_media_id", "logo_light_media_id", "favicon_media_id", "city", "created_at", "updated_at"],
   website_pages: ["id", "page_key", "title", "subtitle", "content", "seo_title", "seo_description", "service_cards_enabled", "service_packages_enabled", "updated_by", "created_at", "updated_at"],
    hero_slides: ["id", "page_id", "badge", "title", "highlight", "subtitle", "image_url", "media_id", "buttons", "display_order", "is_active", "created_at", "updated_at", "alt_text", "cta_text", "cta_link"],
      services: ["id", "category_id", "name", "slug", "description", "duration_minutes", "price", "image_url", "media_id", "featured", "is_active", "deleted_at", "created_at", "updated_at", "alt_text", "tag", "href", "card_type", "type", "display_order", "page_id", "icon"],
