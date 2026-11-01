@@ -134,33 +134,15 @@ export function BookingsView() {
 
   const save = useMutation({
     mutationFn: (values: BookingForm) => {
-      const normalizeOptionalUuid = (value?: string | null) => {
-        if (!value || value === "") return null;
-        return value;
+      const payload: BookingForm = {
+        ...values,
+        customerId: values.customerId || null,
+        guests: values.guests ?? 1,
       };
-
-      // Provide sensible defaults for optional fields that the DB requires
-      const today = new Date().toISOString().split("T")[0];
-
-      const payload: any = {
-        booking_number: `ZT-${1000 + Date.now() % 100000}`,
-        status: values.status || "pending",
-        customer_id: normalizeOptionalUuid(values.customerId ?? editing?.customerId),
-        service_category_id: values.serviceCategoryId,
-        booking_date: values.bookingDate || today,
-        start_time: values.startTime || "09:00",
-        end_time: values.endTime || "10:00",
-        guests: values.guests || 1,
-      };
-
-      // Required guest contact fields
-      if (values.guest_name && values.guest_name.trim()) payload.guest_name = values.guest_name.trim();
-      if (values.guest_phone && values.guest_phone.trim()) payload.guest_phone = values.guest_phone.trim();
-      if (values.guest_email && values.guest_email.trim()) payload.guest_email = values.guest_email.trim();
 
       return editing
-        ? api.update("bookings", editing.id, { ...values, ...payload })
-        : api.create("bookings", { ...values, ...payload });
+        ? api.update("bookings", editing.id, payload)
+        : api.create("bookings", payload);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.bookings.all() });
