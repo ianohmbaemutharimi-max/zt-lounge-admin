@@ -2,7 +2,7 @@
  * Replace one media asset without changing its stable media ID.
  *
  * The replacement stays in the asset's existing content role. The old object
- * is removed only when no other media_assets row points at its public URL.
+ * is removed only when no other media_assets row points at the same bucket/object key.
  * Storage identity is parsed from public_url because the live media_assets
  * table does not contain bucket/path columns.
  */
