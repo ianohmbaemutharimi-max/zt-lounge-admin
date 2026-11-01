@@ -82,6 +82,9 @@ export const CATEGORY_MAX_WIDTHS: Record<ImageCategory, number> = {
   // missing resize bound.
   promotions: 1920,  // Promotion banners/posters (full-width like hero)
   memberships: 800,  // Membership plan images (content width like services)
+  seo: 1200,          // Social/Open Graph preview images
+  feature: 800,       // Page feature illustrations
+  general: 1200,      // General-purpose media
 };
 
 /**
