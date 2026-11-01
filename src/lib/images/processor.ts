@@ -131,7 +131,7 @@ export async function processImage(
   height: number;
   size: number;
   format: string;
-  /** SHA-256 hex digest of the final normalized WebP buffer (canonical dedup key). */
+  /** SHA-256 hex digest of the final normalized WebP buffer (integrity fingerprint). */
   contentHash: string;
 }> {
     // Phase 6 — ICO bypass: a genuine .ico (magic 00 00 01 00) is preserved
@@ -213,7 +213,7 @@ export async function processImage(
     const buffer = await processedImage.toBuffer({ resolveWithObject: true });
 
     // SHA-256 content hash of the FINAL normalized WebP buffer.
-    // This is the deduplication key for the canonical media registry.
+    // This is an integrity fingerprint; the same hash may appear on independent role-specific assets.
     const contentHash = createHash("sha256")
       .update(buffer.data)
       .digest("hex");
