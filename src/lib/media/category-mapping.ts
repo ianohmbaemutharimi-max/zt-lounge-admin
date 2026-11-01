@@ -1,8 +1,8 @@
 /**
  * CATEGORY LOCKING SYSTEM
  * 
- * Enforces strict mapping between media_assets.category and content table usage.
- * A "hero" category image can ONLY be used in hero_slides, a "menu" image ONLY
+ * Enforces strict mapping between media_assets.media_type and content table usage.
+ * A "hero" media asset can ONLY be used in hero_slides, a "menu" image ONLY
  * in menu_items, etc.
  * 
  * This is enforced at three layers:
