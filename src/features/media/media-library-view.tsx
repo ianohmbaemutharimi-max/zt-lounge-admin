@@ -118,7 +118,7 @@ export function MediaLibraryView() {
     setEditModalOpen(true);
   };
 
-  const handleSaveMedia = async (assetId: string, data: { alt_text: string; media_type: string | null }) => {
+  const handleSaveMedia = async (assetId: string, data: { alt_text: string }) => {
     const response = await fetch(`/api/admin/media_assets/${assetId}`, {
       method: "PATCH",
       headers: {
