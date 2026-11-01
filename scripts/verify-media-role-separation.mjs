@@ -13,6 +13,19 @@ const supabase = createClient(projectUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
+const ROLE_FOLDERS = {
+  hero: ["hero"],
+  gallery: ["gallery"],
+  menu: ["menu"],
+  service: ["services"],
+  testimonial: ["testimonials"],
+  branding: ["branding"],
+  promotion: ["promotions"],
+  seo: ["seo"],
+  feature: ["feature"],
+  general: ["general", "memberships"],
+};
+
 const REFERENCES = [
   { table: "services", column: "media_id", role: "service" },
   { table: "gallery", column: "media_id", role: "gallery" },
@@ -40,6 +53,7 @@ function parseStorageUrl(value) {
     const bucket = decodeURIComponent(rest.slice(0, split));
     if (!/^[a-z0-9][a-z0-9_-]{0,62}$/i.test(bucket)) return null;
     const path = rest.slice(split + 1).split("/").map(decodeURIComponent).join("/");
+    if (!path || path.split("/").some((part) => part === "." || part === "..")) return null;
     return { key: bucket + "/" + path, bucket, path };
   } catch {
     return null;
@@ -60,13 +74,37 @@ async function readAll(table, select) {
 const assets = await readAll("media_assets", "id, public_url, media_type, file_name");
 const assetById = new Map(assets.map((asset) => [asset.id, asset]));
 const objectGroups = new Map();
+const rolePathMismatches = [];
 
 for (const asset of assets) {
   const location = parseStorageUrl(asset.public_url);
-  if (!location) continue;
-  const rows = objectGroups.get(location.key) ?? [];
-  rows.push({ id: asset.id, media_type: asset.media_type, file_name: asset.file_name });
-  objectGroups.set(location.key, rows);
+  if (!location) {
+    rolePathMismatches.push({ mediaId: asset.id, mediaType: asset.media_type, publicUrl: asset.public_url, problem: "not a public Storage URL for the configured project" });
+    continue;
+  }
+
+  const objectRows = objectGroups.get(location.key) ?? [];
+  objectRows.push({ id: asset.id, media_type: asset.media_type, file_name: asset.file_name });
+  objectGroups.set(location.key, objectRows);
+
+  const allowedFolders = ROLE_FOLDERS[asset.media_type] ?? [];
+  const pathParts = location.path.split("/");
+  const folder = pathParts.length >= 4 ? pathParts[2] : "";
+  const fileName = pathParts[pathParts.length - 1] ?? "";
+  const hasRoleFolder = pathParts[0] === "assets" && pathParts[1] === "images" && allowedFolders.includes(folder);
+  const hasAssetSpecificName = fileName.startsWith(asset.id + ".");
+
+  if (!hasRoleFolder || !hasAssetSpecificName) {
+    rolePathMismatches.push({
+      mediaId: asset.id,
+      mediaType: asset.media_type,
+      bucket: location.bucket,
+      path: location.path,
+      expectedFolders: allowedFolders,
+      expectedFilePrefix: asset.id + ".",
+      problem: "asset is not stored at its own role-specific media-ID path",
+    });
+  }
 }
 
 const duplicateStorageObjects = [...objectGroups.entries()]
@@ -111,11 +149,16 @@ const report = {
   mediaAssetsScanned: assets.length,
   duplicateStorageObjectGroups: duplicateStorageObjects.length,
   duplicateStorageObjects,
+  rolePathMismatchCount: rolePathMismatches.length,
+  rolePathMismatches,
   crossRoleMediaIdCount: crossRoleIds.length,
   crossRoleMediaIds: crossRoleIds,
   roleMismatchCount: roleMismatches.length,
   roleMismatches,
-  pass: duplicateStorageObjects.length === 0 && crossRoleIds.length === 0 && roleMismatches.length === 0,
+  pass: duplicateStorageObjects.length === 0 &&
+    rolePathMismatches.length === 0 &&
+    crossRoleIds.length === 0 &&
+    roleMismatches.length === 0,
 };
 
 console.log(JSON.stringify(report, null, 2));
