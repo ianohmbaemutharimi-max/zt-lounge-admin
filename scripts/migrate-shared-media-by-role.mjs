@@ -42,7 +42,7 @@ function parseStorageUrl(value) {
     if (split < 1 || split === rest.length - 1) return null;
     const bucket = decodeURIComponent(rest.slice(0, split));
     const path = rest.slice(split + 1).split("/").map(decodeURIComponent).join("/");
-    if (!bucket || !path || path.split("/").some((part) => part === ".." || part === ".")) return null;
+    if (!/^[a-z0-9][a-z0-9_-]{0,62}$/i.test(bucket) || !path || path.split("/").some((part) => part === ".." || part === ".")) return null;
     return { bucket, path, key: bucket + "/" + path };
   } catch {
     return null;
