@@ -148,14 +148,15 @@ export const DELETE = withSuperAdminAuth(
       if (storageLocation) {
         const { data: remaining, error: remainingError } = await supabaseAdmin
           .from("media_assets")
-          .select("id")
-          .eq("public_url", existing.public_url)
-          .limit(1);
+          .select("id, public_url");
 
         if (remainingError) {
           storageCleanup = "failed";
           console.error("[media_assets] Could not verify remaining object references; retained storage object:", remainingError.message);
-        } else if (remaining?.length) {
+        } else if ((remaining ?? []).some((asset: { public_url: string }) => {
+          const location = parsePublicStorageUrl(asset.public_url);
+          return location?.bucket === storageLocation.bucket && location.path === storageLocation.path;
+        })) {
           storageCleanup = "retained_shared";
         } else {
           const { error: storageError } = await supabaseAdmin.storage
