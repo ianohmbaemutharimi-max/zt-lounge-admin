@@ -5,7 +5,7 @@ export const RESOURCE_CONFIG: Record<string, {
 }> = {
   bookings: {
     table: "bookings",
-    searchFields: ["booking_number", "customer_id", "staff_id"],
+    searchFields: ["booking_number", "customer_id", "service_category_id"],
     defaultSort: { column: "created_at", ascending: false },
   },
   "booking-history": {
