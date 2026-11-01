@@ -76,8 +76,9 @@ export function BookingsView() {
   const customers = useQuery({ queryKey: queryKeys.customers.all(), queryFn: () => api.list("customers") });
   const categories = useQuery({
     queryKey: ["service-categories"],
+    // Load all categories so historical bookings still resolve if a category
+    // is later deactivated. The create/edit selector filters active categories.
     queryFn: () => api.list("service-categories", {
-      filter: { is_active: true },
       orderBy: "display_order",
       ascending: "true",
     }),
@@ -428,7 +429,7 @@ export function BookingsView() {
             <Field label="Service category *" error={form.formState.errors.serviceCategoryId?.message}>
               <Select {...form.register("serviceCategoryId")}>
                 <option value="">Select service category…</option>
-                {(categories.data ?? []).map((category: any) => (
+                {(categories.data ?? []).filter((category: any) => category.is_active).map((category: any) => (
                   <option key={category.id} value={category.id}>{category.name}</option>
                 ))}
               </Select>
