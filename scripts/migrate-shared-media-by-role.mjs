@@ -142,13 +142,18 @@ for (const [objectKey, rows] of duplicateGroups) {
 
     // Verify the original object is no longer referenced by any media row
     // before removing it. If verification fails, retain the original object.
-    const remaining = assets.filter((asset) => {
-      if (groupPlan.some((item) => item.assetId === asset.id)) return false;
-      const location = parseStorageUrl(asset.public_url);
-      return location?.key === objectKey;
-    });
+    let stillReferenced = false;
+    for (const oldUrl of new Set(groupPlan.map((item) => item.oldUrl))) {
+      const { data: remaining, error: verifyError } = await supabase
+        .from("media_assets")
+        .select("id")
+        .eq("public_url", oldUrl)
+        .limit(1);
+      if (verifyError) throw new Error("Could not verify old object references: " + verifyError.message);
+      if (remaining?.length) stillReferenced = true;
+    }
 
-    if (remaining.length === 0) {
+    if (!stillReferenced) {
       const { error: removeError } = await supabase.storage
         .from(groupPlan[0].bucket)
         .remove([groupPlan[0].oldPath]);
