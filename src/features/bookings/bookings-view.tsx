@@ -451,11 +451,13 @@ export function BookingsView() {
               <Field label="Guest Email" error={form.formState.errors.guest_email?.message}>
                 <Input type="email" {...form.register("guest_email")} placeholder="customer@email.com" />
               </Field>
-              <Field label="Status">
-                <Select {...form.register("status")}>
-                  {["pending", "confirmed", "completed", "cancelled", "no_show"].map((s) => <option key={s} value={s}>{s}</option>)}
-                </Select>
-              </Field>
+              {editing && (
+                <Field label="Status">
+                  <Select {...form.register("status")}>
+                    {["pending", "confirmed", "completed", "cancelled", "no_show"].map((s) => <option key={s} value={s}>{s}</option>)}
+                  </Select>
+                </Field>
+              )}
             </div>
             {save.isError && <p className="text-sm text-rose-400">{(save.error as Error).message}</p>}
             <div className="flex justify-end gap-2 pt-2">
