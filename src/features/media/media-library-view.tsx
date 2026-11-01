@@ -533,6 +533,7 @@ export function MediaLibraryView() {
               <option value="seo">SEO images</option>
               <option value="feature">Page features</option>
               <option value="memberships">Memberships</option>
+              <option value="general">General</option>
             </select>
             <p className="mt-1 text-xs text-gray-500">Each upload creates a new media ID and a separate storage path for this role, even when the image bytes match another asset.</p>
           </Field>
