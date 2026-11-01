@@ -42,11 +42,23 @@ function parseStorageUrl(value) {
     if (split < 1 || split === rest.length - 1) return null;
     const bucket = decodeURIComponent(rest.slice(0, split));
     const path = rest.slice(split + 1).split("/").map(decodeURIComponent).join("/");
-    if (!/^[a-z0-9][a-z0-9_-]{0,62}$/i.test(bucket) || !path || path.split("/").some((part) => part === ".." || part === ".")) return null;
+    if (!/^[a-z0-9][a-z0-9_-]{0,62}$/i.test(bucket) || !path ||
+        path.split("/").some((part) => part === ".." || part === ".")) return null;
     return { bucket, path, key: bucket + "/" + path };
   } catch {
     return null;
   }
+}
+
+function roleFolderFor(asset, location) {
+  let folder = ROLE_FOLDER[asset.media_type];
+  // The live enum uses "general" for membership assets. Preserve an explicit
+  // memberships folder when the legacy object path already identifies it.
+  if (asset.media_type === "general") {
+    const legacyRoleFolder = location.path.split("/").find((part) => part === "memberships" || part === "general");
+    if (legacyRoleFolder) folder = legacyRoleFolder;
+  }
+  return folder;
 }
 
 async function readAllAssets() {
@@ -66,26 +78,27 @@ async function readAllAssets() {
 
 const assets = await readAllAssets();
 const groups = new Map();
+const unsupportedAssets = [];
+
 for (const asset of assets) {
   const location = parseStorageUrl(asset.public_url);
-  if (!location) continue;
+  if (!location) {
+    unsupportedAssets.push({ id: asset.id, publicUrl: asset.public_url, reason: "Not a public Storage URL for the configured Supabase project" });
+    continue;
+  }
   const group = groups.get(location.key) ?? [];
   group.push({ ...asset, location });
   groups.set(location.key, group);
 }
 
-const duplicateGroups = [...groups.entries()].filter(([, rows]) => rows.length > 1);
 const plan = [];
+const planById = new Map();
 
-for (const [objectKey, rows] of duplicateGroups) {
+for (const [objectKey, rows] of groups) {
   for (const row of rows) {
-    let folder = ROLE_FOLDER[row.media_type];
-    if (row.media_type === "general") {
-      const legacyRoleFolder = row.location.path.split("/").find((part) => part === "memberships" || part === "general");
-      if (legacyRoleFolder) folder = legacyRoleFolder;
-    }
+    const folder = roleFolderFor(row, row.location);
     if (!folder) {
-      throw new Error("Unsupported media_type " + row.media_type + " for asset " + row.id + "; no copy has been made for this group.");
+      throw new Error("Unsupported media_type " + row.media_type + " for asset " + row.id + "; no Storage changes have been made.");
     }
     const extension = row.location.path.includes(".")
       ? row.location.path.split(".").pop().toLowerCase()
@@ -93,47 +106,69 @@ for (const [objectKey, rows] of duplicateGroups) {
     if (!/^[a-z0-9]{1,8}$/.test(extension)) {
       throw new Error("Unsafe file extension for asset " + row.id);
     }
+
+    // Stable path makes dry-run and apply plans identical and makes retries safe.
     const targetPath = "assets/images/" + folder + "/" + row.id + "." + extension;
-    plan.push({ objectKey, assetId: row.id, oldUrl: row.public_url, bucket: row.location.bucket, oldPath: row.location.path, targetPath, mediaType: row.media_type });
+    if (targetPath === row.location.path) continue;
+
+    const item = {
+      objectKey,
+      assetId: row.id,
+      oldUrl: row.public_url,
+      bucket: row.location.bucket,
+      oldPath: row.location.path,
+      targetPath,
+      mediaType: row.media_type,
+    };
+    plan.push(item);
+    planById.set(row.id, item);
   }
 }
+
+const migrationGroups = [...groups.entries()]
+  .filter(([, rows]) => rows.some((row) => planById.has(row.id)));
+const duplicateStorageObjectGroups = [...groups.values()].filter((rows) => rows.length > 1).length;
 
 console.log(JSON.stringify({
   mode: apply ? "APPLY" : "DRY_RUN",
   assetsScanned: assets.length,
-  duplicateStorageObjects: duplicateGroups.length,
-  mediaRowsToSeparate: plan.length,
+  storageObjectsScanned: groups.size,
+  duplicateStorageObjectGroups,
+  sourceObjectsToProcess: migrationGroups.length,
+  mediaRowsToMove: plan.length,
+  unsupportedAssets,
   plan,
 }, null, 2));
 
+if (unsupportedAssets.length) {
+  throw new Error("Some media assets are not recognized as public Storage URLs. Resolve them before applying the role-path migration.");
+}
 if (!apply || plan.length === 0) {
-  console.log(apply ? "No duplicate storage objects require separation." : "Dry run only. No Storage or database changes were made.");
+  console.log(apply ? "No media assets require role-path migration." : "Dry run only. No Storage or database changes were made.");
   process.exit(0);
 }
 
-for (const [objectKey, rows] of duplicateGroups) {
+for (const [objectKey, rows] of migrationGroups) {
   const groupPlan = plan.filter((item) => item.objectKey === objectKey);
   const completed = [];
 
   try {
     for (const item of groupPlan) {
-      if (item.targetPath !== item.oldPath) {
-        const targetDirectory = item.targetPath.slice(0, item.targetPath.lastIndexOf("/"));
-        const targetName = item.targetPath.slice(item.targetPath.lastIndexOf("/") + 1);
-        const { data: existingObjects, error: listError } = await supabase.storage
-          .from(item.bucket)
-          .list(targetDirectory, { search: targetName, limit: 10 });
-        if (listError) throw new Error("Could not inspect target path for " + item.assetId + ": " + listError.message);
+      const targetDirectory = item.targetPath.slice(0, item.targetPath.lastIndexOf("/"));
+      const targetName = item.targetPath.slice(item.targetPath.lastIndexOf("/") + 1);
+      const { data: existingObjects, error: listError } = await supabase.storage
+        .from(item.bucket)
+        .list(targetDirectory, { search: targetName, limit: 10 });
+      if (listError) throw new Error("Could not inspect target path for " + item.assetId + ": " + listError.message);
 
-        const targetAlreadyExists = (existingObjects ?? []).some((object) => object.name === targetName);
-        if (!targetAlreadyExists) {
-          const { error: copyError } = await supabase.storage
-            .from(item.bucket)
-            .copy(item.oldPath, item.targetPath);
-          if (copyError) throw new Error("Storage copy failed for " + item.assetId + ": " + copyError.message);
-        } else {
-          console.log("Reusing previously copied object:", item.targetPath);
-        }
+      const targetAlreadyExists = (existingObjects ?? []).some((object) => object.name === targetName);
+      if (!targetAlreadyExists) {
+        const { error: copyError } = await supabase.storage
+          .from(item.bucket)
+          .copy(item.oldPath, item.targetPath);
+        if (copyError) throw new Error("Storage copy failed for " + item.assetId + ": " + copyError.message);
+      } else {
+        console.log("Reusing previously copied object:", item.targetPath);
       }
 
       const { data: publicData } = supabase.storage
@@ -154,13 +189,13 @@ for (const [objectKey, rows] of duplicateGroups) {
       }
 
       completed.push(item);
-      console.log("Separated", item.assetId, "=>", item.targetPath);
+      console.log("Moved", item.assetId, "=>", item.targetPath);
     }
 
-    // Verify the original object is no longer referenced by any media row
-    // before removing it. If verification fails, retain the original object.
+    // Verify every previous URL is no longer referenced before removing the
+    // source object. Rows already using the target path are retained in place.
     let stillReferenced = false;
-    for (const oldUrl of new Set(groupPlan.map((item) => item.oldUrl))) {
+    for (const oldUrl of new Set(rows.map((row) => row.public_url))) {
       const { data: remaining, error: verifyError } = await supabase
         .from("media_assets")
         .select("id")
@@ -170,28 +205,31 @@ for (const [objectKey, rows] of duplicateGroups) {
       if (remaining?.length) stillReferenced = true;
     }
 
-    const sourceObjectIsStillTheTarget = groupPlan.some((item) => item.targetPath === item.oldPath);
+    const sourceObjectIsStillTheTarget = rows.some((row) => {
+      const planned = planById.get(row.id);
+      return !planned || planned.targetPath === row.location.path;
+    });
 
     if (!stillReferenced && !sourceObjectIsStillTheTarget) {
       const { error: removeError } = await supabase.storage
-        .from(groupPlan[0].bucket)
-        .remove([groupPlan[0].oldPath]);
+        .from(rows[0].location.bucket)
+        .remove([rows[0].location.path]);
       if (removeError) {
-        console.warn("Old shared object retained; cleanup failed:", objectKey, removeError.message);
+        console.warn("Old source object retained; cleanup failed:", objectKey, removeError.message);
       } else {
-        console.log("Removed old shared object:", objectKey);
+        console.log("Removed old source object:", objectKey);
       }
     } else {
-      console.warn("Old object retained because other registry rows still reference it:", objectKey);
+      console.warn("Old source object retained because a media row still references it:", objectKey);
     }
   } catch (error) {
-    console.error("Group failed; attempting rollback for", objectKey, error);
+    console.error("Source object group failed; attempting rollback for", objectKey, error);
     for (const item of completed.reverse()) {
       const { error: rollbackError } = await supabase
         .from("media_assets")
         .update({ public_url: item.oldUrl, updated_at: new Date().toISOString() })
         .eq("id", item.assetId);
-      const { error: removeError } = item.targetPath === item.oldPath ? { error: null } : await supabase.storage.from(item.bucket).remove([item.targetPath]);
+      const { error: removeError } = await supabase.storage.from(item.bucket).remove([item.targetPath]);
       if (rollbackError) console.error("ROLLBACK DB FAILED for", item.assetId, rollbackError.message);
       if (removeError) console.error("ROLLBACK STORAGE CLEANUP FAILED for", item.targetPath, removeError.message);
     }
@@ -199,4 +237,4 @@ for (const [objectKey, rows] of duplicateGroups) {
   }
 }
 
-console.log("Role-specific media copy migration completed. Re-run without --apply to confirm no duplicate object groups remain.");
+console.log("Role-specific media path migration completed. Run scripts/verify-media-role-separation.mjs to verify the result.");
