@@ -134,7 +134,7 @@ const WRITABLE_FIELDS: Record<string, string[]> = {
   // kept in DB for backward compatibility, not writable via admin API).
   testimonials: ["media_id", "occupation", "is_featured", "approved", "display_order", "page_id"],
   contact_messages: ["full_name", "phone", "email", "subject", "message", "status", "replied_by", "replied_at"],
-  media_assets: ["alt_text", "media_type"],
+  media_assets: ["alt_text"],
   faqs: ["question", "answer", "display_order", "is_active", "category", "page_id", "is_featured"],
   promotions: ["title", "description", "discount_percent", "start_date", "end_date", "is_active", "page_id", "media_id", "show_on_homepage", "display_order"],
   system_settings: ["booking_buffer_minutes", "max_booking_days", "allow_online_booking", "require_staff_assignment", "enable_email_notifications", "enable_sms_notifications", "maintenance_mode"],
