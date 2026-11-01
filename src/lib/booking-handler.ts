@@ -42,17 +42,10 @@ export class BookingHandler {
   }
 
   /**
-   * Create booking via the live admin_booking(booking_data jsonb) RPC contract.
-   *
-   * The RPC reads exactly these jsonb keys:
-   *   customer_id, service_category_id, profile_id, booking_date, start_time, end_time, guests,
-   *   special_requests, internal_notes, status (default 'confirmed'),
-   *   guest_name, guest_phone, guest_email
-   * It generates booking_number server-side and does NOT accept booking_number, staff_id,
-   * created_by, or booking_number. When customer_id is provided AND status is
-   * 'confirmed' it creates a confirmed booking linked to that customer;
-   * otherwise it creates a pending booking with the guest contact snapshot
-   * (customer_id = NULL).
+   * Create booking through the live public.admin_booking(...) RPC signature.
+   * The database validates the active service category, date/time, and customer,
+   * then creates a pending booking and generates its booking number server-side.
+   * This RPC does not accept a service ID, staff ID, or caller-selected status.
    */
   private async createBookingViaRPC(data: BookingValidation) {
     const supabase = (this.repo as any).supabase as SupabaseClient<any>;
