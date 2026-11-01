@@ -105,7 +105,7 @@ const RESPONSE_ALLOWLISTS: Record<string, string[]> = {
 const WRITABLE_FIELDS: Record<string, string[]> = {
   roles: ["name", "description"],
   profiles: ["full_name", "phone", "avatar_url", "is_active"],
-  business_settings: ["business_name", "email", "phone", "address", "google_maps_url", "whatsapp", "facebook", "instagram", "opening_hours", "logo_media_id", "favicon_media_id", "city"],
+  business_settings: ["business_name", "email", "phone", "address", "google_maps_url", "whatsapp", "facebook", "instagram", "opening_hours", "logo_media_id", "logo_light_media_id", "favicon_media_id", "city"],
   website_pages: ["page_key", "title", "subtitle", "content", "seo_title", "seo_description", "service_cards_enabled", "service_packages_enabled", "updated_by"],
   hero_slides: ["page_id", "badge", "title", "highlight", "subtitle", "media_id", "buttons", "display_order", "is_active", "alt_text", "cta_text", "cta_link"],
     services: ["category_id", "name", "slug", "description", "duration_minutes", "price", "media_id", "featured", "is_active", "alt_text", "tag", "href", "card_type", "type", "display_order", "page_id", "icon"],
