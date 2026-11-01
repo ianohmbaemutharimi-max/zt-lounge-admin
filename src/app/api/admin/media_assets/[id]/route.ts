@@ -15,6 +15,8 @@ import { withSuperAdminAuth } from "@/lib/auth/server";
 import { Repository } from "@/lib/repository";
 import { validateRecordId, validationError, notFoundError } from "@/lib/validation/admin";
 import { MEDIA_REFERENCE_TABLES } from "@/lib/media/reference-tables";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
+import { parsePublicStorageUrl } from "@/lib/storage/paths";
 
 export const dynamic = "force-dynamic";
 
@@ -103,9 +105,18 @@ export const DELETE = withSuperAdminAuth(
       }
 
       const repo = new Repository(auth.supabase as any);
+      const supabaseAdmin = await getSupabaseAdmin();
 
-      // Verify media asset exists. Storage deletion is intentionally deferred.
-      const existing = await repo.findById("media_assets", id);
+      // Read the live canonical URL from the real table contract.
+      const { data: existing, error: loadError } = await supabaseAdmin
+        .from("media_assets")
+        .select("id, public_url")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (loadError) {
+        throw new Error(`Could not load media asset before deletion: ${loadError.message}`);
+      }
       if (!existing) {
         return notFoundError("Media asset not found");
       }
@@ -126,14 +137,40 @@ export const DELETE = withSuperAdminAuth(
         );
       }
 
-      // Safe to delete - no references found
-      // Delete database record (repository handles RLS)
+      // Remove the registry row first. The database trigger and FK constraints
+      // remain the final guard if a reference appears between our scan and DELETE.
       await repo.delete("media_assets", id);
 
-      // Note: Storage file deletion should be handled by a database trigger
-      // or background job to avoid orphaning records if storage deletion fails
+      // A physical object may be shared by multiple media_assets rows. Remove it
+      // only after confirming no other registry row still points at this URL.
+      let storageCleanup: "deleted" | "retained_shared" | "skipped_unrecognized_url" | "failed" = "skipped_unrecognized_url";
+      const storageLocation = parsePublicStorageUrl(existing.public_url);
+      if (storageLocation) {
+        const { data: remaining, error: remainingError } = await supabaseAdmin
+          .from("media_assets")
+          .select("id")
+          .eq("public_url", existing.public_url)
+          .limit(1);
 
-      return new NextResponse(null, { status: 204 });
+        if (remainingError) {
+          storageCleanup = "failed";
+          console.error("[media_assets] Could not verify remaining object references; retained storage object:", remainingError.message);
+        } else if (remaining?.length) {
+          storageCleanup = "retained_shared";
+        } else {
+          const { error: storageError } = await supabaseAdmin.storage
+            .from(storageLocation.bucket)
+            .remove([storageLocation.path]);
+          if (storageError) {
+            storageCleanup = "failed";
+            console.error("[media_assets] Storage cleanup failed; registry row was deleted:", storageError.message);
+          } else {
+            storageCleanup = "deleted";
+          }
+        }
+      }
+
+      return NextResponse.json({ success: true, storageCleanup }, { status: 200 });
     } catch (error) {
       console.error("[media_assets] DELETE error:", error);
       return NextResponse.json(
