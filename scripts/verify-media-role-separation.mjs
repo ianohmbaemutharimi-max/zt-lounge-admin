@@ -38,6 +38,7 @@ function parseStorageUrl(value) {
     const split = rest.indexOf("/");
     if (split < 1 || split === rest.length - 1) return null;
     const bucket = decodeURIComponent(rest.slice(0, split));
+    if (!/^[a-z0-9][a-z0-9_-]{0,62}$/i.test(bucket)) return null;
     const path = rest.slice(split + 1).split("/").map(decodeURIComponent).join("/");
     return { key: bucket + "/" + path, bucket, path };
   } catch {
