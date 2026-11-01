@@ -65,19 +65,13 @@ export const bookingValidationSchema = z
     serviceCategoryId: z.string().uuid("Select a valid service category"),
     bookingDate: z
       .string()
-      .regex(DATE_FORMAT, "Booking date must be in YYYY-MM-DD format")
-      .optional()
-      .or(z.literal("")),
+      .regex(DATE_FORMAT, "Booking date must be in YYYY-MM-DD format"),
     startTime: z
       .string()
-      .regex(TIME_FORMAT, "Start time must be in HH:mm or HH:mm:ss format")
-      .optional()
-      .or(z.literal("")),
+      .regex(TIME_FORMAT, "Start time must be in HH:mm or HH:mm:ss format"),
     endTime: z
       .string()
-      .regex(TIME_FORMAT, "End time must be in HH:mm or HH:mm:ss format")
-      .optional()
-      .or(z.literal("")),
+      .regex(TIME_FORMAT, "End time must be in HH:mm or HH:mm:ss format"),
     guests: z.preprocess(
       (val) => (val === "" || val === undefined || val === null ? undefined : val),
       z.coerce
