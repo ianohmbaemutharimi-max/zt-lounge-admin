@@ -148,14 +148,15 @@ export const PUT = withSuperAdminAuth(
       if (deleteOld && oldLocation && existing.public_url !== publicUrlData.publicUrl) {
         const { data: otherAssets, error: referenceError } = await supabaseAdmin
           .from("media_assets")
-          .select("id")
-          .eq("public_url", existing.public_url)
-          .neq("id", id)
-          .limit(1);
+          .select("id, public_url")
+          .neq("id", id);
 
         if (referenceError) {
           console.error("[MEDIA_REPLACE] Old-object reference check failed; retained old object:", referenceError.message);
-        } else if (!otherAssets?.length) {
+        } else if (!(otherAssets ?? []).some((asset: { public_url: string }) => {
+          const location = parsePublicStorageUrl(asset.public_url);
+          return location?.bucket === oldLocation.bucket && location.path === oldLocation.path;
+        })) {
           const { error: removeError } = await supabaseAdmin.storage
             .from(oldLocation.bucket)
             .remove([oldLocation.path]);
