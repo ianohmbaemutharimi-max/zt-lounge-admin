@@ -72,7 +72,10 @@ export const PUT = withSuperAdminAuth(
       const pathCategory = oldLocation ? extractCategoryFromPath(oldLocation.path) : null;
       const typeCategory = CATEGORY_BY_MEDIA_TYPE[String(existing.media_type ?? "")];
 
-      if (pathCategory && typeCategory && pathCategory !== typeCategory) {
+      const compatibleGeneralMembership =
+        existing.media_type === "general" && pathCategory === "memberships";
+
+      if (pathCategory && typeCategory && pathCategory !== typeCategory && !compatibleGeneralMembership) {
         return NextResponse.json({
           success: false,
           error: "The stored path category conflicts with this asset's media type. Upload a new asset in the correct role and relink it instead of replacing this record.",
