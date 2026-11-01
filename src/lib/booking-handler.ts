@@ -45,10 +45,10 @@ export class BookingHandler {
    * Create booking via the live admin_booking(booking_data jsonb) RPC contract.
    *
    * The RPC reads exactly these jsonb keys:
-   *   customer_id, service_id, booking_date, start_time, end_time, guests,
+   *   customer_id, service_category_id, profile_id, booking_date, start_time, end_time, guests,
    *   special_requests, internal_notes, status (default 'confirmed'),
    *   guest_name, guest_phone, guest_email
-   * It generates booking_number server-side and does NOT accept staff_id,
+   * It generates booking_number server-side and does NOT accept booking_number, staff_id,
    * created_by, or booking_number. When customer_id is provided AND status is
    * 'confirmed' it creates a confirmed booking linked to that customer;
    * otherwise it creates a pending booking with the guest contact snapshot
@@ -211,7 +211,7 @@ export class BookingHandler {
 
     try {
       // CONTRACT BRIDGE: validation.data uses the public API camelCase contract
-      // (customerId, serviceId, staffId, bookingDate, startTime, endTime,
+      // (customerId, serviceCategoryId, bookingDate, startTime, endTime,
       // specialRequests) but Repository.update -> sanitizePayload allowlists
       // snake_case DB columns. Inverse-map via the canonical mapping layer so
       // those edits persist instead of being silently dropped by the allowlist.
