@@ -62,18 +62,7 @@ export const bookingValidationSchema = z
       .nullable()
       .optional()
       .or(z.literal("")),
-    serviceId: z
-      .string()
-      .uuid("Service ID must be a valid UUID")
-      .nullable()
-      .optional()
-      .or(z.literal("")),
-    staffId: z
-      .string()
-      .uuid("Staff ID must be a valid UUID")
-      .nullable()
-      .optional()
-      .or(z.literal("")),
+    serviceCategoryId: z.string().uuid("Select a valid service category"),
     bookingDate: z
       .string()
       .regex(DATE_FORMAT, "Booking date must be in YYYY-MM-DD format")
