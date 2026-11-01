@@ -22,6 +22,7 @@ export const VALID_CATEGORIES = [
   "memberships",
   "seo",
   "feature",
+  "general",
 ] as const;
 
 export type ImageCategory = (typeof VALID_CATEGORIES)[number];
