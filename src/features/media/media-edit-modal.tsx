@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Modal, Input, Field, Button, Select } from "@/components/ui";
+import { Modal, Input, Field, Button } from "@/components/ui";
 
 interface MediaAsset {
   id: string;
@@ -15,26 +15,11 @@ interface MediaEditModalProps {
   usageLocations?: string[];
   open: boolean;
   onClose: () => void;
-  onSave: (assetId: string, data: { alt_text: string; media_type: string | null }) => Promise<void>;
+  onSave: (assetId: string, data: { alt_text: string }) => Promise<void>;
 }
-
-const MEDIA_TYPES = [
-  { value: "", label: "Unspecified" },
-  { value: "hero", label: "Hero" },
-  { value: "gallery", label: "Gallery" },
-  { value: "branding", label: "Branding" },
-  { value: "service", label: "Service" },
-  { value: "testimonial", label: "Testimonial" },
-  { value: "promotion", label: "Promotion" },
-  { value: "menu", label: "Menu" },
-  { value: "seo", label: "SEO image" },
-  { value: "feature", label: "Page feature" },
-  { value: "general", label: "General" },
-] as const;
 
 export function MediaEditModal({ asset, usageLocations, open, onClose, onSave }: MediaEditModalProps) {
   const [altText, setAltText] = useState("");
-  const [mediaType, setMediaType] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,7 +27,6 @@ export function MediaEditModal({ asset, usageLocations, open, onClose, onSave }:
   useEffect(() => {
     if (open && asset) {
       setAltText(asset.alt_text || "");
-      setMediaType(asset.media_type || "");
       setError(null);
     }
   }, [open, asset]);
@@ -59,7 +43,7 @@ export function MediaEditModal({ asset, usageLocations, open, onClose, onSave }:
     try {
       setError(null);
       setIsSaving(true);
-      await onSave(asset.id, { alt_text: altText, media_type: mediaType || null });
+      await onSave(asset.id, { alt_text: altText });
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save media metadata");
@@ -87,13 +71,11 @@ export function MediaEditModal({ asset, usageLocations, open, onClose, onSave }:
           )}
         </div>
 
-        <Field label="Media type">
-          <Select value={mediaType} onChange={(e) => setMediaType(e.target.value)} disabled={isSaving}>
-            {MEDIA_TYPES.map((type) => (
-              <option key={type.value} value={type.value}>{type.label}</option>
-            ))}
-          </Select>
-        </Field>
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-stone-200">Content role</p>
+          <p className="text-sm text-stone-400">{asset.media_type || "general"}</p>
+          <p className="text-xs text-stone-500">The role is fixed at upload so the Storage path and content references cannot drift apart. Upload a new asset to use a different role.</p>
+        </div>
 
         <Field label="Alt text">
           <Input
