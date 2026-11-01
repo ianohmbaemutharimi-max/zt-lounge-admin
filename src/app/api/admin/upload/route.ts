@@ -332,17 +332,6 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-          {
-            success: false,
-            error: "An identical image already exists in the Media Library. Select the existing asset instead.",
-            existingMediaId: existing?.id,
-            code: "DUPLICATE_MEDIA",
-          },
-          { status: 409 }
-        );
-      }
-
-      return NextResponse.json(
         { success: false, error: "Failed to save upload record" },
         { status: 500 }
       );
