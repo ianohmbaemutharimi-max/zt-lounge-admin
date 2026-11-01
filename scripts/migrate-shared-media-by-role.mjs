@@ -184,10 +184,20 @@ for (const [objectKey, rows] of migrationGroups) {
         .maybeSingle();
 
       if (updateError || !updated) {
-        await supabase.storage.from(item.bucket).remove([item.targetPath]);
+        const { data: targetRefs, error: targetRefError } = await supabase
+          .from("media_assets")
+          .select("id")
+          .eq("public_url", publicData.publicUrl)
+          .limit(1);
+        if (!targetRefError && !targetRefs?.length) {
+          await supabase.storage.from(item.bucket).remove([item.targetPath]);
+        } else {
+          console.warn("Retained target object because its references could not be disproved:", item.targetPath, targetRefError?.message);
+        }
         throw new Error("Media row update failed for " + item.assetId + ": " + (updateError?.message ?? "row changed during migration"));
       }
 
+      item.targetUrl = publicData.publicUrl;
       completed.push(item);
       console.log("Moved", item.assetId, "=>", item.targetPath);
     }
@@ -229,9 +239,18 @@ for (const [objectKey, rows] of migrationGroups) {
         .from("media_assets")
         .update({ public_url: item.oldUrl, updated_at: new Date().toISOString() })
         .eq("id", item.assetId);
-      const { error: removeError } = await supabase.storage.from(item.bucket).remove([item.targetPath]);
+      const { data: targetRefs, error: targetRefError } = await supabase
+        .from("media_assets")
+        .select("id")
+        .eq("public_url", item.targetUrl)
+        .limit(1);
       if (rollbackError) console.error("ROLLBACK DB FAILED for", item.assetId, rollbackError.message);
-      if (removeError) console.error("ROLLBACK STORAGE CLEANUP FAILED for", item.targetPath, removeError.message);
+      if (targetRefError || targetRefs?.length) {
+        console.error("ROLLBACK STORAGE OBJECT RETAINED because references may remain:", item.targetPath, targetRefError?.message);
+      } else {
+        const { error: removeError } = await supabase.storage.from(item.bucket).remove([item.targetPath]);
+        if (removeError) console.error("ROLLBACK STORAGE CLEANUP FAILED for", item.targetPath, removeError.message);
+      }
     }
     throw error;
   }
