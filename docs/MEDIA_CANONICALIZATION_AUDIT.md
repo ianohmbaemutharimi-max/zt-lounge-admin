@@ -552,7 +552,7 @@ Each media record represents one independently managed content-role asset:
 - Replace API now reads/writes only live `media_assets` columns and parses Storage identity from `public_url`; it does not assume nonexistent `bucket` or `path` columns.
 - Delete API checks all canonical references, then removes a Storage object only when no remaining media registry row points at the same URL.
 - Added migration `20261101120000_allow_role_specific_media_copies.sql` to drop the global unique constraint and create a non-unique lookup index. It has **not** been applied to production.
-- Added `scripts/migrate-shared-media-by-role.mjs`. It defaults to dry-run; `--apply` additionally requires `ALLOW_PRODUCTION_MEDIA_MIGRATION=true`. It copies every record in duplicate Storage-object groups into its own role folder, updates only that record's `public_url`, verifies old URLs are no longer referenced, then removes the old shared object. It preserves all media IDs and content references.
+- Added `scripts/migrate-shared-media-by-role.mjs`. It defaults to dry-run; `--apply` additionally requires `ALLOW_PRODUCTION_MEDIA_MIGRATION=true`. It moves every non-canonical media asset—not only the six shared-object groups—into its own `assets/images/{role}/{media_id}.{ext}` path, updates only that record's `public_url`, verifies old object URLs are no longer referenced, then removes the old source object. It preserves all media IDs and content references. Current live inventory: 58 media rows, 6 shared-object groups covering 12 rows; the dry run should plan the non-canonical rows among all 58.
 
 ### Remaining verification / execution
 
@@ -560,7 +560,7 @@ Each media record represents one independently managed content-role asset:
 - [ ] Run TypeScript, ESLint, and targeted Media Library tests.
 - [ ] Deploy the application code before enabling duplicate-content uploads.
 - [ ] Apply the database migration after the compatible code is deployed.
-- [ ] Run the copy script once in dry-run mode; inspect all proposed asset IDs, roles, and destination paths.
+- [ ] Run the copy script once in dry-run mode; inspect all proposed asset IDs, roles, source paths, and deterministic destination paths for all 58 current assets.
 - [ ] Run with `--apply` only after the dry-run matches the six known duplicate groups and any additional groups are understood.
 - [ ] Re-audit that no two media rows share a Storage object path, all media IDs remain unchanged, all original content references remain intact, and all URLs resolve.
 - [ ] Verify deleting one unreferenced Service asset leaves Gallery/Hero assets and their files intact.
