@@ -39,6 +39,7 @@ export const PUT = withSuperAdminAuth(
     let supabaseAdmin: Awaited<ReturnType<typeof getSupabaseAdmin>> | null = null;
     let uploadedBucket: string | null = null;
     let uploadedPath: string | null = null;
+    let databaseUpdated = false;
 
     try {
       const { id } = await ctx.params;
@@ -129,6 +130,8 @@ export const PUT = withSuperAdminAuth(
         return NextResponse.json({ success: false, error: "Failed to update media asset record" }, { status: 500 });
       }
 
+      databaseUpdated = true;
+
       // Old objects are shared by some existing role-specific registry rows.
       // Never remove an object while another media_assets row still points to it.
       if (deleteOld && oldLocation && existing.public_url !== publicUrlData.publicUrl) {
@@ -164,7 +167,7 @@ export const PUT = withSuperAdminAuth(
         },
       });
     } catch (error) {
-      if (supabaseAdmin && uploadedBucket && uploadedPath) {
+      if (!databaseUpdated && supabaseAdmin && uploadedBucket && uploadedPath) {
         const { error: cleanupError } = await supabaseAdmin.storage.from(uploadedBucket).remove([uploadedPath]);
         if (cleanupError) console.error("[MEDIA_REPLACE] Error cleanup failed:", cleanupError.message);
       }
