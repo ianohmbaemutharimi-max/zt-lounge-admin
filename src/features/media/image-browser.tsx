@@ -19,6 +19,9 @@ const MEDIA_TYPE_BY_UPLOAD_CATEGORY: Record<ImageCategory, string> = {
   branding: "branding",
   promotions: "promotion",
   memberships: "general",
+  seo: "seo",
+  feature: "feature",
+  general: "general",
 };
 
 export interface ImageBrowserProps {
