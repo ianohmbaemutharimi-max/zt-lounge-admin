@@ -22,7 +22,7 @@ const REFERENCES = [
   { table: "promotions", column: "media_id", role: "promotion" },
   { table: "branding_assets", column: "media_id", role: "branding" },
   { table: "page_features", column: "media_id", role: "feature" },
-  { table: "page_seo", column: "og_image_media_id", role: "seo" },
+  { table: "page_seo", column: "og_image_media_id", role: "seo", recordColumn: "page_key" },
   { table: "business_settings", column: "logo_media_id", role: "branding" },
   { table: "business_settings", column: "logo_light_media_id", role: "branding" },
   { table: "business_settings", column: "favicon_media_id", role: "branding" },
@@ -75,13 +75,14 @@ const duplicateStorageObjects = [...objectGroups.entries()]
 const roleByAsset = new Map();
 const roleMismatches = [];
 for (const ref of REFERENCES) {
-  const rows = await readAll(ref.table, "id, " + ref.column);
+  const recordColumn = ref.recordColumn ?? "id";
+  const rows = await readAll(ref.table, recordColumn + ", " + ref.column);
   for (const row of rows) {
     const mediaId = row[ref.column];
     if (!mediaId) continue;
     const asset = assetById.get(mediaId);
     if (!asset) {
-      roleMismatches.push({ table: ref.table, recordId: row.id, mediaId, expectedRole: ref.role, problem: "missing media_assets row" });
+      roleMismatches.push({ table: ref.table, recordId: row[recordColumn], mediaId, expectedRole: ref.role, problem: "missing media_assets row" });
       continue;
     }
     const roles = roleByAsset.get(mediaId) ?? new Set();
@@ -90,7 +91,7 @@ for (const ref of REFERENCES) {
     if (asset.media_type !== ref.role) {
       roleMismatches.push({
         table: ref.table,
-        recordId: row.id,
+        recordId: row[recordColumn],
         mediaId,
         expectedRole: ref.role,
         actualMediaType: asset.media_type,
