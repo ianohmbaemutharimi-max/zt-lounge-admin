@@ -24,6 +24,8 @@ export const CONTENT_TABLE_CATEGORY_MAP = {
   testimonials: "testimonials",
   promotions: "promotions",
   membership_plans: "memberships",
+  page_seo: "seo",
+  page_features: "feature",
   // business_settings has multiple media columns, all require "branding"
   business_settings: "branding",
 } as const;
@@ -42,6 +44,9 @@ export const CATEGORY_CONTENT_TABLES_MAP: Record<ImageCategory, readonly Content
   branding: ["business_settings"],
   promotions: ["promotions"],
   memberships: ["membership_plans"],
+  seo: ["page_seo"],
+  feature: ["page_features"],
+  general: [],
 } as const;
 
 /**
