@@ -28,6 +28,7 @@ export function SettingsView() {
   const [saved, setSaved] = useState(false);
   const [sysDraft, setSysDraft] = useState<Record<number, string>>({});
     const [logoPickerOpen, setLogoPickerOpen] = useState(false);
+  const [logoLightPickerOpen, setLogoLightPickerOpen] = useState(false);
   const [faviconPickerOpen, setFaviconPickerOpen] = useState(false);
 
   const settings = useQuery({ queryKey: queryKeys["business-settings"].all(), queryFn: () => api.list("business-settings") });
@@ -37,6 +38,7 @@ export function SettingsView() {
 
   // Resolve logo and favicon assets from media
     const logoAsset = media.data?.find((m: any) => m.id === biz?.logo_media_id);
+  const logoLightAsset = media.data?.find((m: any) => m.id === biz?.logo_light_media_id);
   const faviconAsset = media.data?.find((m: any) => m.id === biz?.favicon_media_id);
 
   const form = useForm<FormValues>({ 
@@ -71,7 +73,7 @@ export function SettingsView() {
   });
 
   const saveBranding = useMutation({
-        mutationFn: async (updates: { logo_media_id?: string | null; favicon_media_id?: string | null }) => {
+        mutationFn: async (updates: { logo_media_id?: string | null; logo_light_media_id?: string | null; favicon_media_id?: string | null }) => {
       const response = await fetch("/api/admin/business-settings/branding", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -94,6 +96,10 @@ export function SettingsView() {
   // receives media_id (never a raw URL) and persists it to business_settings.
     const handleLogoMediaSave = async ({ media_id }: { media_id: string | null }) => {
     await saveBranding.mutateAsync({ logo_media_id: media_id });
+  };
+
+  const handleLogoLightMediaSave = async ({ media_id }: { media_id: string | null }) => {
+    await saveBranding.mutateAsync({ logo_light_media_id: media_id });
   };
 
   const handleFaviconMediaSave = async ({ media_id }: { media_id: string | null }) => {
@@ -164,12 +170,24 @@ export function SettingsView() {
                 )}
               </div>
 
-              {/* Light logo is unavailable until its missing live DB column is added through an approved migration. */}
-              <div className="space-y-2 rounded-lg border border-stone-700 p-4">
+              {/* Light logo */}
+              <div className="space-y-2">
                 <label className="text-sm font-medium text-white">Light Logo</label>
-                <p className="text-xs text-muted">
-                  Not available yet: the live business_settings table has no logo_light_media_id column. This picker is disabled to avoid a save that cannot persist.
-                </p>
+                {logoLightAsset ? (
+                  <div className="group relative aspect-video overflow-hidden rounded-lg border border-stone-700">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={logoLightAsset.public_url} alt={logoLightAsset.file_name || "Light logo"} className="h-full w-full object-contain bg-stone-900" />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
+                      <Button type="button" variant="outline" onClick={() => setLogoLightPickerOpen(true)}>Change Light Logo</Button>
+                    </div>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => setLogoLightPickerOpen(true)} className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-stone-700 bg-stone-900/50 text-stone-500 transition-colors hover:border-stone-600 hover:text-stone-400">
+                    <ImageIcon className="h-8 w-8" />
+                    <span className="text-sm">Select Light Logo</span>
+                  </button>
+                )}
+                {logoLightAsset && <p className="text-xs text-muted">{logoLightAsset.file_name || "Untitled"}</p>}
               </div>
 
               {/* Favicon */}
@@ -264,6 +282,16 @@ export function SettingsView() {
         title="Edit Logo"
         uploadCategory="branding"
         allowRemove={false}
+      />
+      <ImageChangeDialog
+        open={logoLightPickerOpen}
+        onClose={() => setLogoLightPickerOpen(false)}
+        currentMediaId={biz?.logo_light_media_id}
+        currentImageUrl={logoLightAsset?.public_url ?? null}
+        onSave={handleLogoLightMediaSave}
+        title="Edit Light Logo"
+        uploadCategory="branding"
+        allowRemove={true}
       />
       <ImageChangeDialog
         open={faviconPickerOpen}
