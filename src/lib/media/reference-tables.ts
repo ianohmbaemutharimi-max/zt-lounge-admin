@@ -35,7 +35,7 @@ export const MEDIA_REFERENCE_TABLES = [
   { table: "branding_assets", column: "media_id" },
   { table: "page_features", column: "media_id" },
   { table: "page_seo", column: "og_image_media_id" },
-  // Branding columns are two distinct FKs on the same table.
+  // All three branding columns are FKs on the same table.
   { table: "business_settings", column: "logo_media_id" },
   { table: "business_settings", column: "favicon_media_id" },
   { table: "business_settings", column: "logo_light_media_id" },
