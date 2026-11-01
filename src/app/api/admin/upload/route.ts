@@ -265,7 +265,7 @@ export async function POST(request: NextRequest) {
     // Do not deduplicate by content hash across content roles.
     console.log("[UPLOAD] Uploading independent role-specific media object");
 
-    console.log("[UPLOAD] No duplicate detected, starting storage upload");
+    console.log("[UPLOAD] Starting storage upload");
     const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
       .from(uploadBucket)
       .upload(storagePath, processed.buffer, {
@@ -332,15 +332,7 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // The database's unique content_hash constraint handles simultaneous
-      // uploads that race past the first duplicate lookup.
-      if (dbError.code === "23505" && dbError.message.includes("content_hash")) {
-        const { data: existing } = await supabaseAdmin
-          .from("media_assets")
-          .select("id, file_name, public_url")
-          .eq("content_hash", contentHash)
-          .maybeSingle();
-        return NextResponse.json(
+      return NextResponse.json(
           {
             success: false,
             error: "An identical image already exists in the Media Library. Select the existing asset instead.",
