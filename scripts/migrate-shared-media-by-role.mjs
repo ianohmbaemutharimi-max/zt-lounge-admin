@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-import { randomUUID } from "node:crypto";
 
 dotenv.config({ path: ".env.local" });
 
@@ -94,7 +93,7 @@ for (const [objectKey, rows] of duplicateGroups) {
     if (!/^[a-z0-9]{1,8}$/.test(extension)) {
       throw new Error("Unsafe file extension for asset " + row.id);
     }
-    const targetPath = "assets/images/" + folder + "/" + randomUUID() + "." + extension;
+    const targetPath = "assets/images/" + folder + "/" + row.id + "." + extension;
     plan.push({ objectKey, assetId: row.id, oldUrl: row.public_url, bucket: row.location.bucket, oldPath: row.location.path, targetPath, mediaType: row.media_type });
   }
 }
@@ -118,10 +117,24 @@ for (const [objectKey, rows] of duplicateGroups) {
 
   try {
     for (const item of groupPlan) {
-      const { error: copyError } = await supabase.storage
-        .from(item.bucket)
-        .copy(item.oldPath, item.targetPath);
-      if (copyError) throw new Error("Storage copy failed for " + item.assetId + ": " + copyError.message);
+      if (item.targetPath !== item.oldPath) {
+        const targetDirectory = item.targetPath.slice(0, item.targetPath.lastIndexOf("/"));
+        const targetName = item.targetPath.slice(item.targetPath.lastIndexOf("/") + 1);
+        const { data: existingObjects, error: listError } = await supabase.storage
+          .from(item.bucket)
+          .list(targetDirectory, { search: targetName, limit: 10 });
+        if (listError) throw new Error("Could not inspect target path for " + item.assetId + ": " + listError.message);
+
+        const targetAlreadyExists = (existingObjects ?? []).some((object) => object.name === targetName);
+        if (!targetAlreadyExists) {
+          const { error: copyError } = await supabase.storage
+            .from(item.bucket)
+            .copy(item.oldPath, item.targetPath);
+          if (copyError) throw new Error("Storage copy failed for " + item.assetId + ": " + copyError.message);
+        } else {
+          console.log("Reusing previously copied object:", item.targetPath);
+        }
+      }
 
       const { data: publicData } = supabase.storage
         .from(item.bucket)
@@ -176,7 +189,7 @@ for (const [objectKey, rows] of duplicateGroups) {
         .from("media_assets")
         .update({ public_url: item.oldUrl, updated_at: new Date().toISOString() })
         .eq("id", item.assetId);
-      const { error: removeError } = await supabase.storage.from(item.bucket).remove([item.targetPath]);
+      const { error: removeError } = item.targetPath === item.oldPath ? { error: null } : await supabase.storage.from(item.bucket).remove([item.targetPath]);
       if (rollbackError) console.error("ROLLBACK DB FAILED for", item.assetId, rollbackError.message);
       if (removeError) console.error("ROLLBACK STORAGE CLEANUP FAILED for", item.targetPath, removeError.message);
     }
