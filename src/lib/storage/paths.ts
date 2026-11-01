@@ -20,6 +20,9 @@ export const VALID_CATEGORIES = [
   "branding",
   "promotions",
   "memberships",
+  "seo",
+  "feature",
+  "general",
 ] as const;
 
 export type ImageCategory = (typeof VALID_CATEGORIES)[number];
@@ -120,7 +123,33 @@ export function extractCategoryFromPath(path: string): ImageCategory | null {
 }
 
 /**
+ * Parse only public Supabase Storage URLs belonging to this configured project.
+ * Unknown/external URLs are intentionally not eligible for server-side deletion.
+ */
+export function parsePublicStorageUrl(publicUrl: string): { bucket: string; path: string } | null {
+  try {
+    const parsed = new URL(publicUrl);
+    const configuredUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL;
+    if (!configuredUrl || parsed.origin !== new URL(configuredUrl).origin) return null;
+
+    const prefix = "/storage/v1/object/public/";
+    if (!parsed.pathname.startsWith(prefix)) return null;
+    const objectRef = parsed.pathname.slice(prefix.length);
+    const separator = objectRef.indexOf("/");
+    if (separator <= 0 || separator === objectRef.length - 1) return null;
+
+    const bucket = decodeURIComponent(objectRef.slice(0, separator));
+    const path = objectRef.slice(separator + 1).split("/").map(decodeURIComponent).join("/");
+    if (!/^[a-z0-9][a-z0-9_-]{0,62}$/i.test(bucket) || !path || hasPathTraversal(path) || path.split("/").some((part) => part === "." || part === "..")) return null;
+    return { bucket, path };
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Detects potential path traversal attempts in user input.
+
  * 
  * @param input - User-provided string to check
  * @returns True if path traversal detected

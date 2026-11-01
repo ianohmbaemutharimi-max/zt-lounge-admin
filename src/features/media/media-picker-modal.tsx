@@ -12,7 +12,7 @@ export interface MediaPickerModalProps {
   onSelect: (asset: SelectableMediaAsset) => void;
   /** Whether the browser is actively displayed (controls query enable/disable) */
   enabled?: boolean;
-  /** Optional bucket filter passed to ImageBrowser */
+  /** @deprecated Bucket metadata is not present in the canonical media_assets schema. */
   bucket?: string;
 }
 
@@ -22,7 +22,6 @@ export function MediaPickerModal({
   selectedMediaId,
   onSelect,
   enabled,
-  bucket,
 }: MediaPickerModalProps) {
   const handleSelect = useCallback(
     (asset: SelectableMediaAsset) => {
@@ -39,7 +38,6 @@ export function MediaPickerModal({
           selectedMediaId={selectedMediaId}
           onSelect={handleSelect}
           enabled={enabled}
-          bucket={bucket}
         />
 
         {/* Actions */}

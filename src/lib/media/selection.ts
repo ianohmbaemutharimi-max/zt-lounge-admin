@@ -21,7 +21,7 @@ import type {
  * 
  * Admin-only operation protected by withAdminAuth middleware.
  * 
- * @param options Query parameters (bucket, search, pagination)
+ * @param options Query parameters (media type, search, pagination)
  * @returns Paginated media assets with metadata
  * @throws Error if unauthorized or API fails
  */
@@ -29,10 +29,6 @@ export async function getSelectableMedia(
   options?: MediaQueryOptions
 ): Promise<MediaSelectionResponse> {
   const searchParams = new URLSearchParams();
-
-  if (options?.bucket) {
-    searchParams.set("bucket", options.bucket);
-  }
 
   if (options?.category) {
     searchParams.set("category", options.category);
@@ -88,7 +84,7 @@ export async function getMediaAssetById(
 /**
  * Search media assets by text query
  * 
- * Searches title, alt_text, and path fields.
+ * Searches file_name, alt_text, and public_url fields.
  * Admin-only operation.
  * 
  * @param query Search term
@@ -135,18 +131,10 @@ export async function validateMediaId(mediaId: string): Promise<boolean> {
  * @param limit Max results
  * @returns Media assets in bucket
  */
+/** Bucket identity is not stored on media_assets; callers must use media type filters instead. */
 export async function getMediaByBucket(
-  bucket: string,
-  limit: number = 50
+  _bucket: string,
+  _limit: number = 50
 ): Promise<SelectableMediaAsset[]> {
-  try {
-    const result = await getSelectableMedia({
-      bucket,
-      limit,
-    });
-    return result.data;
-  } catch (error) {
-    console.error("Error fetching media by bucket:", error);
-    return [];
-  }
+  throw new Error("Bucket filtering is unavailable because media_assets has no bucket column.");
 }

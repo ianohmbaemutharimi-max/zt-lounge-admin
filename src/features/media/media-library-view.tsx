@@ -11,19 +11,15 @@ import { MediaUsageModal } from "./media-usage-modal";
 
 interface MediaAsset {
   id: string;
-  bucket: string;
-  path: string;
   public_url: string;
-  original_name: string | null;
+  file_name: string | null;
   mime_type: string | null;
   file_size: number | null;
-  width: number | null;
-  height: number | null;
   alt_text: string | null;
-  title: string | null;
-  description: string | null;
-  category: string | null;
-  created_at: string;
+  media_type: string | null;
+  display_id: number;
+  page_id: string | null;
+  created_at: string | null;
   usageCount: number;
   usageLocations?: string[];
 }
@@ -78,7 +74,8 @@ function formatDate(dateString: string): string {
 
 export function MediaLibraryView() {
   const [filter, setFilter] = useState<string>("all"); // "all", "used", "unused"
-  const [categoryFilter, setCategoryFilter] = useState<string>(""); // "", "hero", "gallery", etc.
+  const [categoryFilter, setCategoryFilter] = useState<string>(""); // live media_type enum filter
+  const [pageOffset, setPageOffset] = useState(0);
   const [search, setSearch] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
   const [selectedAsset, setSelectedAsset] = useState<MediaAsset | null>(null);
@@ -87,6 +84,7 @@ export function MediaLibraryView() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [usageModalOpen, setUsageModalOpen] = useState(false);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploadCategory, setUploadCategory] = useState<string>("branding");
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
@@ -98,18 +96,20 @@ export function MediaLibraryView() {
   // Debounce search
   const handleSearchChange = (value: string) => {
     setSearch(value);
+    setPageOffset(0);
     const timer = setTimeout(() => setDebouncedSearch(value), 300);
     return () => clearTimeout(timer);
   };
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["media", { filter, category: categoryFilter, search: debouncedSearch }],
+    queryKey: ["media", { filter, category: categoryFilter, search: debouncedSearch, offset: pageOffset }],
     queryFn: () =>
       fetchMedia({
         filter: filter || undefined,
         category: categoryFilter || undefined,
         search: debouncedSearch || undefined,
         limit: 50,
+        offset: pageOffset,
       }),
   });
 
@@ -118,7 +118,7 @@ export function MediaLibraryView() {
     setEditModalOpen(true);
   };
 
-  const handleSaveMedia = async (assetId: string, data: { alt_text: string; title: string; description: string; category: string | null }) => {
+  const handleSaveMedia = async (assetId: string, data: { alt_text: string }) => {
     const response = await fetch(`/api/admin/media_assets/${assetId}`, {
       method: "PATCH",
       headers: {
@@ -136,10 +136,10 @@ export function MediaLibraryView() {
 
   // Upload mutation
   const uploadMutation = useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async ({ file, category }: { file: File; category: string }) => {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("category", "branding"); // Default category for media library
+      formData.append("category", category);
 
       const xhr = new XMLHttpRequest();
 
@@ -186,7 +186,7 @@ export function MediaLibraryView() {
     if (file) {
       setUploadedFileName(file.name);
       setUploadError(null);
-      uploadMutation.mutate(file);
+      uploadMutation.mutate({ file, category: uploadCategory });
     }
   };
 
@@ -197,10 +197,9 @@ export function MediaLibraryView() {
 
   // Replace mutation - replaces image file while preserving media_assets.id
   const replaceMutation = useMutation({
-    mutationFn: async ({ assetId, file, category }: { assetId: string; file: File; category: string }) => {
+    mutationFn: async ({ assetId, file }: { assetId: string; file: File }) => {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("category", category);
       formData.append("deleteOld", "true");
 
       const xhr = new XMLHttpRequest();
@@ -259,7 +258,6 @@ export function MediaLibraryView() {
       replaceMutation.mutate({
         assetId: selectedAsset.id,
         file: replaceFile,
-        category: "branding", // Default category for media library
       });
     }
   };
@@ -356,7 +354,7 @@ export function MediaLibraryView() {
         actions={
           <Button
             variant="gold"
-            onClick={() => setUploadOpen(true)}
+            onClick={() => { setUploadCategory(categoryFilter === "service" ? "services" : categoryFilter === "testimonial" ? "testimonials" : categoryFilter === "promotion" ? "promotions" : categoryFilter || "branding"); setUploadOpen(true); }}
             className="gap-2"
           >
             <Plus className="h-4 w-4" />
@@ -387,44 +385,44 @@ export function MediaLibraryView() {
             <div className="flex gap-2">
               <Button
                 variant={filter === "all" ? "gold" : "ghost"}
-                onClick={() => setFilter("all")}
+                onClick={() => { setFilter("all"); setPageOffset(0); }}
                 className="text-sm"
               >
                 All Images
               </Button>
               <Button
                 variant={filter === "used" ? "gold" : "ghost"}
-                onClick={() => setFilter("used")}
+                onClick={() => { setFilter("used"); setPageOffset(0); }}
                 className="text-sm"
               >
                 Used
               </Button>
               <Button
                 variant={filter === "unused" ? "gold" : "ghost"}
-                onClick={() => setFilter("unused")}
+                onClick={() => { setFilter("unused"); setPageOffset(0); }}
                 className="text-sm"
               >
                 Unused
               </Button>
             </div>
 
-            {/* Category Filter */}
+            {/* Media type filter */}
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={categoryFilter === "" ? "gold" : "ghost"}
-                onClick={() => setCategoryFilter("")}
+                onClick={() => { setCategoryFilter(""); setPageOffset(0); }}
                 className="text-sm"
               >
-                All Categories
+                All Types
               </Button>
-              {["hero", "gallery", "menu", "services", "testimonials", "branding", "promotions", "memberships", "uncategorized"].map((cat) => (
+              {["hero", "gallery", "menu", "service", "testimonial", "branding", "promotion", "seo", "feature", "general", "uncategorized"].map((cat) => (
                 <Button
                   key={cat}
                   variant={categoryFilter === cat ? "gold" : "ghost"}
-                  onClick={() => setCategoryFilter(cat)}
+                  onClick={() => { setCategoryFilter(cat); setPageOffset(0); }}
                   className="text-sm capitalize"
                 >
-                  {cat === "uncategorized" ? "Uncategorized" : cat}
+                  {cat === "uncategorized" ? "Unspecified" : cat}
                 </Button>
               ))}
             </div>
@@ -436,6 +434,7 @@ export function MediaLibraryView() {
                 onClick={() => {
                   setFilter("all");
                   setCategoryFilter("");
+                  setPageOffset(0);
                   setSearch("");
                   setDebouncedSearch("");
                 }}
@@ -476,6 +475,30 @@ export function MediaLibraryView() {
         </div>
       )}
 
+      {total > 0 && (
+        <div className="mt-6 flex items-center justify-between gap-3 text-sm text-gray-400">
+          <span>
+            Showing {Math.min(pageOffset + 1, total)}–{Math.min(pageOffset + assets.length, total)} of {total}
+          </span>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              disabled={pageOffset === 0 || isLoading}
+              onClick={() => setPageOffset(Math.max(0, pageOffset - 50))}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="ghost"
+              disabled={!data?.pagination.hasMore || isLoading}
+              onClick={() => setPageOffset(pageOffset + 50)}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Upload Dialog */}
       <Modal
         open={uploadOpen}
@@ -493,6 +516,28 @@ export function MediaLibraryView() {
               <p>{uploadError}</p>
             </div>
           )}
+
+          <Field label="Content role">
+            <select
+              value={uploadCategory}
+              onChange={(event) => setUploadCategory(event.target.value)}
+              className="w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-100"
+              disabled={uploadProgress > 0}
+            >
+              <option value="services">Services</option>
+              <option value="gallery">Gallery</option>
+              <option value="hero">Hero slides</option>
+              <option value="menu">Menu</option>
+              <option value="testimonials">Testimonials</option>
+              <option value="promotions">Promotions</option>
+              <option value="branding">Branding</option>
+              <option value="seo">SEO images</option>
+              <option value="feature">Page features</option>
+              <option value="memberships">Memberships</option>
+              <option value="general">General</option>
+            </select>
+            <p className="mt-1 text-xs text-gray-500">Each upload creates a new media ID and a separate storage path for this role, even when the image bytes match another asset.</p>
+          </Field>
 
           <Field label="Image File">
             <div className="flex items-center gap-4">
@@ -589,7 +634,7 @@ export function MediaLibraryView() {
 
           <div className="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
             <p className="text-sm text-gray-400">Replacing image:</p>
-            <p className="mt-1 font-medium text-white">{selectedAsset?.title || selectedAsset?.original_name || "Untitled"}</p>
+            <p className="mt-1 font-medium text-white">{selectedAsset?.file_name || "Unnamed file"}</p>
             {selectedAsset && selectedAsset.usageCount > 0 && (
               <div className="mt-2">
                 <Badge status="active">
@@ -722,7 +767,7 @@ function MediaAssetCard({ asset, onEdit, onReplace, onDelete, onViewUsage }: {
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={asset.public_url}
-            alt={asset.alt_text || asset.title || "Media asset"}
+            alt={asset.alt_text || asset.file_name || "Media asset"}
             className="h-full w-full object-cover"
             onError={() => setImageError(true)}
             loading="lazy"
@@ -751,8 +796,8 @@ function MediaAssetCard({ asset, onEdit, onReplace, onDelete, onViewUsage }: {
           <button
             onClick={() => onEdit(asset)}
             className="flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/30"
-            aria-label={`Edit image: ${asset.title || asset.original_name || "Untitled"}`}
-            title={`Edit image: ${asset.title || asset.original_name || "Untitled"}`}
+            aria-label={`Edit image: ${asset.file_name || "Unnamed file"}`}
+            title={`Edit image: ${asset.file_name || "Unnamed file"}`}
           >
             <Pencil className="h-4 w-4" />
             <span>Edit</span>
@@ -763,8 +808,8 @@ function MediaAssetCard({ asset, onEdit, onReplace, onDelete, onViewUsage }: {
       {/* Asset details */}
       <div className="p-3">
         {/* Title */}
-        <h3 className="truncate font-medium text-gray-100" title={asset.title || undefined}>
-          {asset.title || "Untitled"}
+        <h3 className="truncate font-medium text-gray-100" title={asset.file_name || undefined}>
+          {asset.file_name || "Unnamed file"}
         </h3>
 
         {/* Alt text */}
@@ -793,15 +838,6 @@ function MediaAssetCard({ asset, onEdit, onReplace, onDelete, onViewUsage }: {
 
         {/* Metadata */}
         <div className="mt-2 space-y-1 text-xs text-gray-400">
-          {asset.width && asset.height && (
-            <div className="flex items-center justify-between">
-              <span className="font-medium">Size:</span>
-              <span>
-                {asset.width} × {asset.height}
-              </span>
-            </div>
-          )}
-
           {asset.file_size && (
             <div className="flex items-center justify-between">
               <span className="font-medium">File:</span>
@@ -810,8 +846,12 @@ function MediaAssetCard({ asset, onEdit, onReplace, onDelete, onViewUsage }: {
           )}
 
           <div className="flex items-center justify-between">
+            <span className="font-medium">Type:</span>
+            <span>{asset.media_type || "Unspecified"}</span>
+          </div>
+          <div className="flex items-center justify-between">
             <span className="font-medium">Created:</span>
-            <span>{formatDate(asset.created_at)}</span>
+            <span>{asset.created_at ? formatDate(asset.created_at) : "—"}</span>
           </div>
         </div>
 
@@ -831,7 +871,7 @@ function MediaAssetCard({ asset, onEdit, onReplace, onDelete, onViewUsage }: {
             <button
               onClick={() => onDelete(asset)}
               className="inline-flex items-center gap-1.5 rounded-md border border-rose-700/50 bg-rose-900/20 px-3 py-1.5 text-xs font-medium text-rose-400 transition-colors hover:bg-rose-900/40 hover:border-rose-600"
-              aria-label={`Delete image: ${asset.title || asset.original_name || "Untitled"}`}
+              aria-label={`Delete image: ${asset.file_name || "Unnamed file"}`}
               title="Delete this image"
             >
               <Trash2 className="h-3 w-3" />
@@ -843,7 +883,7 @@ function MediaAssetCard({ asset, onEdit, onReplace, onDelete, onViewUsage }: {
             <button
               onClick={() => onReplace(asset)}
               className="inline-flex items-center gap-1.5 rounded-md border border-gray-700 bg-gray-800 px-3 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:bg-gray-700 hover:border-gray-600"
-              aria-label={`Replace image: ${asset.title || asset.original_name || "Untitled"}`}
+              aria-label={`Replace image: ${asset.file_name || "Unnamed file"}`}
               title="Replace the image file while keeping all existing uses"
             >
               <RefreshCw className="h-3 w-3" />
@@ -852,7 +892,7 @@ function MediaAssetCard({ asset, onEdit, onReplace, onDelete, onViewUsage }: {
             <button
               onClick={() => onEdit(asset)}
               className="inline-flex items-center gap-1.5 rounded-md border border-gray-700 bg-gray-800 px-3 py-1.5 text-xs font-medium text-gray-200 transition-colors hover:bg-gray-700 hover:border-gray-600"
-              aria-label={`Edit image: ${asset.title || asset.original_name || "Untitled"}`}
+              aria-label={`Edit image: ${asset.file_name || "Unnamed file"}`}
               title="Edit image details"
             >
               <Pencil className="h-3 w-3" />

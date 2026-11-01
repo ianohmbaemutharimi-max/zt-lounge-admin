@@ -16,7 +16,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer, getSupabaseAdmin } from "@/lib/supabase/server";
-import { CONTENT_MANAGER_ROLES } from "@/lib/auth/server";
 import { 
   sanitizeCategory,
   generateStoragePath,
@@ -25,6 +24,24 @@ import {
   type ImageCategory
 } from "@/lib/storage/paths";
 import { processImage, MAX_FILE_SIZE } from "@/lib/images/processor";
+
+// Map UI upload categories to the actual public.media_type enum.
+// The live enum has no membership value; until that schema/relationship is
+// introduced, membership uploads are classified as general rather than using
+// an invalid enum label.
+const MEDIA_TYPE_BY_CATEGORY: Record<ImageCategory, string> = {
+  hero: "hero",
+  gallery: "gallery",
+  menu: "menu",
+  services: "service",
+  testimonials: "testimonial",
+  branding: "branding",
+  promotions: "promotion",
+  memberships: "general",
+  seo: "seo",
+  feature: "feature",
+  general: "general",
+};
 
 /**
  * CRITICAL: Sharp requires Node.js runtime (not Edge).
@@ -228,13 +245,9 @@ export async function POST(request: NextRequest) {
 
     console.log("[UPLOAD] Generating storage path");
     
-    // 8. Content hash (SHA-256 of final normalized WebP buffer)
-    // Duplicate detection is handled in APPLICATION code:
-    // the live database has NO uniqueness constraint on
-    // media_assets.content_hash, and per the architecture we must NOT
-    // introduce one. We detect an identical normalized upload here and
-    // return a 409 so administrators can reuse the existing media asset
-    // from the Media Library instead of creating a duplicate storage object.
+    // 8. Content hash (SHA-256 of final normalized WebP/ICO bytes).
+    // Hashes are metadata, not global asset identity: identical bytes may be
+    // uploaded into separate role-specific paths and receive distinct media IDs.
     const contentHash = processed.contentHash;
 
     // Generate storage path (UUID-based, no client control)
@@ -245,35 +258,14 @@ export async function POST(request: NextRequest) {
     const uploadBucket = isFaviconIco ? FAVICONS_BUCKET : PUBLIC_ASSETS_BUCKET;
     console.log("[UPLOAD] Storage path:", storagePath);
 
-    console.log("[UPLOAD] Creating admin client");
-    
     const supabaseAdmin = await getSupabaseAdmin();
-    console.log("[UPLOAD] Admin client created, checking for duplicate content hash");
-    
-    // Application-level duplicate detection (no DB constraint created).
-    const { data: dupes, error: dupesError } = await supabaseAdmin
-      .from("media_assets")
-      .select("id, title, original_name")
-      .eq("content_hash", contentHash)
-      .limit(1);
 
-    if (!dupesError && dupes && dupes.length > 0) {
-      const existing = dupes[0];
-      console.log("[UPLOAD] Duplicate content hash detected:", existing.id);
-      return NextResponse.json(
-        {
-          success: false,
-          error: "An identical image already exists in the Media Library. " +
-            "Select it from the library (or remove the existing asset) instead of uploading a duplicate.",
-          existingMediaId: existing.id,
-          code: "DUPLICATE_MEDIA",
-        },
-        { status: 409 }
-      );
-    }
+    // Every upload creates a new role-specific object and media_assets row.
+    // Do not deduplicate by content hash across content roles.
+    console.log("[UPLOAD] Uploading independent role-specific media object");
 
-    console.log("[UPLOAD] No duplicate detected, starting storage upload");
-    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+    console.log("[UPLOAD] Starting storage upload");
+    const { error: uploadError } = await supabaseAdmin.storage
       .from(uploadBucket)
       .upload(storagePath, processed.buffer, {
         contentType: isFaviconIco ? "image/x-icon" : "image/webp",
@@ -308,15 +300,12 @@ export async function POST(request: NextRequest) {
     const { data: fileUploadRecord, error: dbError } = await supabaseAdmin
       .from("media_assets")
       .insert({
-        bucket: uploadBucket,
-        path: storagePath,
         public_url: publicUrl,
-        original_name: originalName,
-        mime_type: isFaviconIco ? "image/x-icon" : declaredMimeType,
+        file_name: originalName,
+        mime_type: isFaviconIco ? "image/x-icon" : "image/webp",
         file_size: processed.size,
-        width: processed.width,
-        height: processed.height,
-        uploaded_by: profile.id,
+        created_by: profile.id,
+        media_type: MEDIA_TYPE_BY_CATEGORY[category],
         content_hash: contentHash,
       })
       .select()
@@ -343,10 +332,7 @@ export async function POST(request: NextRequest) {
       }
 
       return NextResponse.json(
-        { 
-          success: false, 
-          error: "Failed to save upload record" 
-        },
+        { success: false, error: "Failed to save upload record" },
         { status: 500 }
       );
     }

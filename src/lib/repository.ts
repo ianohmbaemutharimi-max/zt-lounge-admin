@@ -59,7 +59,7 @@ const SENSITIVE_FIELDS = new Set([
 const RESPONSE_ALLOWLISTS: Record<string, string[]> = {
   roles: ["id", "name", "description", "created_at"],
   profiles: ["id", "full_name", "phone", "avatar_url", "is_active", "created_at", "updated_at"],
-     business_settings: ["id", "business_name", "email", "phone", "address", "google_maps_url", "whatsapp", "facebook", "instagram", "opening_hours", "logo_url", "favicon_url", "logo_media_id", "logo_light_media_id", "favicon_media_id", "timezone", "currency", "tagline", "description", "twitter", "youtube", "city", "country", "latitude", "longitude", "google_maps_reviews_url", "google_reviews_api_key", "created_at", "updated_at"],
+     business_settings: ["id", "business_name", "email", "phone", "address", "google_maps_url", "whatsapp", "facebook", "instagram", "opening_hours", "logo_media_id", "logo_light_media_id", "favicon_media_id", "city", "created_at", "updated_at"],
   website_pages: ["id", "page_key", "title", "subtitle", "content", "seo_title", "seo_description", "service_cards_enabled", "service_packages_enabled", "updated_by", "created_at", "updated_at"],
    hero_slides: ["id", "page_id", "badge", "title", "highlight", "subtitle", "image_url", "media_id", "buttons", "display_order", "is_active", "created_at", "updated_at", "alt_text", "cta_text", "cta_link"],
      services: ["id", "category_id", "name", "slug", "description", "duration_minutes", "price", "image_url", "media_id", "featured", "is_active", "deleted_at", "created_at", "updated_at", "alt_text", "tag", "href", "card_type", "type", "display_order", "page_id", "icon"],
@@ -81,7 +81,7 @@ const RESPONSE_ALLOWLISTS: Record<string, string[]> = {
   gallery: ["id", "title", "description", "image_url", "media_id", "category", "alt_text", "display_order", "is_featured", "is_active", "uploaded_by", "created_at", "updated_at", "type", "page_id"],
    testimonials: ["id", "customer_name", "image_url", "occupation", "rating", "comment", "is_featured", "approved", "created_at", "updated_at", "display_order", "page_id", "media_id", "source", "external_id", "external_url", "author_photo_url", "reviewed_at", "last_synced_at"],
    contact_messages: ["id", "full_name", "phone", "email", "subject", "message", "status", "replied_by", "replied_at", "created_at"],
-   media_assets: ["id", "bucket", "path", "public_url", "original_name", "mime_type", "file_size", "width", "height", "alt_text", "title", "description", "category", "created_at", "updated_at"],
+   media_assets: ["id", "public_url", "file_name", "mime_type", "file_size", "alt_text", "media_type", "display_id", "page_id", "created_at", "updated_at", "created_by", "updated_by"],
    faqs: ["id", "question", "answer", "display_order", "is_active", "category", "page_id", "is_featured", "created_at", "updated_at"],
   promotions: ["id", "title", "description", "banner_image", "discount_percent", "start_date", "end_date", "is_active", "page_id", "media_id", "show_on_homepage", "display_order", "created_at", "updated_at"],
   system_settings: ["id", "booking_buffer_minutes", "max_booking_days", "allow_online_booking", "require_staff_assignment", "enable_email_notifications", "enable_sms_notifications", "maintenance_mode", "created_at", "updated_at"],
@@ -105,7 +105,7 @@ const RESPONSE_ALLOWLISTS: Record<string, string[]> = {
 const WRITABLE_FIELDS: Record<string, string[]> = {
   roles: ["name", "description"],
   profiles: ["full_name", "phone", "avatar_url", "is_active"],
-  business_settings: ["business_name", "email", "phone", "address", "google_maps_url", "whatsapp", "facebook", "instagram", "opening_hours", "logo_url", "favicon_url", "logo_media_id", "favicon_media_id", "timezone", "currency", "tagline", "description", "twitter", "youtube", "city", "country", "latitude", "longitude", "google_maps_reviews_url", "google_reviews_api_key"],
+  business_settings: ["business_name", "email", "phone", "address", "google_maps_url", "whatsapp", "facebook", "instagram", "opening_hours", "logo_media_id", "logo_light_media_id", "favicon_media_id", "city"],
   website_pages: ["page_key", "title", "subtitle", "content", "seo_title", "seo_description", "service_cards_enabled", "service_packages_enabled", "updated_by"],
   hero_slides: ["page_id", "badge", "title", "highlight", "subtitle", "media_id", "buttons", "display_order", "is_active", "alt_text", "cta_text", "cta_link"],
     services: ["category_id", "name", "slug", "description", "duration_minutes", "price", "media_id", "featured", "is_active", "alt_text", "tag", "href", "card_type", "type", "display_order", "page_id", "icon"],
@@ -134,7 +134,7 @@ const WRITABLE_FIELDS: Record<string, string[]> = {
   // kept in DB for backward compatibility, not writable via admin API).
   testimonials: ["media_id", "occupation", "is_featured", "approved", "display_order", "page_id"],
   contact_messages: ["full_name", "phone", "email", "subject", "message", "status", "replied_by", "replied_at"],
-  media_assets: ["alt_text", "title", "description", "category"],
+  media_assets: ["alt_text"],
   faqs: ["question", "answer", "display_order", "is_active", "category", "page_id", "is_featured"],
   promotions: ["title", "description", "discount_percent", "start_date", "end_date", "is_active", "page_id", "media_id", "show_on_homepage", "display_order"],
   system_settings: ["booking_buffer_minutes", "max_booking_days", "allow_online_booking", "require_staff_assignment", "enable_email_notifications", "enable_sms_notifications", "maintenance_mode"],

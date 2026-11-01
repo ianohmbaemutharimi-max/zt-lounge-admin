@@ -82,6 +82,9 @@ export const CATEGORY_MAX_WIDTHS: Record<ImageCategory, number> = {
   // missing resize bound.
   promotions: 1920,  // Promotion banners/posters (full-width like hero)
   memberships: 800,  // Membership plan images (content width like services)
+  seo: 1200,          // Social/Open Graph preview images
+  feature: 800,       // Page feature illustrations
+  general: 1200,      // General-purpose media
 };
 
 /**
@@ -128,7 +131,7 @@ export async function processImage(
   height: number;
   size: number;
   format: string;
-  /** SHA-256 hex digest of the final normalized WebP buffer (canonical dedup key). */
+  /** SHA-256 hex digest of the final normalized WebP buffer (integrity fingerprint). */
   contentHash: string;
 }> {
     // Phase 6 — ICO bypass: a genuine .ico (magic 00 00 01 00) is preserved
@@ -210,7 +213,7 @@ export async function processImage(
     const buffer = await processedImage.toBuffer({ resolveWithObject: true });
 
     // SHA-256 content hash of the FINAL normalized WebP buffer.
-    // This is the deduplication key for the canonical media registry.
+    // This is an integrity fingerprint; the same hash may appear on independent role-specific assets.
     const contentHash = createHash("sha256")
       .update(buffer.data)
       .digest("hex");

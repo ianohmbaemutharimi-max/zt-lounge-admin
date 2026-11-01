@@ -6,11 +6,11 @@ export const dynamic = "force-dynamic";
 /**
  * PATCH /api/admin/business-settings/branding
  * 
- * Update branding assets (logo_media_id / favicon_media_id).
+ * Update branding assets (dark logo, light logo, and favicon media IDs).
  * 
  * Security:
  * - Admin-only via withAdminAuth
- * - Only mutates branding fields (logo_media_id, favicon_media_id)
+ * - Only mutates branding fields (logo_media_id, logo_light_media_id, favicon_media_id)
  * - Validates media asset exists and is an image
  * 
  * Contract:
@@ -18,19 +18,33 @@ export const dynamic = "force-dynamic";
  * - Response: Updated business_settings row
  * 
  * Architecture:
- * - Canonical source: business_settings.logo_media_id / favicon_media_id
+ * - Canonical source: business_settings.logo_media_id / logo_light_media_id / favicon_media_id
  * - Referenced table: media_assets.id (FK RESTRICT)
  * - Legacy fields (logo_url, favicon_url) are NOT updated by this endpoint
  */
 export const PATCH = withAdminAuth(async (req: NextRequest, auth) => {
   try {
     const body = await req.json();
-    const { logo_media_id, favicon_media_id } = body;
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json({ error: "A branding update object is required" }, { status: 400 });
+    }
+
+    const allowedFields = new Set(["logo_media_id", "logo_light_media_id", "favicon_media_id"]);
+    if (Object.keys(body).some((field) => !allowedFields.has(field))) {
+      return NextResponse.json({ error: "Only logo_media_id, logo_light_media_id, and favicon_media_id can be updated" }, { status: 400 });
+    }
+
+    const { logo_media_id, logo_light_media_id, favicon_media_id } = body;
+
+    // These branding references are required by the application contract.
+    if (logo_media_id === null || favicon_media_id === null) {
+      return NextResponse.json({ error: "Logo and favicon references cannot be cleared" }, { status: 400 });
+    }
 
     // Validate at least one field is provided
-    if (logo_media_id === undefined && favicon_media_id === undefined) {
+    if (logo_media_id === undefined && logo_light_media_id === undefined && favicon_media_id === undefined) {
       return NextResponse.json(
-        { error: "At least one of logo_media_id or favicon_media_id must be provided" },
+        { error: "At least one branding media reference must be provided" },
         { status: 400 }
       );
     }
@@ -63,6 +77,24 @@ export const PATCH = withAdminAuth(async (req: NextRequest, auth) => {
       }
 
       updates.logo_media_id = logo_media_id;
+    }
+
+    if (logo_light_media_id !== undefined) {
+      if (logo_light_media_id !== null) {
+        const { data: asset, error: assetError } = await auth.supabase
+          .from("media_assets")
+          .select("id, mime_type")
+          .eq("id", logo_light_media_id)
+          .maybeSingle();
+
+        if (assetError || !asset) {
+          return NextResponse.json({ error: "Light logo media asset not found" }, { status: 404 });
+        }
+        if (!asset.mime_type?.startsWith("image/")) {
+          return NextResponse.json({ error: "Light logo media asset must be an image" }, { status: 400 });
+        }
+      }
+      updates.logo_light_media_id = logo_light_media_id;
     }
 
     if (favicon_media_id !== undefined) {

@@ -1,228 +1,224 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withAdminAuth } from "@/lib/auth/server";
-import { MEDIA_REFERENCE_TABLES, type MediaReferenceTable } from "@/lib/media/reference-tables";
+import { MEDIA_REFERENCE_TABLES } from "@/lib/media/reference-tables";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Resolve human-readable labels for media usage locations.
- *
- * Maps source_table + source_record_id to labels like:
- * - "Home → Hero"
- * - "Gallery"
- * - "Restaurant → Menu"
- * - "Services"
- *
- * @param usageByAsset - Map of media_asset_id -> usage records
- * @param supabase - Supabase client
- * @returns Map of media_asset_id -> array of label strings
- */
-async function resolveUsageLabels(
-  usageByAsset: Record<string, any[]>,
-  supabase: any
-): Promise<Record<string, string[]>> {
-  const result: Record<string, string[]> = {};
+type UsageRecord = {
+  source_table: string;
+  source_column: string;
+  source_record_id: string;
+};
 
-  // Collect all unique source_record_ids per table
-  const tableIds: Record<string, string[]> = {};
+type UsageMap = Record<string, UsageRecord[]>;
 
-  Object.values(usageByAsset).forEach((usages) => {
-    usages.forEach((u) => {
-      if (!tableIds[u.source_table]) {
-        tableIds[u.source_table] = [];
-      }
-      if (!tableIds[u.source_table].includes(u.source_record_id)) {
-        tableIds[u.source_table].push(u.source_record_id);
-      }
-    });
-  });
-
-  // Fetch page info for hero_slides and gallery
-  const pageMap: Record<string, { page_key: string; title: string }> = {};
-  const heroSlideMap: Record<string, { page_id: string }> = {};
-  const galleryMap: Record<string, { page_id: string }> = {};
-
-  // Fetch website_pages
-  const { data: pages } = await supabase
-    .from("website_pages")
-    .select("id, page_key, title")
-    .in("id", Object.values(tableIds).flat());
-
-  if (pages) {
-    pages.forEach((p: any) => {
-      pageMap[p.id] = { page_key: p.page_key, title: p.title };
-    });
-  }
-
-  // Fetch hero_slides
-  if (tableIds["hero_slides"]) {
-    const { data: heroSlides } = await supabase
-      .from("hero_slides")
-      .select("id, page_id")
-      .in("id", tableIds["hero_slides"]);
-
-    if (heroSlides) {
-      heroSlides.forEach((h: any) => {
-        heroSlideMap[h.id] = { page_id: h.page_id };
-      });
-    }
-  }
-
-  // Fetch gallery
-  if (tableIds["gallery"]) {
-    const { data: galleryItems } = await supabase
-      .from("gallery")
-      .select("id, page_id")
-      .in("id", tableIds["gallery"]);
-
-    if (galleryItems) {
-      galleryItems.forEach((g: any) => {
-        galleryMap[g.id] = { page_id: g.page_id };
-      });
-    }
-  }
-
-  // Build labels
-  Object.entries(usageByAsset).forEach(([assetId, usages]) => {
-    const labels: string[] = [];
-
-    usages.forEach((u) => {
-      let label = "";
-
-      switch (u.source_table) {
-        case "hero_slides": {
-          const slide = heroSlideMap[u.source_record_id];
-          if (slide) {
-            const page = pageMap[slide.page_id];
-            label = page ? `${page.page_key.charAt(0).toUpperCase() + page.page_key.slice(1)} → Hero` : "Hero";
-          }
-          break;
-        }
-        case "gallery": {
-          const item = galleryMap[u.source_record_id];
-          if (item) {
-            const page = pageMap[item.page_id];
-            label = page ? `${page.page_key.charAt(0).toUpperCase() + page.page_key.slice(1)} → Gallery` : "Gallery";
-          }
-          break;
-        }
-        case "menu_items": {
-          label = "Menu";
-          break;
-        }
-        case "services": {
-          label = "Services";
-          break;
-        }
-        case "promotions": {
-          label = "Promotions";
-          break;
-        }
-        case "testimonials": {
-          label = "Testimonials";
-          break;
-        }
-        case "membership_plans": {
-          label = "Memberships";
-          break;
-        }
-        case "business_settings": {
-          label = u.source_column === "favicon_media_id" ? "Branding → Favicon" : "Branding → Logo";
-          break;
-        }
-        default: {
-          label = u.source_table;
-        }
-      }
-
-      if (label && !labels.includes(label)) {
-        labels.push(label);
-      }
-    });
-
-    result[assetId] = labels;
-  });
-
-  return result;
+function addUsage(usageByAsset: UsageMap, assetId: string, usage: UsageRecord) {
+  (usageByAsset[assetId] ??= []).push(usage);
 }
 
 /**
- * GET /api/media
- * 
- * Fetch media assets with usage counts.
- * Admin-only access via withAdminAuth wrapper.
- * 
- * Query params:
- * - summary: if "true", return summary stats only (assets count, usage count, buckets count)
- * - bucket: filter by bucket name
- * - search: search in title, alt_text, path
- * - limit: pagination limit (default 50)
- * - offset: pagination offset (default 0)
+ * Read every verified media reference. A failed reference query rejects the
+ * whole request; an incomplete scan must never make an asset appear unused.
  */
+async function scanMediaUsage(supabase: any, assetIds: string[]): Promise<UsageMap> {
+  const usageByAsset: UsageMap = {};
+  if (!assetIds.length) return usageByAsset;
+
+  const idSet = new Set(assetIds);
+  const sources = MEDIA_REFERENCE_TABLES.filter((ref) => ref.table !== "business_settings");
+
+  await Promise.all([
+    ...sources.map(async ({ table, column }) => {
+      const { data, error } = await supabase
+        .from(table)
+        .select(`id, ${column}`)
+        .in(column, assetIds);
+
+      if (error) {
+        console.error(`[media] usage reference query failed for ${table}.${column}:`, error.message);
+        throw new Error(`Could not verify media usage for ${table}.${column}`);
+      }
+
+      for (const row of (data ?? []) as Array<Record<string, unknown>>) {
+        const assetId = String(row[column] ?? "");
+        if (!assetId || !idSet.has(assetId)) continue;
+        addUsage(usageByAsset, assetId, {
+          source_table: table,
+          source_column: column,
+          source_record_id: String(row.id ?? ""),
+        });
+      }
+    }),
+    (async () => {
+      const { data, error } = await supabase
+        .from("business_settings")
+        .select("id, logo_media_id, logo_light_media_id, favicon_media_id")
+        .or(`logo_media_id.in.(${assetIds.join(",")}),logo_light_media_id.in.(${assetIds.join(",")}),favicon_media_id.in.(${assetIds.join(",")})`);
+
+      if (error) {
+        console.error("[media] usage reference query failed for business_settings:", error.message);
+        throw new Error("Could not verify media usage for business settings");
+      }
+
+      for (const row of (data ?? []) as Array<Record<string, unknown>>) {
+        const rowId = String(row.id ?? "");
+        for (const column of ["logo_media_id", "logo_light_media_id", "favicon_media_id"] as const) {
+          const assetId = String(row[column] ?? "");
+          if (assetId && idSet.has(assetId)) {
+            addUsage(usageByAsset, assetId, {
+              source_table: "business_settings",
+              source_column: column,
+              source_record_id: rowId,
+            });
+          }
+        }
+      }
+    })(),
+  ]);
+
+  return usageByAsset;
+}
+
+function humanTableLabel(table: string, column: string): string {
+  if (table === "business_settings") {
+    return column === "favicon_media_id" ? "Branding → Favicon" : column === "logo_light_media_id" ? "Branding → Light logo" : "Branding → Logo";
+  }
+  const labels: Record<string, string> = {
+    hero_slides: "Hero",
+    gallery: "Gallery",
+    menu_items: "Menu",
+    services: "Services",
+    promotions: "Promotions",
+    testimonials: "Testimonials",
+    branding_assets: "Branding",
+    page_features: "Page features",
+    page_seo: "SEO image",
+  };
+  return labels[table] ?? table.replaceAll("_", " ");
+}
+
+async function resolveUsageLabels(
+  usageByAsset: UsageMap,
+  supabase: any,
+): Promise<Record<string, string[]>> {
+  const result: Record<string, string[]> = {};
+  const idsByTable: Record<string, string[]> = {};
+
+  for (const usages of Object.values(usageByAsset)) {
+    for (const usage of usages) {
+      (idsByTable[usage.source_table] ??= []).push(usage.source_record_id);
+    }
+  }
+
+  const pageNames = new Map<string, string>();
+  const pagesResult = await supabase.from("website_pages").select("id, name, slug");
+  if (pagesResult.error) {
+    console.error("[media] page-label lookup failed:", pagesResult.error.message);
+    throw new Error("Could not resolve media usage labels");
+  }
+  for (const page of (pagesResult.data ?? []) as Array<{ id: string; name: string; slug: string }>) {
+    pageNames.set(page.id, page.name);
+    pageNames.set(page.slug, page.name);
+  }
+
+  const pageIdsByRecord: Record<string, Record<string, string>> = {};
+  for (const table of ["hero_slides", "gallery"]) {
+    const recordIds = [...new Set(idsByTable[table] ?? [])];
+    if (!recordIds.length) continue;
+    const { data, error } = await supabase.from(table).select("id, page_id").in("id", recordIds);
+    if (error) {
+      console.error(`[media] ${table} label lookup failed:`, error.message);
+      throw new Error("Could not resolve media usage labels");
+    }
+    pageIdsByRecord[table] = {};
+    for (const row of (data ?? []) as Array<{ id: string; page_id: string | null }>) {
+      if (row.page_id) pageIdsByRecord[table][row.id] = row.page_id;
+    }
+  }
+
+  for (const [assetId, usages] of Object.entries(usageByAsset)) {
+    const labels = new Set<string>();
+    for (const usage of usages) {
+      const base = humanTableLabel(usage.source_table, usage.source_column);
+      const pageId = pageIdsByRecord[usage.source_table]?.[usage.source_record_id];
+      const pageName = pageId ? pageNames.get(pageId) : undefined;
+      labels.add(pageName && ["hero_slides", "gallery"].includes(usage.source_table)
+        ? `${pageName} → ${base}`
+        : base);
+    }
+    result[assetId] = [...labels];
+  }
+  return result;
+}
+
+async function getUsageSummary(supabase: any): Promise<number> {
+  const columns = MEDIA_REFERENCE_TABLES.map(({ table, column }) => ({ table, column }));
+  const counts = await Promise.all(columns.map(async ({ table, column }) => {
+    const { count, error } = await supabase
+      .from(table)
+      .select("id", { count: "exact", head: true })
+      .not(column, "is", null);
+    if (error) {
+      console.error(`[media] usage summary failed for ${table}.${column}:`, error.message);
+      throw new Error("Could not calculate media usage summary");
+    }
+    return count ?? 0;
+  }));
+  return counts.reduce((sum, count) => sum + count, 0);
+}
+
 export const GET = withAdminAuth(async (req: NextRequest, _ctx, auth) => {
   try {
     const url = new URL(req.url);
     const summary = url.searchParams.get("summary") === "true";
 
-    // Handle summary request
     if (summary) {
-      const [assetsResult, usageResult, bucketsResult] = await Promise.all([
+      const [{ count: totalAssets, error: assetsError }, totalUsage] = await Promise.all([
         auth.supabase.from("media_assets").select("id", { count: "exact", head: true }),
-        auth.supabase.from("media_usage").select("id", { count: "exact", head: true }),
-        auth.supabase.from("media_assets").select("bucket"),
+        getUsageSummary(auth.supabase),
       ]);
-
-      const totalAssets = assetsResult.count || 0;
-      const totalUsage = usageResult.count || 0;
-      const uniqueBuckets = bucketsResult.data
-        ? new Set(bucketsResult.data.map((r) => r.bucket)).size
-        : 0;
+      if (assetsError) throw new Error("Could not count media assets");
+      const { data: mediaTypes, error: typesError } = await auth.supabase
+        .from("media_assets")
+        .select("media_type");
+      if (typesError) throw new Error("Could not summarize media types");
 
       return NextResponse.json({
-        totalAssets,
+        totalAssets: totalAssets ?? 0,
         totalUsage,
-        uniqueBuckets,
+        uniqueMediaTypes: new Set((mediaTypes ?? []).map((row: { media_type: string | null }) => row.media_type).filter(Boolean)).size,
       });
     }
 
-        // Handle full list request
-    const filter = url.searchParams.get("filter"); // "all", "used", "unused"
-    const search = url.searchParams.get("search");
-    const bucketFilter = url.searchParams.get("bucket"); // specific bucket name
-    const categoryFilter = url.searchParams.get("category"); // category filter (hero, gallery, menu, etc.)
-    const altFilter = url.searchParams.get("alt"); // "missing" | "present"
-    const limit = Math.min(Number(url.searchParams.get("limit")) || 50, 100);
-    const offset = Number(url.searchParams.get("offset")) || 0;
+    const filter = url.searchParams.get("filter") ?? "all";
+    const search = url.searchParams.get("search")?.trim() ?? "";
+    const categoryFilter = url.searchParams.get("category");
+    const altFilter = url.searchParams.get("alt");
+    const limit = Math.max(1, Math.min(Number(url.searchParams.get("limit")) || 50, 100));
+    const offset = Math.max(0, Number(url.searchParams.get("offset")) || 0);
 
-    // Build query for media_assets
+    // Usage filters are applied before pagination. The current registry is small,
+    // and this avoids returning a misleading page/total for used/unused assets.
     let assetsQuery = auth.supabase
       .from("media_assets")
-      .select("*", { count: "exact" })
-      .order("created_at", { ascending: false })
-      .range(offset, offset + limit - 1);
+      .select("id, content_hash, public_url, file_size, mime_type, created_at, updated_at, created_by, updated_by, file_name, alt_text, media_type, display_id, page_id", { count: "exact" })
+      .order("created_at", { ascending: false });
 
-    // Apply search filter (title, alt_text, or path)
     if (search) {
-      assetsQuery = assetsQuery.or(
-        `title.ilike.%${search}%,alt_text.ilike.%${search}%,path.ilike.%${search}%`
-      );
-    }
-
-    // Apply bucket filter (server-side, only buckets that actually exist)
-    if (bucketFilter) {
-      assetsQuery = assetsQuery.eq("bucket", bucketFilter);
-    }
-
-    // Apply category filter
-    if (categoryFilter) {
-      if (categoryFilter === "uncategorized") {
-        assetsQuery = assetsQuery.is("category", null);
-      } else {
-        assetsQuery = assetsQuery.eq("category", categoryFilter);
+      const safeSearch = search.replace(/[,%()]/g, " ").trim();
+      if (safeSearch) {
+        assetsQuery = assetsQuery.or(
+          `file_name.ilike.%${safeSearch}%,alt_text.ilike.%${safeSearch}%,public_url.ilike.%${safeSearch}%`
+        );
       }
     }
 
-    // Apply alt_text presence filter (uses existing alt_text column only)
+    if (categoryFilter) {
+      assetsQuery = categoryFilter === "uncategorized"
+        ? assetsQuery.is("media_type", null)
+        : assetsQuery.eq("media_type", categoryFilter);
+    }
+
     if (altFilter === "missing") {
       assetsQuery = assetsQuery.or("alt_text.is.null,alt_text.eq.");
     } else if (altFilter === "present") {
@@ -230,121 +226,44 @@ export const GET = withAdminAuth(async (req: NextRequest, _ctx, auth) => {
     }
 
     const { data: assets, error: assetsError, count } = await assetsQuery;
-
     if (assetsError) {
-      console.error("Error fetching media assets:", assetsError);
-      return NextResponse.json(
-        { error: "Failed to fetch media assets" },
-        { status: 500 }
-      );
+      console.error("[media] asset query failed:", assetsError.message);
+      return NextResponse.json({ error: "Failed to fetch media assets" }, { status: 500 });
     }
 
-    // Fetch usage details for all assets.
-    //
-    // CANONICAL SOURCE: derive usage from the live foreign-key references
-    // (content record .media_id -> media_assets.id). The denormalized
-    // media_usage table is NOT queried: it is manually maintained, has no
-    // writer anywhere in the codebase, and was proven stale (missing
-    // hero_slides/promotions/services refs and the entire branding
-    // relationship, which made the canonical logo show as "Unused").
-    const assetIds = assets?.map((a) => a.id) || [];
-    const usageByAsset: Record<string, any[]> = {};
-
-    if (assetIds.length > 0) {
-      const inIds = `(${assetIds.join(",")})`; // uuid literals are safe (server-generated)
-
-      // Derive the batch of single-column FK scans from the canonical list.
-      // `business_settings` is excluded here because it carries TWO FK columns
-      // (logo_media_id, favicon_media_id) on one row; it's queried separately
-      // with a single `.or()` below so we don't fetch a customer's id twice.
-      const refSources: Array<{ table: string; column: string; select: string }> = MEDIA_REFERENCE_TABLES
-        .filter((r) => r.table !== "business_settings")
-        .map((r) => ({ table: r.table, column: r.column, select: `id, ${r.column}` }));
-
-      const idOf = new Set(assetIds);
-      await Promise.all([
-        ...refSources.map(async ({ table, column, select }) => {
-          const { data, error } = await auth.supabase.from(table).select(select).in(column, assetIds);
-          if (error) {
-            console.error(`[media] usage ref query failed for ${table}:`, error.message);
-            return;
-          }
-          for (const row of (data ?? []) as unknown as Array<Record<string, unknown>>) {
-            const assetId = String(row[column] ?? "");
-            if (!assetId || !idOf.has(assetId)) continue;
-            (usageByAsset[assetId] ??= []).push({
-              source_table: table,
-              source_column: column,
-              source_record_id: String(row.id ?? ""),
-            });
-          }
-        }),
-        // Branding: business_settings.logo_media_id / favicon_media_id
-        (async () => {
-          const { data, error } = await auth.supabase
-            .from("business_settings")
-            .select("id, logo_media_id, favicon_media_id")
-            .or(`logo_media_id.in.${inIds},favicon_media_id.in.${inIds}`);
-          if (error) {
-            console.error("[media] usage ref query failed for business_settings:", error.message);
-            return;
-          }
-          for (const row of (data ?? []) as unknown as Array<Record<string, unknown>>) {
-            const logoId = String(row.logo_media_id ?? "");
-            const faviconId = String(row.favicon_media_id ?? "");
-            if (logoId && idOf.has(logoId)) {
-              (usageByAsset[logoId] ??= []).push({
-                source_table: "business_settings",
-                source_column: "logo_media_id",
-                source_record_id: String(row.id ?? ""),
-              });
-            }
-            if (faviconId && idOf.has(faviconId)) {
-              (usageByAsset[faviconId] ??= []).push({
-                source_table: "business_settings",
-                source_column: "favicon_media_id",
-                source_record_id: String(row.id ?? ""),
-              });
-            }
-          }
-        })(),
-      ]);
-    }
-
-    // Resolve human-readable labels for usage
+    const assetRows = assets ?? [];
+    const usageByAsset = await scanMediaUsage(auth.supabase, assetRows.map((asset: { id: string }) => asset.id));
     const usageLabels = await resolveUsageLabels(usageByAsset, auth.supabase);
 
-    // Combine assets with usage details
-    let assetsWithUsage = assets?.map((asset) => ({
+    let assetsWithUsage = assetRows.map((asset: Record<string, any>) => ({
       ...asset,
-      usageCount: usageByAsset[asset.id]?.length || 0,
-      usageLocations: usageLabels[asset.id] || [],
+      usageCount: usageByAsset[asset.id]?.length ?? 0,
+      usageLocations: usageLabels[asset.id] ?? [],
     }));
 
-    // Apply usage filter
-    if (filter === "used") {
-      assetsWithUsage = assetsWithUsage?.filter((a) => a.usageCount > 0);
-    } else if (filter === "unused") {
-      assetsWithUsage = assetsWithUsage?.filter((a) => a.usageCount === 0);
-    }
+    if (filter === "used") assetsWithUsage = assetsWithUsage.filter((asset: { usageCount: number }) => asset.usageCount > 0);
+    if (filter === "unused") assetsWithUsage = assetsWithUsage.filter((asset: { usageCount: number }) => asset.usageCount === 0);
 
-    // Update total count after filtering
-    const filteredTotal = assetsWithUsage?.length || 0;
+    const filteredTotal = assetsWithUsage.length;
+    const page = assetsWithUsage.slice(offset, offset + limit);
+
+    // Never expose content_hash in the Media Library response.
+    const safePage = page.map(({ content_hash: _contentHash, ...asset }: Record<string, any>) => asset);
 
     return NextResponse.json({
-      data: assetsWithUsage,
+      data: safePage,
       pagination: {
         limit,
         offset,
         total: filteredTotal,
-        hasMore: false, // Client-side filtering, no pagination needed
+        hasMore: offset + safePage.length < filteredTotal,
       },
     });
   } catch (error) {
-    console.error("Unexpected error in /api/media:", error);
+    console.error("[media] GET failed:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { error: "Unable to verify media data. Please retry; no assets were marked unused." },
+      { status: 500 },
     );
   }
 });

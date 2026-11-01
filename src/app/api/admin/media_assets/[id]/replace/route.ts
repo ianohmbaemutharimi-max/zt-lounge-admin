@@ -1,269 +1,190 @@
 /**
- * Media Asset File Replace API
+ * Replace one media asset without changing its stable media ID.
  *
- * PUT /api/admin/media_assets/[id]/replace
- *
- * Replaces the FILE behind an existing media_assets row while preserving the
- * row's id — every content row that references this asset via media_id keeps
- * resolving to the new image with no data migration (fix loop 1, UI-02).
- *
- * Mirrors the POST /api/admin/upload pipeline (same Sharp processing, same
- * bucket/path conventions, same service-role storage client) and the sibling
- * [id]/route.ts auth/validation pattern (withSuperAdminAuth).
- *
- * Request body (multipart/form-data):
- * - file: Image file (JPEG, PNG, or WebP; max 10MB)
- * - category: Image category for the new object path (hero|gallery|menu|services|testimonials|branding)
- * - deleteOld: "true" to remove the previous storage object after success
- *
- * Response (200): { success: true, data: { id, bucket, path, relativePath, publicUrl, ... } }
- * (same shape as POST /api/admin/upload so the client contract stays uniform)
- *
- * Safety contract:
- * - The media_assets row is UPDATED IN PLACE (id, uploaded_by, alt_text/title/
- *   description preserved) — no new asset is created and no media_id
- *   relationship changes.
- * - Order of operations: upload new object -> update row -> delete old object.
- *   A row-update failure removes the new object, leaving the old asset intact.
- * - A delete-old failure is logged but non-fatal (the row already points at
- *   the new object, so the orphaned old file has no dangling reference).
+ * The replacement stays in the asset's existing content role. The old object
+ * is removed only when no other media_assets row points at the same bucket/object key.
+ * Storage identity is parsed from public_url because the live media_assets
+ * table does not contain bucket/path columns.
  */
-
 import { NextRequest, NextResponse } from "next/server";
 import { withSuperAdminAuth } from "@/lib/auth/server";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import {
-  sanitizeCategory,
+  extractCategoryFromPath,
   generateStoragePath,
+  parsePublicStorageUrl,
+  FAVICONS_BUCKET,
   PUBLIC_ASSETS_BUCKET,
-  type ImageCategory
+  type ImageCategory,
 } from "@/lib/storage/paths";
 import { processImage, MAX_FILE_SIZE } from "@/lib/images/processor";
 import { validateRecordId } from "@/lib/validation/admin";
 
-/**
- * CRITICAL: Sharp requires Node.js runtime (not Edge) — same as upload.
- */
 export const runtime = "nodejs";
+
+const CATEGORY_BY_MEDIA_TYPE: Record<string, ImageCategory> = {
+  hero: "hero",
+  gallery: "gallery",
+  menu: "menu",
+  service: "services",
+  testimonial: "testimonials",
+  branding: "branding",
+  promotion: "promotions",
+  seo: "seo",
+  feature: "feature",
+};
 
 export const PUT = withSuperAdminAuth(
   async (req: NextRequest, ctx: { params: Promise<{ id: string }> }) => {
+    let supabaseAdmin: Awaited<ReturnType<typeof getSupabaseAdmin>> | null = null;
+    let uploadedBucket: string | null = null;
+    let uploadedPath: string | null = null;
+    let databaseUpdated = false;
+
     try {
       const { id } = await ctx.params;
-
       if (!validateRecordId(id)) {
-        return NextResponse.json(
-          { success: false, error: "Invalid media asset ID format" },
-          { status: 400 }
-        );
+        return NextResponse.json({ success: false, error: "Invalid media asset ID format" }, { status: 400 });
       }
 
-      // 1. Parse multipart form data (same contract as upload)
       const formData = await req.formData();
       const file = formData.get("file");
-      const categoryRaw = formData.get("category");
       const deleteOld = formData.get("deleteOld") === "true";
-
       if (!file || !(file instanceof File)) {
-        return NextResponse.json(
-          { success: false, error: "File is required" },
-          { status: 400 }
-        );
+        return NextResponse.json({ success: false, error: "File is required" }, { status: 400 });
       }
-      if (!categoryRaw) {
-        return NextResponse.json(
-          { success: false, error: "Category is required" },
-          { status: 400 }
-        );
-      }
-
-      // 2. Validate and sanitize category
-      let category: ImageCategory;
-      try {
-        category = sanitizeCategory(categoryRaw);
-      } catch (error) {
-        return NextResponse.json(
-          { success: false, error: error instanceof Error ? error.message : "Invalid category" },
-          { status: 400 }
-        );
-      }
-
-      // 3. Validate file size (before expensive processing)
       if (file.size > MAX_FILE_SIZE) {
-        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-        const maxMB = (MAX_FILE_SIZE / (1024 * 1024)).toFixed(0);
-        return NextResponse.json(
-          { success: false, error: `File too large: ${sizeMB} MB. Maximum: ${maxMB} MB` },
-          { status: 413 }
-        );
+        return NextResponse.json({ success: false, error: "File exceeds the 10 MB limit" }, { status: 413 });
       }
 
-      const supabaseAdmin = await getSupabaseAdmin();
-
-      // 4. Load the existing asset (service role: bypass RLS, same as upload insert)
+      supabaseAdmin = await getSupabaseAdmin();
       const { data: existing, error: loadError } = await supabaseAdmin
         .from("media_assets")
-        .select("id, bucket, path, content_hash")
+        .select("id, public_url, content_hash, media_type, file_name")
         .eq("id", id)
         .single();
 
       if (loadError || !existing) {
-        return NextResponse.json(
-          { success: false, error: "Media asset not found" },
-          { status: 404 }
-        );
+        return NextResponse.json({ success: false, error: "Media asset not found" }, { status: 404 });
       }
 
-      // 5. Process image with Sharp (identical pipeline to upload)
-      const fileBuffer = Buffer.from(await file.arrayBuffer());
-      const originalName = file.name;
-      const declaredMimeType = file.type;
+      const oldLocation = parsePublicStorageUrl(existing.public_url);
+      const pathCategory = oldLocation ? extractCategoryFromPath(oldLocation.path) : null;
+      const typeCategory = CATEGORY_BY_MEDIA_TYPE[String(existing.media_type ?? "")];
 
+      const compatibleGeneralMembership =
+        existing.media_type === "general" && pathCategory === "memberships";
+
+      if (pathCategory && typeCategory && pathCategory !== typeCategory && !compatibleGeneralMembership) {
+        return NextResponse.json({
+          success: false,
+          error: "The stored path category conflicts with this asset's media type. Upload a new asset in the correct role and relink it instead of replacing this record.",
+        }, { status: 409 });
+      }
+
+      const category = pathCategory ?? typeCategory;
+
+      if (!category) {
+        return NextResponse.json({
+          success: false,
+          error: "This legacy asset has no reliable role mapping. Upload a new asset in the correct category and relink it instead of replacing it.",
+        }, { status: 409 });
+      }
+
+      const fileBuffer = Buffer.from(await file.arrayBuffer());
       let processed;
       try {
-        processed = await processImage(fileBuffer, declaredMimeType, originalName, category);
+        processed = await processImage(fileBuffer, file.type, file.name, category);
       } catch (error) {
         const message = error instanceof Error ? error.message : "Image processing failed";
-        const isFormatError = message.includes("format") || message.includes("corrupted");
-        return NextResponse.json(
-          { success: false, error: message },
-          { status: isFormatError ? 415 : 400 }
-        );
+        const formatError = message.toLowerCase().includes("format") || message.toLowerCase().includes("corrupt");
+        return NextResponse.json({ success: false, error: message }, { status: formatError ? 415 : 400 });
       }
 
-      // 6. Duplicate detection mirrors upload: reject replacing with a file
-      // identical to a DIFFERENT asset (replacing with the same image is fine).
-      if (processed.contentHash !== existing.content_hash) {
-        const { data: dupes, error: dupesError } = await supabaseAdmin
-          .from("media_assets")
-          .select("id, title, original_name")
-          .eq("content_hash", processed.contentHash)
-          .neq("id", id)
-          .limit(1);
+      const isIco = processed.format === "ico";
+      uploadedBucket = isIco ? FAVICONS_BUCKET : PUBLIC_ASSETS_BUCKET;
+      uploadedPath = generateStoragePath(category, isIco ? "ico" : "webp");
 
-        if (!dupesError && dupes && dupes.length > 0) {
-          return NextResponse.json(
-            {
-              success: false,
-              error: "An identical image already exists in the Media Library. " +
-                "Select it from the library instead of replacing this asset with a duplicate.",
-              existingMediaId: dupes[0].id,
-              code: "DUPLICATE_MEDIA",
-            },
-            { status: 409 }
-          );
-        }
-      }
-
-      // 7. Upload NEW object first (row still points at the old one)
-      const storagePath = generateStoragePath(category);
       const { error: uploadError } = await supabaseAdmin.storage
-        .from(PUBLIC_ASSETS_BUCKET)
-        .upload(storagePath, processed.buffer, {
-          contentType: "image/webp",
+        .from(uploadedBucket)
+        .upload(uploadedPath, processed.buffer, {
+          contentType: isIco ? "image/x-icon" : "image/webp",
           cacheControl: "3600",
-          upsert: false, // Never overwrite existing files
+          upsert: false,
         });
 
       if (uploadError) {
-        console.error("[REPLACE] Storage upload failed:", {
-          path: storagePath,
-          error: uploadError.message,
-        });
-        return NextResponse.json(
-          { success: false, error: "Failed to upload file to storage" },
-          { status: 500 }
-        );
+        console.error("[MEDIA_REPLACE] Storage upload failed:", uploadError.message);
+        return NextResponse.json({ success: false, error: "Failed to upload replacement image" }, { status: 500 });
       }
 
-      const { data: { publicUrl } } = supabaseAdmin.storage
-        .from(PUBLIC_ASSETS_BUCKET)
-        .getPublicUrl(storagePath);
+      const { data: publicUrlData } = supabaseAdmin.storage
+        .from(uploadedBucket)
+        .getPublicUrl(uploadedPath);
 
-      // 8. Update the EXISTING row in place — media_id references stay valid.
-      //    Only file-derived fields change; id/uploaded_by/alt_text/title/
-      //    description/created_at are preserved.
-      const { error: dbError } = await supabaseAdmin
+      const { error: updateError } = await supabaseAdmin
         .from("media_assets")
         .update({
-          bucket: PUBLIC_ASSETS_BUCKET,
-          path: storagePath,
-          public_url: publicUrl,
-          original_name: originalName,
-          mime_type: declaredMimeType,
+          public_url: publicUrlData.publicUrl,
+          file_name: file.name,
+          mime_type: isIco ? "image/x-icon" : "image/webp",
           file_size: processed.size,
-          width: processed.width,
-          height: processed.height,
           content_hash: processed.contentHash,
+          updated_at: new Date().toISOString(),
         })
         .eq("id", id);
 
-      if (dbError) {
-        // Row update failed: remove the NEW object, keep the old asset intact.
-        console.error("[REPLACE] Row update failed, cleaning up new object:", {
-          path: storagePath,
-          error: dbError.message,
-        });
-        const { error: cleanupError } = await supabaseAdmin.storage
-          .from(PUBLIC_ASSETS_BUCKET)
-          .remove([storagePath]);
-        if (cleanupError) {
-          console.error("[REPLACE] Cleanup failed - orphaned new object:", {
-            path: storagePath,
-            error: cleanupError.message,
-          });
-        }
-        return NextResponse.json(
-          { success: false, error: "Failed to update media asset record" },
-          { status: 500 }
-        );
+      if (updateError) {
+        const { error: cleanupError } = await supabaseAdmin.storage.from(uploadedBucket).remove([uploadedPath]);
+        if (cleanupError) console.error("[MEDIA_REPLACE] New object cleanup failed:", cleanupError.message);
+        uploadedPath = null;
+        return NextResponse.json({ success: false, error: "Failed to update media asset record" }, { status: 500 });
       }
 
-      // 9. Success: optionally remove the OLD object. Non-fatal on failure.
-      if (deleteOld && existing.path && existing.path !== storagePath) {
-        const oldBucket = existing.bucket || PUBLIC_ASSETS_BUCKET;
-        const { error: oldDeleteError } = await supabaseAdmin.storage
-          .from(oldBucket)
-          .remove([existing.path]);
-        if (oldDeleteError) {
-          console.error("[REPLACE] Old object cleanup failed (non-fatal):", {
-            bucket: oldBucket,
-            path: existing.path,
-            error: oldDeleteError.message,
-          });
+      databaseUpdated = true;
+
+      // Old objects are shared by some existing role-specific registry rows.
+      // Never remove an object while another media_assets row still points to it.
+      if (deleteOld && oldLocation && existing.public_url !== publicUrlData.publicUrl) {
+        const { data: otherAssets, error: referenceError } = await supabaseAdmin
+          .from("media_assets")
+          .select("id, public_url")
+          .neq("id", id);
+
+        if (referenceError) {
+          console.error("[MEDIA_REPLACE] Old-object reference check failed; retained old object:", referenceError.message);
+        } else if (!(otherAssets ?? []).some((asset: { public_url: string }) => {
+          const location = parsePublicStorageUrl(asset.public_url);
+          return location?.bucket === oldLocation.bucket && location.path === oldLocation.path;
+        })) {
+          const { error: removeError } = await supabaseAdmin.storage
+            .from(oldLocation.bucket)
+            .remove([oldLocation.path]);
+          if (removeError) console.error("[MEDIA_REPLACE] Old-object cleanup failed:", removeError.message);
         }
       }
 
-      // 10. Return success (same response shape as POST /api/admin/upload)
-      return NextResponse.json(
-        {
-          success: true,
-          data: {
-            id,
-            bucket: PUBLIC_ASSETS_BUCKET,
-            path: storagePath,
-            relativePath: storagePath, // For AssetUrl compatibility
-            publicUrl,
-            originalName,
-            mimeType: declaredMimeType,
-            fileSize: processed.size,
-            width: processed.width,
-            height: processed.height,
-          },
+      return NextResponse.json({
+        success: true,
+        data: {
+          id,
+          bucket: uploadedBucket,
+          path: uploadedPath,
+          relativePath: uploadedPath,
+          publicUrl: publicUrlData.publicUrl,
+          originalName: file.name,
+          mimeType: isIco ? "image/x-icon" : "image/webp",
+          fileSize: processed.size,
+          contentHash: processed.contentHash,
         },
-        { status: 200 }
-      );
-    } catch (error) {
-      console.error("[REPLACE] FATAL ERROR:", {
-        name: error instanceof Error ? error.name : "Unknown",
-        message: error instanceof Error ? error.message : String(error),
       });
-      return NextResponse.json(
-        { success: false, error: "Internal server error" },
-        { status: 500 }
-      );
+    } catch (error) {
+      if (!databaseUpdated && supabaseAdmin && uploadedBucket && uploadedPath) {
+        const { error: cleanupError } = await supabaseAdmin.storage.from(uploadedBucket).remove([uploadedPath]);
+        if (cleanupError) console.error("[MEDIA_REPLACE] Error cleanup failed:", cleanupError.message);
+      }
+      console.error("[MEDIA_REPLACE] Unexpected error:", error);
+      return NextResponse.json({ success: false, error: "Internal server error" }, { status: 500 });
     }
-  }
+  },
 );
-
-

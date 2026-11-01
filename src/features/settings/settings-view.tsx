@@ -8,26 +8,18 @@ import { z } from "zod";
 import { CheckCircle2, Image as ImageIcon } from "lucide-react";
 import { api } from "@/lib/api";
 import { queryKeys } from "@/lib/query-keys";
-import { PageHeader, Card, Spinner, EmptyState, Button, Field, Input, Select, Textarea } from "@/components/ui";
+import { PageHeader, Card, Spinner, EmptyState, Button, Field, Input } from "@/components/ui";
 import { ImageChangeDialog } from "@/features/media/image-change-dialog";
 import { getSelectableMedia } from "@/lib/media/selection";
 
 const schema = z.object({
   business_name: z.string().min(2, "Business name is required"),
-  description: z.string().optional(),
   phone: z.string().min(7, "Phone is required"),
   whatsapp: z.string().optional(),
   email: z.string().email("Invalid email"),
   address: z.string().min(3, "Address is required"),
   city: z.string().optional(),
-  country: z.string().optional(),
   google_maps_url: z.union([z.string().url("Invalid URL"), z.literal("")]).optional(),
-  google_maps_reviews_url: z.union([z.string().url("Invalid URL"), z.literal("")]).optional(),
-  google_reviews_api_key: z.string().optional(),
-  latitude: z.union([z.coerce.number().min(-90, "Latitude must be between -90 and 90").max(90, "Latitude must be between -90 and 90"), z.literal("")]).optional(),
-  longitude: z.union([z.coerce.number().min(-180, "Longitude must be between -180 and 180").max(180, "Longitude must be between -180 and 180"), z.literal("")]).optional(),
-  currency: z.string().min(2),
-  timezone: z.string().min(2),
 });
 type FormValues = z.infer<typeof schema>;
 
@@ -56,21 +48,13 @@ export function SettingsView() {
   useEffect(() => {
     if (biz) {
       form.reset({
-        business_name: biz.business_name,
-        description: biz.description ?? "",
+        business_name: biz.business_name ?? "",
         phone: biz.phone ?? "",
         whatsapp: biz.whatsapp ?? "",
         email: biz.email ?? "",
         address: biz.address ?? "",
         city: biz.city ?? "",
-        country: biz.country ?? "",
         google_maps_url: biz.google_maps_url ?? "",
-        google_maps_reviews_url: biz.google_maps_reviews_url ?? "",
-        google_reviews_api_key: biz.google_reviews_api_key ?? "",
-        latitude: biz.latitude ?? "",
-        longitude: biz.longitude ?? "",
-        currency: biz.currency ?? "KES",
-        timezone: biz.timezone ?? "Africa/Nairobi",
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -140,9 +124,6 @@ export function SettingsView() {
             <Field label="Business Name" error={form.formState.errors.business_name?.message}>
               <Input {...form.register("business_name")} />
             </Field>
-            <Field label="Description" error={form.formState.errors.description?.message}>
-              <Textarea {...form.register("description")} placeholder="Brief description of your business" rows={3} />
-            </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Phone" error={form.formState.errors.phone?.message}><Input {...form.register("phone")} /></Field>
               <Field label="WhatsApp"><Input {...form.register("whatsapp")} placeholder="Optional" /></Field>
@@ -161,7 +142,7 @@ export function SettingsView() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={logoAsset.public_url}
-                      alt={logoAsset.title || "Logo"}
+                      alt={logoAsset.file_name || "Logo"}
                       className="h-full w-full object-contain bg-stone-900"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
@@ -185,44 +166,28 @@ export function SettingsView() {
                   </button>
                 )}
                                 {logoAsset && (
-                  <p className="text-xs text-muted">{logoAsset.title || "Untitled"}</p>
+                  <p className="text-xs text-muted">{logoAsset.file_name || "Untitled"}</p>
                 )}
               </div>
 
-              {/* Light Logo (logo-white.webp renders on light/white header via .logo-light slot) */}
+              {/* Light logo */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-white">Light Logo</label>
                 {logoLightAsset ? (
                   <div className="group relative aspect-video overflow-hidden rounded-lg border border-stone-700">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={logoLightAsset.public_url}
-                      alt={logoLightAsset.title || "Light Logo"}
-                      className="h-full w-full object-contain bg-stone-900"
-                    />
+                    <img src={logoLightAsset.public_url} alt={logoLightAsset.file_name || "Light logo"} className="h-full w-full object-contain bg-stone-900" />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setLogoLightPickerOpen(true)}
-                      >
-                        Change Light Logo
-                      </Button>
+                      <Button type="button" variant="outline" onClick={() => setLogoLightPickerOpen(true)}>Change Light Logo</Button>
                     </div>
                   </div>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => setLogoLightPickerOpen(true)}
-                    className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-stone-700 bg-stone-900/50 text-stone-500 transition-colors hover:border-stone-600 hover:text-stone-400"
-                  >
-                    <ImageIcon className="h-8 h-8" />
+                  <button type="button" onClick={() => setLogoLightPickerOpen(true)} className="flex aspect-video w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-stone-700 bg-stone-900/50 text-stone-500 transition-colors hover:border-stone-600 hover:text-stone-400">
+                    <ImageIcon className="h-8 w-8" />
                     <span className="text-sm">Select Light Logo</span>
                   </button>
                 )}
-                {logoLightAsset && (
-                  <p className="text-xs text-muted">{logoLightAsset.title || "Untitled"}</p>
-                )}
+                {logoLightAsset && <p className="text-xs text-muted">{logoLightAsset.file_name || "Untitled"}</p>}
               </div>
 
               {/* Favicon */}
@@ -233,7 +198,7 @@ export function SettingsView() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={faviconAsset.public_url}
-                      alt={faviconAsset.title || "Favicon"}
+                      alt={faviconAsset.file_name || "Favicon"}
                       className="h-full w-full object-contain bg-stone-900"
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 transition-opacity group-hover:opacity-100">
@@ -257,7 +222,7 @@ export function SettingsView() {
                   </button>
                 )}
                 {faviconAsset && (
-                  <p className="text-xs text-muted">{faviconAsset.title || "Untitled"}</p>
+                  <p className="text-xs text-muted">{faviconAsset.file_name || "Untitled"}</p>
                 )}
               </div>
             </div>
@@ -265,42 +230,11 @@ export function SettingsView() {
             <p className="pt-2 text-xs font-semibold uppercase tracking-wider text-muted">Location &amp; Maps</p>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="City"><Input {...form.register("city")} placeholder="Optional" /></Field>
-              <Field label="Country"><Input {...form.register("country")} placeholder="Optional" /></Field>
             </div>
             <Field label="Google Maps URL" error={form.formState.errors.google_maps_url?.message}>
               <Input {...form.register("google_maps_url")} placeholder="https://maps.app.goo.gl/..." />
             </Field>
-            <Field label="Google Reviews URL" error={form.formState.errors.google_maps_reviews_url?.message}>
-              <Input {...form.register("google_maps_reviews_url")} placeholder="https://maps.app.goo.gl/..." />
-            </Field>
-            <Field label="Google Reviews API Key" error={form.formState.errors.google_reviews_api_key?.message}>
-              <Input {...form.register("google_reviews_api_key")} placeholder="Leave blank to clear" />
-            </Field>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Latitude" error={form.formState.errors.latitude?.message}>
-                <Input {...form.register("latitude")} type="number" step="any" placeholder="Optional (e.g. -1.2921)" />
-              </Field>
-              <Field label="Longitude" error={form.formState.errors.longitude?.message}>
-                <Input {...form.register("longitude")} type="number" step="any" placeholder="Optional (e.g. 36.8219)" />
-              </Field>
-            </div>
-
-            <p className="pt-2 text-xs font-semibold uppercase tracking-wider text-muted">System</p>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Currency">
-                <Select {...form.register("currency")}>
-                  <option value="KES">KES — Kenyan Shilling</option>
-                  <option value="USD">USD — US Dollar</option>
-                  <option value="EUR">EUR — Euro</option>
-                </Select>
-              </Field>
-              <Field label="Timezone">
-                <Select {...form.register("timezone")}>
-                  <option value="Africa/Nairobi">Africa/Nairobi (EAT)</option>
-                  <option value="UTC">UTC</option>
-                </Select>
-              </Field>
-            </div>
+            <p className="text-xs text-muted">Only fields supported by the current live business_settings table are editable here. Additional settings require a reviewed database migration.</p>
             {saveBiz.isError && <p className="text-sm text-rose-400">{(saveBiz.error as Error).message}</p>}
             <div className="flex justify-end">
               <Button type="submit" disabled={saveBiz.isPending}>{saveBiz.isPending ? "Saving…" : "Save Business Info"}</Button>
@@ -357,7 +291,7 @@ export function SettingsView() {
         onSave={handleLogoLightMediaSave}
         title="Edit Light Logo"
         uploadCategory="branding"
-        allowRemove={false}
+        allowRemove={true}
       />
       <ImageChangeDialog
         open={faviconPickerOpen}

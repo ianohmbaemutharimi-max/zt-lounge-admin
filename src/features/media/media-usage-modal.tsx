@@ -4,8 +4,7 @@ import { Modal, Button, Badge } from "@/components/ui";
 
 interface MediaAsset {
   id: string;
-  title: string | null;
-  original_name: string | null;
+  file_name: string | null;
   usageCount: number;
   usageLocations?: string[];
 }
@@ -25,7 +24,7 @@ export function MediaUsageModal({ open, onClose, asset }: MediaUsageModalProps) 
         <div className="rounded-lg border border-gray-700 bg-gray-800/50 p-4">
           <p className="text-sm text-gray-400">Image:</p>
           <p className="mt-1 font-medium text-white">
-            {asset.title || asset.original_name || "Untitled"}
+            {asset.file_name || "Unnamed file"}
           </p>
           <div className="mt-2">
             <Badge

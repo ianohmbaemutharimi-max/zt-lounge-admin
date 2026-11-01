@@ -1,8 +1,8 @@
 /**
  * CATEGORY LOCKING SYSTEM
  * 
- * Enforces strict mapping between media_assets.category and content table usage.
- * A "hero" category image can ONLY be used in hero_slides, a "menu" image ONLY
+ * Enforces strict mapping between media_assets.media_type and content table usage.
+ * A "hero" media asset can ONLY be used in hero_slides, a "menu" image ONLY
  * in menu_items, etc.
  * 
  * This is enforced at three layers:
@@ -24,11 +24,27 @@ export const CONTENT_TABLE_CATEGORY_MAP = {
   testimonials: "testimonials",
   promotions: "promotions",
   membership_plans: "memberships",
+  page_seo: "seo",
+  page_features: "feature",
   // business_settings has multiple media columns, all require "branding"
   business_settings: "branding",
 } as const;
 
 export type ContentTable = keyof typeof CONTENT_TABLE_CATEGORY_MAP;
+
+const MEDIA_TYPE_BY_CATEGORY: Record<ImageCategory, string> = {
+  hero: "hero",
+  gallery: "gallery",
+  menu: "menu",
+  services: "service",
+  testimonials: "testimonial",
+  branding: "branding",
+  promotions: "promotion",
+  memberships: "general",
+  seo: "seo",
+  feature: "feature",
+  general: "general",
+};
 
 /**
  * Reverse mapping: category → allowed content tables
@@ -42,6 +58,9 @@ export const CATEGORY_CONTENT_TABLES_MAP: Record<ImageCategory, readonly Content
   branding: ["business_settings"],
   promotions: ["promotions"],
   memberships: ["membership_plans"],
+  seo: ["page_seo"],
+  feature: ["page_features"],
+  general: [],
 } as const;
 
 /**
@@ -133,7 +152,7 @@ export async function validateMediaCategoryForMutation(
     // Query the media asset to check its category
     const { data: asset, error } = await supabase
       .from("media_assets")
-      .select("id, category")
+      .select("id, media_type")
       .eq("id", mediaId)
       .single();
 
@@ -144,10 +163,10 @@ export async function validateMediaCategoryForMutation(
       };
     }
 
-    if (asset.category !== requiredCategory) {
+    const requiredMediaType = MEDIA_TYPE_BY_CATEGORY[requiredCategory];\n\n    if (asset.media_type !== requiredMediaType) {
       return {
         valid: false,
-        error: `Category mismatch: ${table}.${columnName} requires media with category="${requiredCategory}", but referenced asset has category="${asset.category}"`
+        error: `Category mismatch: ${table}.${columnName} requires media with category="${requiredCategory}", but referenced asset has media_type="${asset.media_type}"`
       };
     }
 
